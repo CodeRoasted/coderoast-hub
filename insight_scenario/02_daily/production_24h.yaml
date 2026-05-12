@@ -1,6 +1,6 @@
 # Daily runner: 24-hour production simulation with business-hours traffic.
 # Uses rate modulation to simulate realistic daily traffic patterns.
-# Run with: LogCraft data/scenario/daily/production_24h.yaml
+# Run with the Insight Playground scenario catalog.
 scenario:
   name: production-24h
   duration: 24h

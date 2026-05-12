@@ -16,7 +16,8 @@ The scenario library is data, not engine code. LogCraft owns the scenario DSL re
 
 | Path | Purpose |
 |---|---|
-| `scenario/` | Runnable scenario YAML. |
+| `scenario/` | LogCraft Playground starter scenario YAML. |
+| `insight_scenario/` | Insight Playground regression and real-life scenario YAML. |
 | `agents/` | Reusable agent definitions and templates. |
-| `scenario/self_hosted/` | Scenarios that require local filesystem includes or registry support. |
+| `insight_scenario/self_hosted/` | Scenarios that require local filesystem includes or registry support. |
 | `scenario_reference.md` | Scenario DSL reference mirrored from LogCraft-facing docs. |

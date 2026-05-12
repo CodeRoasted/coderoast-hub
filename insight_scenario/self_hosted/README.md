@@ -21,8 +21,8 @@ The registry loads reusable agent definitions from external files, with versioni
 registry:
   named_agents:
     nginx:
-      v1: agents/nginx_v1.yaml
-      v2: agents/nginx_v2.yaml
+      v1: ../../agents/nginx_v1.yaml
+      v2: ../../agents/nginx_v2.yaml
   agents:
     - ref: "nginx:v2"
       name: nginx-primary

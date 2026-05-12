@@ -1,5 +1,5 @@
 # Demo: Registry and templates — shows inheritance, versioning, overrides.
-# External agents from data/agents/ are loaded via the registry mechanism.
+# External agents from agents/ are loaded via the registry mechanism.
 scenario:
   name: registry-templates-demo
   seed: 99
@@ -32,12 +32,12 @@ scenario:
   # ── Registry: versioned external agents ───────────────────────────────
   registry:
     sources:
-      - "../agents/"
+      - "../../agents/"
     nginx:
-      v1: ../agents/nginx_v1.yaml
-      v2: ../agents/nginx_v2.yaml
-    auth: ../agents/auth.yaml
-    db: ../agents/db.yaml
+      v1: ../../agents/nginx_v1.yaml
+      v2: ../../agents/nginx_v2.yaml
+    auth: ../../agents/auth.yaml
+    db: ../../agents/db.yaml
 
     agents:
       # Load nginx v2 with custom name

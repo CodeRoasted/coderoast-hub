@@ -68,9 +68,9 @@ scenario:
   # ── Registry: load external agents ────────────────────────────────────
   registry:
     sources:
-      - "../agents/"
+      - "../../agents/"
     nginx:
-      v2: ../agents/nginx_v2.yaml
+      v2: ../../agents/nginx_v2.yaml
     agents:
       - ref: "nginx:v2"
         name: nginx-frontend

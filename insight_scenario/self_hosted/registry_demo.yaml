@@ -1,5 +1,5 @@
 # This scenario demonstrates the registry feature.
-# Agent definitions live in external YAML files under data/agents/.
+# Agent definitions live in external YAML files under agents/.
 # The registry maps logical names (with optional versions) to those files.
 # Agents are instantiated via "ref:" with optional name and overrides.
 
@@ -24,13 +24,13 @@ scenario:
   # Simple mapping: "auth: path" → ref as "auth"
   registry:
     sources:
-      - "./agents/"
+      - "../../agents/"
 
     nginx:
-      v1: ../agents/nginx_v1.yaml
-      v2: ../agents/nginx_v2.yaml
-    auth: ../agents/auth.yaml
-    db: ../agents/db.yaml
+      v1: ../../agents/nginx_v1.yaml
+      v2: ../../agents/nginx_v2.yaml
+    auth: ../../agents/auth.yaml
+    db: ../../agents/db.yaml
 
     agents:
       # Two nginx instances running different versions
