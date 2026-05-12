@@ -1,0 +1,72 @@
+# Failures 04 — Flapping Service
+# A payment API that randomly transitions between healthy, degraded, failing, and recovering.
+# Typical of a service with memory leaks, connection pool exhaustion, or intermittent deps.
+# Concepts: health_state machine, per-state latency_multipliers and error_rates, transitions
+
+scenario:
+  name: flapping-service
+  duration: 10m
+
+  agents:
+    - name: payment-api
+      type: api_service
+      rate: 40/s
+      error_rate: 0.01
+      latency_ms:
+        distribution: percentile
+        p50: 100
+        p95: 500
+        p99: 1500
+      health_state:
+        # Per-state latency multipliers: [healthy, degraded, failing, recovering]
+        latency_multipliers: [1.0, 3.0, 10.0, 1.5]
+        # Per-state error rates
+        error_rates: [0.01, 0.08, 0.40, 0.03]
+        transitions:
+          - {from: 0, to: 1, probability: 0.002}  # healthy → degraded: ~8 min average
+          - {from: 1, to: 2, probability: 0.008}  # degraded → failing: ~2 min average
+          - {from: 1, to: 0, probability: 0.02}   # degraded → self-heal: ~1 min average
+          - {from: 2, to: 3, probability: 0.02}   # failing → recovering
+          - {from: 3, to: 0, probability: 0.05}   # recovering → healthy
+          - {from: 3, to: 2, probability: 0.01}   # recovering → relapse
+      message_template: "payment {txn_id} {provider} -> {outcome}"
+      fields:
+        - name: txn_id
+          generator: sequence
+          prefix: "txn-"
+        - name: provider
+          generator: weighted_choice
+          values: [stripe, paypal, braintree]
+          weights: [60, 25, 15]
+        - name: outcome
+          generator: weighted_choice
+          values: [approved, declined, timeout, error]
+          weights: [90, 5, 3, 2]
+
+    - name: fraud-detector
+      type: ml_service
+      rate: 40/s    # called for every payment attempt
+      error_rate: 0.005
+      latency_ms:
+        distribution: percentile
+        p50: 15
+        p95: 80
+        p99: 200
+      message_template: "fraud check {txn_id}: {verdict} score={score}"
+      fields:
+        - name: txn_id
+          generator: sequence
+          prefix: "txn-"
+        - name: verdict
+          generator: weighted_choice
+          values: [pass, flag, block]
+          weights: [92, 6, 2]
+        - name: score
+          generator: range
+          min: 0
+          max: 100
+          integer: true
+
+  outputs:
+    - type: console
+      format: json

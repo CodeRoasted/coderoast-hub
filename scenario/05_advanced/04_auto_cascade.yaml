@@ -1,0 +1,154 @@
+# Advanced 04 — Automatic Cascade
+# Declare a dependency graph; auto_cascade propagates degradation through it automatically.
+# No manual rules needed: when Postgres fails, the cascade walks the interaction graph.
+# Concepts: auto_cascade (error_threshold, dampening_factor, blast_radius), interactions
+
+scenario:
+  name: auto-cascade
+  duration: 10m
+
+  interactions:
+    - {from: frontend, to: api-gateway, type: request}
+    - {from: api-gateway, to: user-service, type: request}
+    - {from: api-gateway, to: order-service, type: request}
+    - {from: order-service, to: postgres, type: dependency}
+    - {from: order-service, to: redis-cache, type: dependency}
+    - {from: user-service, to: postgres, type: dependency}
+
+  # auto_cascade walks the interaction graph and propagates degradation automatically.
+  # blast_radius: max hops. dampening_factor: each hop reduces the effect by 50%.
+  auto_cascade:
+    error_threshold: 0.05         # start propagating when any agent's error_rate > 5%
+    latency_threshold_ms: 200.0   # or when p99 latency > 200ms
+    dampening_factor: 0.5         # each hop halves the impact
+    blast_radius: 3               # propagate at most 3 hops
+
+  # Postgres failure at minute 3 triggers the cascade
+  incidents:
+    - name: postgres_failure
+      trigger: "time > 3m"
+      duration: 2m
+      effects:
+        - target: postgres
+          latency_multiplier: 10.0
+          error_rate: 0.35
+
+  agents:
+    - name: frontend
+      type: web_server
+      rate: 300/s
+      error_rate: 0.005
+      latency_ms: [5, 30]
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST]
+          weights: [75, 25]
+        - name: path
+          generator: choice
+          values: [/, /orders, /profile, /dashboard]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "302", "400", "500"]
+          weights: [80, 10, 7, 3]
+
+    - name: api-gateway
+      type: api_service
+      rate: 290/s
+      error_rate: 0.008
+      latency_ms:
+        distribution: normal
+        mean: 20
+        stddev: 8
+      message_template: "route {service} {path}"
+      fields:
+        - name: service
+          generator: weighted_choice
+          values: [user-service, order-service]
+          weights: [40, 60]
+        - name: path
+          generator: choice
+          values: [/api/users, /api/orders, /api/products]
+
+    - name: user-service
+      type: api_service
+      rate: 120/s
+      error_rate: 0.005
+      latency_ms:
+        distribution: normal
+        mean: 15
+        stddev: 5
+      message_template: "user {user_id} {action}"
+      fields:
+        - name: user_id
+          generator: range
+          min: 1
+          max: 50000
+          integer: true
+        - name: action
+          generator: weighted_choice
+          values: [get, update, authenticate]
+          weights: [60, 25, 15]
+
+    - name: order-service
+      type: api_service
+      rate: 170/s
+      error_rate: 0.006
+      latency_ms:
+        distribution: percentile
+        p50: 25
+        p95: 120
+        p99: 400
+      message_template: "order {order_id} {action}"
+      fields:
+        - name: order_id
+          generator: sequence
+          prefix: "ord-"
+        - name: action
+          generator: weighted_choice
+          values: [create, read, update, cancel]
+          weights: [25, 55, 15, 5]
+
+    - name: postgres
+      type: database
+      rate: 350/s
+      error_rate: 0.002
+      latency_ms:
+        distribution: percentile
+        p50: 3
+        p95: 15
+        p99: 60
+      message_template: "{op} {table} {rows}r"
+      fields:
+        - name: op
+          generator: weighted_choice
+          values: [SELECT, INSERT, UPDATE, DELETE]
+          weights: [55, 20, 20, 5]
+        - name: table
+          generator: choice
+          values: [users, orders, products, sessions]
+        - name: rows
+          generator: range
+          min: 0
+          max: 100
+          integer: true
+
+    - name: redis-cache
+      type: cache
+      rate: 500/s
+      error_rate: 0.001
+      latency_ms: [0, 3]
+      message_template: "{cmd} {key_type}"
+      fields:
+        - name: cmd
+          generator: weighted_choice
+          values: [GET, SET, DEL, EXPIRE]
+          weights: [60, 25, 10, 5]
+        - name: key_type
+          generator: choice
+          values: [user_session, order_cache, product_price]
+
+  outputs:
+    - type: console
+      format: json

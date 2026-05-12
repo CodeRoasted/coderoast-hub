@@ -1,0 +1,56 @@
+# Formats 02 — Structured Text Log Formats
+# kv/logfmt, syslog, RFC 5424, and log4j output from the same event stream.
+# These formats are widely used in Java stacks, syslog pipelines, and log aggregators.
+# Concepts: format: kv, syslog, rfc5424, log4j; multiple file outputs
+
+scenario:
+  name: structured-log-formats
+  duration: 2m
+
+  agents:
+    - name: app-server
+      type: application
+      rate: 10/s
+      message_template: "Request to {endpoint} returned {status_code} in {latency_ms}ms"
+      fields:
+        - name: endpoint
+          generator: choice
+          values: [/api/login, /api/orders, /api/products, /api/checkout]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "400", "401", "500"]
+          weights: [85, 8, 5, 2]
+        - name: latency_ms
+          generator: range
+          min: 5
+          max: 500
+          integer: true
+        - name: user_id
+          generator: sequence
+          prefix: "usr-"
+          start: 1001
+        - name: trace_id
+          generator: sequence
+          prefix: "trace-"
+          start: 1
+
+  outputs:
+    # ts=2026-01-15T10:23:45Z level=info service=app-server msg="..."
+    - type: file
+      path: /tmp/logcraft_kv.log
+      format: kv
+
+    # Jan 15 10:23:45 hostname app-server[1234]: message
+    - type: file
+      path: /tmp/logcraft_syslog.log
+      format: syslog
+
+    # <14>1 2026-01-15T10:23:45Z host app-server 1234 - - message
+    - type: file
+      path: /tmp/logcraft_rfc5424.log
+      format: rfc5424
+
+    # 2026-01-15 10:23:45,123 INFO [main] com.example.AppServer: message
+    - type: file
+      path: /tmp/logcraft_log4j.log
+      format: log4j

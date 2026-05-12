@@ -1,0 +1,139 @@
+# Services 03 — Microservice Mesh
+# Six services sharing common profiles, each capable of probabilistic health degradation.
+# Concepts: templates, interactions, health_state machine (latency_multipliers, error_rates, transitions)
+
+scenario:
+  name: microservice-mesh
+  duration: 10m
+
+  templates:
+    go_api:
+      rate: 100/s
+      error_rate: 0.008
+      latency_ms:
+        distribution: percentile
+        p50: 12
+        p95: 60
+        p99: 200
+      health_state:
+        # Per-state multipliers: [healthy, degraded, failing, recovering]
+        latency_multipliers: [1.0, 2.5, 8.0, 1.5]
+        error_rates:         [0.008, 0.05, 0.30, 0.02]
+        transitions:
+          - {from: 0, to: 1, probability: 0.001}  # healthy → degraded: ~16 min average
+          - {from: 1, to: 2, probability: 0.01}   # degraded → failing: ~1.6 min average
+          - {from: 1, to: 0, probability: 0.05}   # degraded → self-heal: likely
+          - {from: 2, to: 3, probability: 0.05}   # failing → recovering
+          - {from: 3, to: 0, probability: 0.10}   # recovering → healthy
+          - {from: 3, to: 2, probability: 0.02}   # recovering → relapse
+
+  interactions:
+    - {from: api-gateway, to: user-service, type: request}
+    - {from: api-gateway, to: order-service, type: request}
+    - {from: order-service, to: inventory-service, type: dependency}
+    - {from: order-service, to: notification-service, type: request}
+    - {from: user-service, to: auth-service, type: dependency}
+
+  agents:
+    - name: api-gateway
+      use: go_api
+      rate: 300/s
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT, DELETE]
+          weights: [60, 25, 12, 3]
+        - name: path
+          generator: choice
+          values: [/api/users, /api/orders, /api/products, /health]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "400", "500"]
+          weights: [80, 10, 7, 3]
+
+    - name: user-service
+      use: go_api
+      message_template: "user {user_id}: {action}"
+      fields:
+        - name: user_id
+          generator: range
+          min: 1
+          max: 100000
+          integer: true
+        - name: action
+          generator: weighted_choice
+          values: [get, update, create, delete]
+          weights: [70, 20, 8, 2]
+
+    - name: order-service
+      use: go_api
+      rate: 80/s
+      message_template: "order {order_id}: {action}"
+      fields:
+        - name: order_id
+          generator: sequence
+          prefix: "ord-"
+        - name: action
+          generator: weighted_choice
+          values: [create, read, update, fulfill]
+          weights: [30, 50, 15, 5]
+
+    - name: inventory-service
+      use: go_api
+      rate: 60/s
+      message_template: "sku={sku} qty={qty} action={action}"
+      fields:
+        - name: sku
+          generator: choice
+          values: [SKU-001, SKU-002, SKU-003, SKU-004, SKU-005]
+        - name: qty
+          generator: range
+          min: 0
+          max: 1000
+          integer: true
+        - name: action
+          generator: weighted_choice
+          values: [reserve, release, check, adjust]
+          weights: [40, 30, 20, 10]
+
+    - name: notification-service
+      use: go_api
+      rate: 20/s
+      message_template: "notification type={type} channel={channel} status={status}"
+      fields:
+        - name: type
+          generator: weighted_choice
+          values: [order_confirmed, shipped, delivered, payment_failed]
+          weights: [40, 30, 20, 10]
+        - name: channel
+          generator: weighted_choice
+          values: [email, push, sms]
+          weights: [50, 35, 15]
+        - name: status
+          generator: weighted_choice
+          values: [sent, failed, queued]
+          weights: [92, 5, 3]
+
+    - name: auth-service
+      use: go_api
+      rate: 150/s
+      message_template: "auth {action} user={user_id} result={result}"
+      fields:
+        - name: action
+          generator: weighted_choice
+          values: [verify, refresh, revoke]
+          weights: [80, 18, 2]
+        - name: user_id
+          generator: range
+          min: 1
+          max: 100000
+          integer: true
+        - name: result
+          generator: weighted_choice
+          values: [ok, invalid_token, expired, not_found]
+          weights: [93, 3, 3, 1]
+
+  outputs:
+    - type: console
+      format: json

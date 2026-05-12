@@ -1,0 +1,55 @@
+# Formats 03 — Cloud-Native and Observability Log Formats
+# ECS (Elastic Common Schema), OpenTelemetry, CloudWatch, and systemd journal.
+# Use these when feeding Elasticsearch, an OTel collector, AWS, or a Linux host.
+# Concepts: format: ecs, otel, cloudwatch, systemd_journal
+
+scenario:
+  name: modern-log-formats
+  duration: 2m
+
+  agents:
+    - name: api-service
+      type: microservice
+      rate: 10/s
+      message_template: "Handled {method} {path} in {latency_ms}ms"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT, DELETE]
+          weights: [65, 25, 7, 3]
+        - name: path
+          generator: choice
+          values: [/api/v1/users, /api/v1/orders, /api/v1/events, /healthz]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "400", "404", "500"]
+          weights: [75, 10, 7, 6, 2]
+        - name: latency_ms
+          generator: range
+          min: 5
+          max: 800
+          integer: true
+        - name: request_id
+          generator: sequence
+          prefix: "req-"
+
+  outputs:
+    # {"@timestamp":"...","log":{"level":"info"},"message":"...","service":{"name":"..."}}
+    - type: file
+      path: /tmp/logcraft_ecs.log
+      format: ecs
+
+    # OpenTelemetry log record format
+    - type: file
+      path: /tmp/logcraft_otel.log
+      format: otel
+
+    # AWS CloudWatch Logs JSON format
+    - type: file
+      path: /tmp/logcraft_cloudwatch.log
+      format: cloudwatch
+
+    # systemd journal export format
+    - type: file
+      path: /tmp/logcraft_journal.log
+      format: systemd_journal

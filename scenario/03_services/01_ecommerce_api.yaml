@@ -1,0 +1,96 @@
+# Services 01 — E-Commerce API Stack
+# A realistic 3-service stack: API gateway → order service → payment processor.
+# Phases model a morning warmup, business-hours peak, and end-of-day cooldown.
+# Concepts: multi-agent stack, phases, percentile latency, weighted_choice field schemas
+
+scenario:
+  name: ecommerce-api
+  duration: 10m
+
+  agents:
+    - name: api-gateway
+      type: web_server
+      rate: 200/s
+      error_rate: 0.01
+      latency_ms:
+        distribution: percentile
+        p50: 15
+        p95: 80
+        p99: 250
+      phases:
+        - name: warmup
+          duration: 1m
+          rate: 20/s
+        - name: steady
+          duration: 7m
+          rate: 200/s
+        - name: cooldown
+          duration: 2m
+          rate: 40/s
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT, DELETE]
+          weights: [60, 25, 12, 3]
+        - name: path
+          generator: weighted_choice
+          values: [/api/products, /api/cart, /api/orders, /api/checkout, /api/users, /health]
+          weights: [30, 20, 25, 15, 8, 2]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "400", "401", "404", "500"]
+          weights: [68, 15, 7, 3, 5, 2]
+
+    - name: order-service
+      type: api_service
+      rate: 80/s
+      error_rate: 0.015
+      latency_ms:
+        distribution: percentile
+        p50: 30
+        p95: 150
+        p99: 600
+      message_template: "order {order_id}: {action} -> {result}"
+      fields:
+        - name: order_id
+          generator: sequence
+          prefix: "ord-"
+          start: 10000
+        - name: action
+          generator: weighted_choice
+          values: [create, read, update, cancel]
+          weights: [40, 40, 15, 5]
+        - name: result
+          generator: weighted_choice
+          values: [ok, validation_error, not_found, timeout]
+          weights: [90, 5, 3, 2]
+
+    - name: payment-processor
+      type: external_api
+      rate: 30/s
+      error_rate: 0.02
+      # Payment gateways are slow with long tails — p99 of 3.5s is realistic
+      latency_ms:
+        distribution: percentile
+        p50: 120
+        p95: 800
+        p99: 3500
+      message_template: "payment {txn_id}: {provider} {result}"
+      fields:
+        - name: txn_id
+          generator: sequence
+          prefix: "txn-"
+          start: 1
+        - name: provider
+          generator: weighted_choice
+          values: [stripe, paypal, adyen]
+          weights: [60, 25, 15]
+        - name: result
+          generator: weighted_choice
+          values: [approved, declined, timeout, fraud_flagged]
+          weights: [88, 7, 3, 2]
+
+  outputs:
+    - type: console
+      format: json

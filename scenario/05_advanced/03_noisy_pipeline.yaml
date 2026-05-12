@@ -1,0 +1,103 @@
+# Advanced 03 — Noisy Pipeline
+# A 3-stage data pipeline with at-least-once delivery, schema drift, and timing jitter.
+# Use this to test how your consumers handle duplicates, missing fields, and out-of-order records.
+# Concepts: noise (log_duplication_rate, missing_fields_rate, random_delay_ms), field_variations
+
+scenario:
+  name: noisy-pipeline
+  duration: 5m
+
+  # Global noise applies to all agents unless they define their own
+  noise:
+    log_duplication_rate: 0.005   # 0.5% of records are duplicated (at-least-once)
+    missing_fields_rate: 0.01     # 1% of records have random fields dropped
+    random_delay_ms: [0, 50]      # up to 50ms of timing jitter per record
+
+  agents:
+    - name: ingestor
+      type: data_pipeline
+      rate: 500/s
+      error_rate: 0.002
+      # Ingestor has slightly higher duplication than the global default
+      noise:
+        log_duplication_rate: 0.008
+      message_template: "ingest event_type={event_type} source={source} bytes={payload_bytes}"
+      fields:
+        - name: event_type
+          generator: weighted_choice
+          values: [click, view, purchase, search, add_to_cart]
+          weights: [35, 30, 10, 15, 10]
+        - name: source
+          generator: weighted_choice
+          values: [web, mobile_ios, mobile_android, api]
+          weights: [45, 30, 20, 5]
+        - name: payload_bytes
+          generator: range
+          min: 64
+          max: 8192
+          integer: true
+        - name: pipeline_stage
+          generator: static
+          value: "ingest"
+
+    - name: transformer
+      type: data_pipeline
+      rate: 490/s    # slightly slower than ingestor — some records are dropped
+      error_rate: 0.01
+      latency_ms:
+        distribution: normal
+        mean: 15
+        stddev: 8
+      message_template: "transform event_type={event_type} schema={schema_version} valid={valid}"
+      fields:
+        - name: event_type
+          generator: weighted_choice
+          values: [click, view, purchase, search, add_to_cart]
+          weights: [35, 30, 10, 15, 10]
+        - name: schema_version
+          generator: weighted_choice
+          values: [v2, v3, legacy]
+          weights: [70, 25, 5]
+        - name: valid
+          generator: weighted_choice
+          values: ["true", "false"]
+          weights: [95, 5]
+        - name: pipeline_stage
+          generator: static
+          value: "transform"
+
+    - name: loader
+      type: data_pipeline
+      rate: 480/s
+      error_rate: 0.003
+      latency_ms:
+        distribution: percentile
+        p50: 8
+        p95: 50
+        p99: 200
+      message_template: "load destination={destination} batch={batch_id} rows={rows}"
+      fields:
+        - name: destination
+          generator: weighted_choice
+          values: [bigquery, s3, elasticsearch, postgres]
+          weights: [40, 30, 20, 10]
+        - name: batch_id
+          generator: sequence
+          prefix: "batch-"
+        - name: rows
+          generator: range
+          min: 1
+          max: 1000
+          integer: true
+        - name: pipeline_stage
+          generator: static
+          value: "load"
+
+  # Naturally varying payload sizes across the pipeline
+  field_variations:
+    - field: payload_bytes
+      jitter_percent: 20.0
+
+  outputs:
+    - type: console
+      format: json

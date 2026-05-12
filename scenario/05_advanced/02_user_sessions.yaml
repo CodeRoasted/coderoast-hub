@@ -1,0 +1,75 @@
+# Advanced 02 — User Sessions and Personas
+# 500 simulated users browsing the store, split into power users, regulars, and browsers.
+# Each persona has different request rates and endpoint preferences.
+# Concepts: users, personas, entity_pool
+
+scenario:
+  name: user-sessions
+  duration: 10m
+
+  users:
+    count: 500
+    sessions:
+      duration: [60, 600]           # sessions last 1–10 minutes
+      requests_per_session: [3, 50] # 3–50 requests per session
+
+  personas:
+    - name: power_user
+      weight: 0.15    # 15% of users — heavy API consumers
+      behavior:
+        request_rate: high
+        endpoints: [/api/orders, /api/reports, /api/export, /api/batch]
+
+    - name: regular_user
+      weight: 0.60    # 60% of users — typical shoppers
+      behavior:
+        request_rate: medium
+        endpoints: [/api/products, /api/cart, /api/checkout, /api/account]
+
+    - name: browser
+      weight: 0.25    # 25% of users — just looking, low activity
+      behavior:
+        request_rate: low
+        endpoints: [/api/products, /api/search, /api/categories]
+
+  entity_pool:
+    - product:1001
+    - product:1002
+    - product:1003
+    - product:1004
+    - product:1005
+    - product:2001
+    - product:2002
+    - product:3001
+
+  agents:
+    - name: web-app
+      type: web_server
+      rate: 200/s
+      error_rate: 0.01
+      latency_ms:
+        distribution: normal
+        mean: 60
+        stddev: 30
+      message_template: "{method} {path} user={user_id} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT, DELETE]
+          weights: [70, 20, 8, 2]
+        - name: path
+          generator: choice
+          values: [/api/products, /api/cart, /api/orders, /api/checkout, /api/account, /api/search]
+        - name: user_id
+          generator: range
+          min: 1000
+          max: 9999
+          integer: true
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "304", "400", "404", "500"]
+          weights: [65, 12, 8, 7, 6, 2]
+
+  outputs:
+    - type: console
+      format: json

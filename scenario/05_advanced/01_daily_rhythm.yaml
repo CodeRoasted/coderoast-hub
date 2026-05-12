@@ -1,0 +1,63 @@
+# Advanced 01 — Daily Traffic Rhythm
+# Business-hours traffic on the API; sinusoidal background jobs that peak at midnight.
+# Run with a virtual clock to fast-forward through the 24-hour pattern.
+# Concepts: rate_modulation (business_hours, sinusoidal), clock virtual mode
+
+scenario:
+  name: daily-rhythm
+  duration: 0    # run until stopped; set to 86400s to simulate a full day
+
+  agents:
+    - name: web-api
+      type: web_server
+      rate: 500/s    # peak rate — business_hours multiplier scales this down off-peak
+      error_rate: 0.01
+      latency_ms:
+        distribution: percentile
+        p50: 20
+        p95: 100
+        p99: 400
+      rate_modulation:
+        type: business_hours
+        peak_start_hour: 9
+        peak_end_hour: 18
+        peak_multiplier: 1.0        # full 500/s during business hours
+        off_peak_multiplier: 0.05   # nearly silent at 3am (~25/s)
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT]
+          weights: [65, 25, 10]
+        - name: path
+          generator: choice
+          values: [/api/dashboard, /api/orders, /api/reports, /health]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "304", "400", "500"]
+          weights: [80, 10, 8, 2]
+
+    - name: batch-processor
+      type: worker
+      rate: 20/s
+      error_rate: 0.005
+      # ETL and archive jobs are busy at night, quiet during business hours
+      rate_modulation:
+        type: sinusoidal
+        amplitude_factor: 0.8       # swings ±80% of base rate
+        period_seconds: 86400       # 24-hour period
+        phase_offset_seconds: 43200 # peaks at midnight (half-period offset from noon)
+      message_template: "batch job={job_type} status={status}"
+      fields:
+        - name: job_type
+          generator: weighted_choice
+          values: [etl_sync, report_gen, data_archive, index_rebuild]
+          weights: [50, 25, 15, 10]
+        - name: status
+          generator: weighted_choice
+          values: [started, completed, failed, retrying]
+          weights: [30, 60, 5, 5]
+
+  outputs:
+    - type: console
+      format: json

@@ -1,0 +1,69 @@
+# Benchmarks 02 — Wide Fleet
+# 50 web nodes + 50 workers + 5 DB replicas: 105 agent instances, ~1750 records/s aggregate.
+# Tests multi-agent scheduling overhead rather than raw per-agent throughput.
+# Concepts: instances (spin up N identical agents), templates for shared profiles
+
+scenario:
+  name: wide-fleet
+  duration: 60s
+
+  templates:
+    fleet_node:
+      rate: 10/s       # 10/s each × 50 instances = 500/s for this agent type
+      error_rate: 0.01
+      latency_ms:
+        distribution: normal
+        mean: 30
+        stddev: 10
+
+  agents:
+    - name: web-node
+      use: fleet_node
+      instances: 50    # spin up 50 identical web nodes
+      message_template: "GET {path} -> {status_code}"
+      fields:
+        - name: path
+          generator: choice
+          values: [/api/data, /api/query, /health]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "500"]
+          weights: [99, 1]
+
+    - name: worker-node
+      use: fleet_node
+      instances: 50    # 50 background workers
+      rate: 5/s        # 5/s × 50 = 250/s aggregate
+      message_template: "job {job_type} -> {result}"
+      fields:
+        - name: job_type
+          generator: weighted_choice
+          values: [etl, report, sync, cleanup]
+          weights: [40, 25, 25, 10]
+        - name: result
+          generator: weighted_choice
+          values: [ok, error, skipped]
+          weights: [95, 3, 2]
+
+    - name: db-replica
+      use: fleet_node
+      instances: 5     # 5 read replicas
+      rate: 100/s      # 100/s × 5 = 500/s aggregate
+      latency_ms:
+        distribution: percentile
+        p50: 5
+        p95: 25
+        p99: 100
+      message_template: "{op} {table}"
+      fields:
+        - name: op
+          generator: weighted_choice
+          values: [SELECT, INSERT, UPDATE]
+          weights: [70, 20, 10]
+        - name: table
+          generator: choice
+          values: [events, metrics, logs, users]
+
+  outputs:
+    - type: console
+      format: json

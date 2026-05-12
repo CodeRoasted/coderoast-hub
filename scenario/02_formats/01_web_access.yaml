@@ -1,0 +1,50 @@
+# Formats 01 — Web Access Log Formats
+# CLF (Combined Log Format), nginx error, and Apache error from the same web traffic.
+# These are the classic on-disk formats you'll find in /var/log/nginx/ and /var/log/apache2/.
+# Concepts: format: clf, nginx_error, apache_error; multiple file outputs
+
+scenario:
+  name: web-access-formats
+  duration: 2m
+
+  agents:
+    - name: nginx
+      type: web_server
+      rate: 20/s
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: remote_addr
+          generator: choice
+          values: ["192.168.1.1", "10.0.0.42", "172.16.0.3", "203.0.113.5"]
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT, DELETE]
+          weights: [70, 20, 7, 3]
+        - name: path
+          generator: choice
+          values: [/, /api/users, /api/orders, /static/app.js, /health]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "301", "400", "404", "500"]
+          weights: [70, 10, 5, 5, 8, 2]
+        - name: bytes_sent
+          generator: range
+          min: 0
+          max: 51200
+          integer: true
+
+  outputs:
+    # 127.0.0.1 - - [15/Jan/2026:10:23:45 +0000] "GET / HTTP/1.1" 200 1024
+    - type: file
+      path: /tmp/logcraft_access.log
+      format: clf
+
+    # 2026/01/15 10:23:45 [error] 123#0: upstream timed out
+    - type: file
+      path: /tmp/logcraft_nginx_error.log
+      format: nginx_error
+
+    # [Mon Jan 15 10:23:45.123 2026] [error] [pid 123] msg
+    - type: file
+      path: /tmp/logcraft_apache_error.log
+      format: apache_error

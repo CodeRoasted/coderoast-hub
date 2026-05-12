@@ -1,0 +1,84 @@
+# Failures 01 — Error Spike
+# A web service running normally until a bad deployment causes a 35% error rate.
+# Watch the spike hit at minute 5, then the incident auto-resolves and traffic recovers.
+# Concepts: phases, incidents, effects on multiple agents
+
+scenario:
+  name: error-spike
+  duration: 12m
+
+  # Bad deploy fires at minute 5 and lasts 3 minutes
+  incidents:
+    - name: bad_deploy
+      trigger: "time > 5m"
+      duration: 3m
+      effects:
+        - target: api-server
+          error_rate: 0.35
+          latency_multiplier: 4.0
+        - target: postgres
+          error_rate: 0.10
+          latency_multiplier: 2.0
+
+  agents:
+    - name: api-server
+      type: web_server
+      rate: 100/s
+      error_rate: 0.01
+      latency_ms:
+        distribution: percentile
+        p50: 20
+        p95: 100
+        p99: 300
+      # After the incident resolves, recovery is gradual (phases continue from where we are)
+      phases:
+        - name: steady
+          duration: 5m
+          rate: 100/s
+          error_rate: 0.01
+        - name: degraded-recovery
+          duration: 3m
+          rate: 60/s
+          error_rate: 0.05
+        - name: back-to-normal
+          duration: 1m
+          rate: 100/s
+          error_rate: 0.01
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST]
+          weights: [75, 25]
+        - name: path
+          generator: choice
+          values: [/api/users, /api/orders, /api/products, /health]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "400", "500", "503"]
+          weights: [82, 8, 7, 3]
+
+    - name: postgres
+      type: database
+      rate: 80/s
+      error_rate: 0.003
+      latency_ms:
+        distribution: percentile
+        p50: 5
+        p95: 20
+        p99: 80
+      message_template: "{query} rows={rows}"
+      fields:
+        - name: query
+          generator: weighted_choice
+          values: [SELECT, INSERT, UPDATE, DELETE]
+          weights: [55, 20, 20, 5]
+        - name: rows
+          generator: range
+          min: 0
+          max: 200
+          integer: true
+
+  outputs:
+    - type: console
+      format: json

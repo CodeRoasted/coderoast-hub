@@ -1,0 +1,75 @@
+# Services 02 — Web App with Database
+# A web application backed by PostgreSQL, showing realistic query patterns.
+# The conditional generator varies response body size based on HTTP status code.
+# Concepts: conditional generator, sequence for IDs, range, realistic DB latency
+
+scenario:
+  name: webapp-postgres
+  duration: 5m
+
+  agents:
+    - name: web-app
+      type: web_server
+      rate: 50/s
+      error_rate: 0.02
+      latency_ms:
+        distribution: normal
+        mean: 45
+        stddev: 20
+      message_template: "{method} {path} {status_code} {body_bytes}b"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT, DELETE]
+          weights: [65, 20, 12, 3]
+        - name: path
+          generator: choice
+          values: [/users, /posts, /comments, /tags, /health]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "400", "404", "422", "500"]
+          weights: [65, 15, 8, 5, 5, 2]
+        # Body size depends on status: success responses carry a payload, errors are small
+        - name: body_bytes
+          generator: conditional
+          condition_field: status_code
+          branches:
+            "200": {generator: range, min: 200, max: 50000, integer: true}
+            "201": {generator: range, min: 50, max: 500, integer: true}
+            "400": {generator: static, value: "87"}
+            "404": {generator: static, value: "45"}
+            "422": {generator: range, min: 100, max: 400, integer: true}
+            "500": {generator: static, value: "62"}
+          default: {generator: static, value: "0"}
+
+    - name: postgres
+      type: database
+      rate: 120/s    # database sees more ops than HTTP: joins, indexes, sequences
+      error_rate: 0.005
+      latency_ms:
+        distribution: percentile
+        p50: 3
+        p95: 25
+        p99: 180    # occasional lock waits and vacuum interference
+      message_template: "{query_type} {table} seq={seq_id} rows={rows}"
+      fields:
+        - name: query_type
+          generator: weighted_choice
+          values: [SELECT, INSERT, UPDATE, DELETE, BEGIN, COMMIT]
+          weights: [50, 20, 15, 5, 5, 5]
+        - name: table
+          generator: weighted_choice
+          values: [users, posts, comments, tags, sessions]
+          weights: [20, 30, 35, 10, 5]
+        - name: seq_id
+          generator: sequence
+          start: 1
+        - name: rows
+          generator: range
+          min: 0
+          max: 500
+          integer: true
+
+  outputs:
+    - type: console
+      format: json

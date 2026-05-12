@@ -1,0 +1,133 @@
+# Failures 02 — Cascading Failure
+# A database I/O storm causes the order service to degrade, which propagates to the gateway.
+# Rules automatically propagate the degradation — no manual per-hop config needed.
+# Concepts: interactions, incidents, rules (propagation), multi-hop cascade
+
+scenario:
+  name: cascading-failure
+  duration: 10m
+
+  interactions:
+    - {from: api-gateway, to: order-service, type: request}
+    - {from: order-service, to: postgres, type: dependency}
+    - {from: order-service, to: redis-cache, type: dependency}
+
+  # Disk I/O storm at minute 3; cache fails under the resulting pressure at minute 4
+  incidents:
+    - name: disk_io_storm
+      trigger: "time > 3m"
+      duration: 2m
+      effects:
+        - target: postgres
+          latency_multiplier: 12.0
+          error_rate: 0.30
+
+    - name: cache_oom
+      trigger: "time > 4m"
+      duration: 90s
+      effects:
+        - target: redis-cache
+          latency_multiplier: 20.0
+          error_rate: 0.50
+
+  # These rules propagate degradation upstream automatically
+  rules:
+    - when: "postgres.error_rate > 0.05"
+      propagate:
+        to: order-service
+        latency_multiplier: 3.0
+        error_rate: 0.15
+    - when: "order-service.error_rate > 0.10"
+      propagate:
+        to: api-gateway
+        error_rate: 0.08
+
+  agents:
+    - name: api-gateway
+      type: web_server
+      rate: 150/s
+      error_rate: 0.01
+      latency_ms: [10, 80]
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT]
+          weights: [60, 30, 10]
+        - name: path
+          generator: choice
+          values: [/api/orders, /api/users, /api/products, /health]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "500", "503"]
+          weights: [82, 10, 5, 3]
+
+    - name: order-service
+      type: api_service
+      rate: 80/s
+      error_rate: 0.005
+      latency_ms:
+        distribution: normal
+        mean: 30
+        stddev: 10
+      message_template: "order {order_id} {action}"
+      fields:
+        - name: order_id
+          generator: sequence
+          prefix: "ord-"
+        - name: action
+          generator: weighted_choice
+          values: [create, read, update, fulfill]
+          weights: [30, 50, 15, 5]
+
+    - name: postgres
+      type: database
+      rate: 100/s
+      error_rate: 0.002
+      latency_ms:
+        distribution: percentile
+        p50: 4
+        p95: 20
+        p99: 80
+      message_template: "{op} {table} {rows}r {duration}ms"
+      fields:
+        - name: op
+          generator: weighted_choice
+          values: [SELECT, INSERT, UPDATE, DELETE]
+          weights: [55, 20, 20, 5]
+        - name: table
+          generator: choice
+          values: [orders, users, inventory, payments]
+        - name: rows
+          generator: range
+          min: 0
+          max: 500
+          integer: true
+        - name: duration
+          generator: range
+          min: 1
+          max: 100
+          integer: true
+
+    - name: redis-cache
+      type: cache
+      rate: 200/s
+      error_rate: 0.001
+      latency_ms: [0, 3]
+      message_template: "{cmd} {key_prefix}* -> {result}"
+      fields:
+        - name: cmd
+          generator: weighted_choice
+          values: [GET, SET, DEL, EXPIRE, MGET]
+          weights: [50, 25, 10, 10, 5]
+        - name: key_prefix
+          generator: choice
+          values: ["order:cache:", "user:session:", "product:price:"]
+        - name: result
+          generator: weighted_choice
+          values: [HIT, MISS, OK]
+          weights: [75, 20, 5]
+
+  outputs:
+    - type: console
+      format: json

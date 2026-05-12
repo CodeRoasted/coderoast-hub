@@ -1,0 +1,111 @@
+# Failures 05 — Thundering Herd
+# Cache cold start causes all requests to hit the database simultaneously.
+# The DB collapses under the load, then slowly recovers as the cache re-warms.
+# Concepts: availability, slow_queries, failures, contention, incidents
+
+scenario:
+  name: thundering-herd
+  duration: 8m
+
+  incidents:
+    # Cache eviction at minute 2: every request falls through to the database
+    - name: cache_eviction
+      trigger: "time > 2m"
+      duration: 30s
+      effects:
+        - target: redis-cache
+          error_rate: 0.98      # nearly all cache lookups fail (cold cache)
+          latency_multiplier: 0.1  # fast fail — no timeout, just immediate misses
+
+    # Database overwhelmed by the thundering herd immediately after
+    - name: db_overload
+      trigger: "time > 2m"
+      duration: 90s
+      effects:
+        - target: mysql
+          latency_multiplier: 15.0
+          error_rate: 0.20
+
+  agents:
+    - name: web-api
+      type: web_server
+      rate: 200/s
+      error_rate: 0.005
+      latency_ms: [5, 50]
+      message_template: "{method} {path} cache={cache_status}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST]
+          weights: [80, 20]
+        - name: path
+          generator: choice
+          values: [/products, /categories, /search, /user/profile]
+        - name: cache_status
+          generator: weighted_choice
+          values: [HIT, MISS]
+          weights: [85, 15]
+
+    - name: redis-cache
+      type: cache
+      rate: 200/s
+      error_rate: 0.002
+      latency_ms: [0, 2]
+      availability:
+        uptime: 0.998
+        failure_mode: timeout
+      slow_queries:
+        probability: 0.001
+        latency_ms: [100, 500]
+      message_template: "{cmd} {key_prefix}* {result}"
+      fields:
+        - name: cmd
+          generator: weighted_choice
+          values: [GET, MGET, SET, DEL]
+          weights: [60, 20, 15, 5]
+        - name: key_prefix
+          generator: choice
+          values: ["product:", "category:", "user:", "search:"]
+        - name: result
+          generator: weighted_choice
+          values: [HIT, MISS, OK, ERR]
+          weights: [80, 15, 4, 1]
+
+    - name: mysql
+      type: database
+      rate: 40/s    # normally only cache misses reach the database
+      error_rate: 0.003
+      latency_ms:
+        distribution: percentile
+        p50: 8
+        p95: 40
+        p99: 150
+      contention:
+        max_connections: 100
+        queue_latency_ms: [50, 500]
+      slow_queries:
+        probability: 0.02
+        latency_ms: [500, 5000]
+      failures:
+        mode: burst
+        trigger: "error_rate > 0.1"
+        duration: 30s
+        error_rate: 0.5
+      message_template: "{op} {table} {rows}r"
+      fields:
+        - name: op
+          generator: weighted_choice
+          values: [SELECT, INSERT, UPDATE]
+          weights: [70, 20, 10]
+        - name: table
+          generator: choice
+          values: [products, categories, users, search_index]
+        - name: rows
+          generator: range
+          min: 0
+          max: 1000
+          integer: true
+
+  outputs:
+    - type: console
+      format: json

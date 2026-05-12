@@ -1,0 +1,107 @@
+# Services 04 — Event-Driven Architecture with Kafka
+# A producer, Kafka broker, and consumer with realistic noise and payload variation.
+# Concepts: noise (log_duplication_rate, missing_fields_rate), entity_pool, field_variations
+
+scenario:
+  name: event-driven-kafka
+  duration: 5m
+
+  entity_pool:
+    - user:12345
+    - user:67890
+    - user:11111
+    - user:44444
+    - user:99999
+
+  agents:
+    - name: event-producer
+      type: api_service
+      rate: 80/s
+      message_template: "produce event_type={event_type} topic={topic} bytes={payload_bytes}"
+      fields:
+        - name: event_type
+          generator: weighted_choice
+          values: [user.created, user.updated, order.placed, order.shipped, payment.processed]
+          weights: [5, 15, 40, 30, 10]
+        - name: topic
+          generator: weighted_choice
+          values: [users, orders, payments]
+          weights: [20, 55, 25]
+        - name: partition
+          generator: range
+          min: 0
+          max: 11
+          integer: true
+        - name: payload_bytes
+          generator: range
+          min: 64
+          max: 4096
+          integer: true
+
+    - name: kafka-broker
+      type: message_broker
+      rate: 200/s    # broker sees all produces + replication + fetches
+      error_rate: 0.001
+      latency_ms:
+        distribution: normal
+        mean: 2
+        stddev: 1
+      # At-least-once delivery: occasional duplicate records and missing metadata
+      noise:
+        log_duplication_rate: 0.003
+        missing_fields_rate: 0.001
+      message_template: "{operation} topic={topic} partition={partition} offset={offset}"
+      fields:
+        - name: operation
+          generator: weighted_choice
+          values: [Produce, Fetch, OffsetCommit, LeaderAndIsr, UpdateMetadata]
+          weights: [40, 40, 10, 5, 5]
+        - name: topic
+          generator: weighted_choice
+          values: [users, orders, payments]
+          weights: [20, 55, 25]
+        - name: partition
+          generator: range
+          min: 0
+          max: 11
+          integer: true
+        - name: offset
+          generator: sequence
+          start: 0
+
+    - name: event-consumer
+      type: worker
+      rate: 75/s    # slightly behind the producer: consumer lag builds up
+      error_rate: 0.005
+      latency_ms:
+        distribution: percentile
+        p50: 50
+        p95: 200
+        p99: 800    # consumer processing can be slow
+      message_template: "consume event_type={event_type} topic={topic} lag={consumer_lag_ms}ms"
+      fields:
+        - name: event_type
+          generator: weighted_choice
+          values: [user.created, user.updated, order.placed, order.shipped, payment.processed]
+          weights: [5, 15, 40, 30, 10]
+        - name: topic
+          generator: weighted_choice
+          values: [users, orders, payments]
+          weights: [20, 55, 25]
+        - name: consumer_lag_ms
+          generator: range
+          min: 0
+          max: 5000
+          integer: true
+        - name: consumer_group
+          generator: static
+          value: "order-processor"
+
+  # Natural variation in payload sizes across the pipeline
+  field_variations:
+    - field: payload_bytes
+      jitter_percent: 20.0
+
+  outputs:
+    - type: console
+      format: json
