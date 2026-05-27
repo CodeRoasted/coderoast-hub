@@ -21,7 +21,7 @@ class LogCraftPlaygroundConan(ConanFile):
     )
 
     def requirements(self):
-        self.requires("logcraft_core/1.3.7")
+        self.requires("logcraft_core/1.3.8")
 
     def generate(self):
         tc = CMakeToolchain(self)
