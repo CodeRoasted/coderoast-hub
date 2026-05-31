@@ -147,6 +147,13 @@ rate_per_second: 200/s   # string form ("N/s")
 rate_per_second: 200     # plain number (records per second)
 ```
 
+`rate_per_second: 0` **silences the agent** — it emits no records (the `<= 0`
+emission guard), while the agent stays alive and can be raised again later. Use it
+to model a **flow-only service** (the agent exists only so a flow can log *through*
+it — no `start_delay` hack needed) or, in a `phases:` entry, to make an agent go
+quiet at a sim-time boundary (vanish-a-template-at-T). A phase that **sets**
+`rate_per_second: 0` silences; a phase that **omits** the key keeps the current rate.
+
 ---
 
 ## Engine Modes
