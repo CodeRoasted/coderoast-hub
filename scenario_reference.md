@@ -5,27 +5,12 @@ file. Generated from direct source-code audit of `scenario_loader.cpp`, `config.
 `capability_keys.hpp`, and `field_generator.cpp`. This is the single source of truth;
 `logcraft/technical_docs/reference/scenario_reference.md` redirects here.
 
-All scenarios are defined in YAML under a top-level `scenario:` key.
-
-```bash
-logcraft my_scenario.yaml
-```
-
----
-
-## CLI vs CodeRoast
-
-The free CLI binary includes every feature documented here with one exception: **`seed:`
-(deterministic mode) requires [CodeRoast](https://coderoast.fr)**. Without `seed:`, each
-run produces unique randomized logs — which is the right default for exploration and
-testing.
-
-The `insight_shm` output sink connects to InSight's shared-memory IPC channel; it is
-only useful when running inside the CodeRoast platform.
-
-All other features — every field generator, every output format, all the chaos tooling
-(phases, incidents, health state machine, rate modulation, state variables, noise) —
-are available to the free CLI.
+All scenarios are defined in YAML under a top-level `scenario:` key. These scenarios are
+openly published (CC-BY-4.0); the LogCraft **engine** that runs them is part of
+[CodeRoast](https://coderoast.fr), where you run a scenario in the hosted **Lab**. A run
+without `seed:` randomizes every time (the right default for open-ended exploration);
+adding `seed:` selects **deterministic mode** — bit-identical logs on every run (see
+[Engine Modes](#engine-modes)).
 
 ---
 
@@ -98,7 +83,7 @@ scenario:
 |-----|------|---------|-------------|
 | `name` | string | `"unnamed"` | Human-readable scenario name |
 | `duration_seconds` | string/number | `0` | Auto-stop duration (`0` = run forever). Accepts a duration string (`"5m"`) or plain seconds. See [Duration Format](#duration-format) |
-| `seed` | uint64 | absent | Sets deterministic mode — **requires CodeRoast**. See [Engine Modes](#engine-modes) |
+| `seed` | uint64 | absent | Sets deterministic mode — bit-identical replay. See [Engine Modes](#engine-modes) |
 | `agents` | sequence | required | One or more agent definitions |
 | `outputs` | sequence | `[{type: console, format: json}]` | Output sink definitions |
 | `environment` | map | absent | Global metadata (region, cluster, version) |
@@ -161,7 +146,7 @@ quiet at a sim-time boundary (vanish-a-template-at-T). A phase that **sets**
 | Mode | Selected by | Clock | Notes |
 |------|-------------|-------|-------|
 | **Real** | no `seed:` | `real` | Default. Randomized each run. |
-| **Deterministic** | `seed:` present | `virtual` (required) | Same logs every run. Requires CodeRoast. Requires `pipeline.policy: block`. Rejects `time.timezone: local`. |
+| **Deterministic** | `seed:` present | `virtual` (required) | Same logs every run. Requires `pipeline.policy: block`. Rejects `time.timezone: local`. |
 
 In deterministic mode, the loader auto-creates a `clock: {mode: virtual}` and sets
 `pipeline.policy: block` when those blocks are absent, and emits a notice.
@@ -193,9 +178,9 @@ outputs:
 | `file` | Write to disk with optional rotation |
 | `recording` | Write JSONL for later replay |
 | `http` | Batched HTTP POST (e.g. Elasticsearch, Loki, any webhook) |
-| `prometheus` | Expose `/metrics` scrape endpoint (CodeRoast) |
-| `statsd` | Push metrics over UDP (CodeRoast) |
-| `insight_shm` | Shared-memory IPC channel for InSight integration (CodeRoast platform only) |
+| `prometheus` | Expose `/metrics` scrape endpoint |
+| `statsd` | Push metrics over UDP |
+| `insight_shm` | Shared-memory IPC channel for InSight integration |
 
 ### Output Formats
 
