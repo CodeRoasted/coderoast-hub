@@ -78,7 +78,7 @@ scenario:
   duration_seconds: 5m
   agents:
     - name: api-server
-      rate_per_second: 100/s
+      rate_per_second: 100
 ```
 
 | Key | Type | Default | Description |
@@ -255,7 +255,7 @@ required and must contain at least one entry.
 agents:
   - name: api-gateway             # Required
     type: web_server              # Free-form label (metadata only)
-    rate_per_second: 100/s                   # Records per second
+    rate_per_second: 100                     # Records per second
     error_rate: 0.03              # Probability of ERROR-level log (0.0–1.0)
     log_level: info               # Base log level
     instances: 3                  # Run N copies (names become api-gateway-1, -2, -3)
@@ -523,22 +523,22 @@ Phases override an agent's rate, error rate, or latency for a set duration, in o
 ```yaml
 agents:
   - name: api-server
-    rate_per_second: 50/s
+    rate_per_second: 50
     phases:
       - name: warmup
         duration_seconds: 30s
-        rate_per_second: 10/s
+        rate_per_second: 10
         latency_ms: [5, 20]
       - name: steady
         duration_seconds: 5m
-        rate_per_second: 50/s
+        rate_per_second: 50
         latency_ms:
           distribution: normal
           mean: 25
           stddev: 8
       - name: peak
         duration_seconds: 1m
-        rate_per_second: 150/s
+        rate_per_second: 150
         error_rate: 0.08
         latency_ms:
           distribution: percentile
@@ -623,14 +623,14 @@ template defaults. Templates can include any agent-level key.
 ```yaml
 templates:
   go_microservice:
-    rate_per_second: 100/s
+    rate_per_second: 100
     error_rate: 0.008
     latency_ms:
       distribution: normal
       mean: 12
       stddev: 5
   high_traffic:
-    rate_per_second: 1000/s
+    rate_per_second: 1000
     error_rate: 0.01
 
 agents:
@@ -697,7 +697,7 @@ bit-identically — adding a flow never shifts an agent's own content.
 ```yaml
 flows:
   - name: checkout
-    instance_rate_per_second: 50/s   # new trace instances per second
+    instance_rate_per_second: 50     # new trace instances per second
     start_delay_seconds: 0           # when the flow begins spawning (duration format)
     max_concurrent: 200              # cap in-flight instances (0 = unbounded; drop new on full)
     correlation_field: trace_id      # field stamped on every step record of an instance
