@@ -38,6 +38,7 @@ adding `seed:` selects **deterministic mode** — bit-identical logs on every ru
   - [percentile](#percentile)
   - [conditional](#conditional)
 - [Phases](#phases)
+  - [Distribution drift (ramps)](#distribution-drift-ramps)
 - [Latency](#latency)
 - [Templates](#templates)
 - [Causal Flows](#causal-flows)
@@ -567,9 +568,77 @@ agents:
 | `rate_per_second` | string/number | `0.0` | Override agent rate for this phase |
 | `error_rate` | number | `0.0` | Override agent error rate for this phase (0.0–1.0) |
 | `latency_ms` | distribution | absent | Override agent latency for this phase |
+| `field_weight_ramps` | sequence | `[]` | Gradually drift a `weighted_choice` field's value distribution over the phase (see [Distribution drift](#distribution-drift-ramps)) |
+| `level_weight_ramp` | map | absent | Gradually drift the agent's `level_weights` (severity mix) over the phase (see [Distribution drift](#distribution-drift-ramps)) |
 
 Phases run sequentially in order. When all phases complete, the agent continues at its
 base configuration (or the scenario ends if `duration_seconds` has elapsed).
+
+### Distribution drift (ramps)
+
+A normal phase swaps behavior at its boundary (a *step*). A **ramp** instead *interpolates* a
+distribution **gradually** across the phase, so the change emerges window by window — the way a
+real system drifts (a slow error-rate creep, a backend slowly shifting its status-code mix). Both
+ramp kinds reweight over a **FIXED support** (they never add or remove a value/level), advance in
+**per-window quanta** (the weight vector is frozen within each `window_seconds` slice), and are
+**fully deterministic** (a given seed replays bit-for-bit). The interpolation is linear:
+
+```
+w_i(n) = w_start_i + (w_end_i − w_start_i) · n / N
+```
+
+where `w_start` is the field/level's **base** distribution, `w_end` is the declared target, `n` is
+the window index within the phase, and `N` is the phase span in windows. A **flat** ramp (target ==
+base) is stationary — the clean control for a before/after experiment.
+
+**`field_weight_ramps`** — drift a `weighted_choice` field's *value* distribution. Each entry ramps
+one field toward `target_weights` (which must have the same length as the field's `values`):
+
+```yaml
+agents:
+  - name: api-server
+    fields:
+      - name: status
+        generator: weighted_choice
+        values:  ["200", "500"]    # FIXED support
+        weights: [1.0, 0.0]        # base (w_start) — all 200
+    phases:
+      - name: healthy
+        duration_seconds: 5m
+      - name: degrading
+        duration_seconds: 10m
+        field_weight_ramps:
+          - field: status            # a weighted_choice field on this agent
+            target_weights: [0.5, 0.5]   # w_end — drift toward a 50/50 mix
+            window_seconds: 60           # quantum (default 60s)
+```
+
+**`level_weight_ramp`** — drift the agent's `level_weights` (the severity mix) toward a target over
+the phase. `target_weights` reweights the **same level set** the agent declares in `level_weights`.
+`level_weights` shapes the mix *within* the normal (`trace`/`debug`/`info`/`warn`) and error
+(`error`/`fatal`) groups, so this drifts the within-group severity distribution (e.g. `info`→`warn`):
+
+```yaml
+agents:
+  - name: worker
+    level_weights: { info: 1.0, warn: 0.0 }   # base severity mix
+    phases:
+      - name: nominal
+        duration_seconds: 5m
+      - name: noisy
+        duration_seconds: 10m
+        level_weight_ramp:
+          target_weights: { info: 0.2, warn: 0.8 }   # drift toward mostly-warn
+          window_seconds: 60
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `field_weight_ramps[].field` | string | required | Name of a `weighted_choice` field on this agent |
+| `field_weight_ramps[].target_weights` | sequence | required | Target weights (`w_end`); length must equal the field's `values` |
+| `field_weight_ramps[].window_seconds` | number | `60.0` | Quantum the ramp advances in (align with the consuming window) |
+| `level_weight_ramp.target_weights` | map | required | Target level mix; keys must match the agent's `level_weights` keys |
+| `level_weight_ramp.window_seconds` | number | `60.0` | Quantum the ramp advances in |
 
 ---
 
