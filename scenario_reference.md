@@ -807,6 +807,7 @@ flows:
 | `start` | string | required | Initial state name (must be a declared state) |
 | `states` | map | required | State name → step spec |
 | `transitions` | sequence | absent | Weighted directed edges between states |
+| `branch_weight_ramps` | sequence | `[]` | Per-state step-function schedules of outgoing edge weights — author a branching-entropy shift / `BranchingShift` (see [Branch weight ramps](#branch-weight-ramps--authoring-a-branching-entropy-shift)) |
 
 ### Flow State Keys
 
@@ -831,6 +832,57 @@ flows:
 A state with no outgoing transition terminates the instance. Fan-out (a step touching
 several services) is modeled as sequential states — one agent per state keeps the causal
 path a clean linear chain.
+
+### Branch weight ramps — authoring a branching-entropy shift
+
+`branch_weight_ramps` reshape a `from` state's **outgoing transition weights** over sim-time as a
+**step-function** — the structural sibling of a phase's [`field_weight_ramps`](#distribution-drift-ramps).
+Where a field ramp moves a field-value histogram (a *distributional* `FieldDrift` — the DISJOINT
+authoring primitive), a branch ramp moves the **spread** of a state's successor distribution, which
+shifts the metalog **branching entropy** of that state → an acute **`BranchingShift`** (the *structural*
+instant voice, InSight §5.2). It is what lets a scenario co-fire a structural regression with a drift on
+one template → a **branch-A Composite**.
+
+At each declared `at_seconds` boundary the `from` state's outgoing edges take the step's `weights`
+(a `to`-state → weight map; an edge **absent** from the map takes weight `0`). Before the first
+boundary the declared transition `weight`s apply. A sharp spread change — e.g. all-mass-on-one edge
+(entropy 0) → uniform over *K* edges (entropy `log2 K`) — yields a per-window entropy jump ≈ `log2 K`;
+to clear the sequence bank's default `branching_delta_threshold_bits` (~3.5) fan out to **≥ 12 edges**.
+
+```yaml
+flows:
+  - name: worker
+    start: process
+    states:
+      process:  { agent: api-svc, message_template: "request bucket {bucket} processed" }
+      step_01:  { agent: api-svc, message_template: "worker step_01" }
+      # … step_02 … step_16 (≥12 successors so the uniform spread ≥ 3.5 bits) …
+    transitions:
+      - { from: process, to: step_01, weight: 1.0 }   # base: all mass on one edge (entropy 0)
+      - { from: process, to: step_02, weight: 0.0 }
+      # … one edge per successor …
+    branch_weight_ramps:
+      - from: process                    # the state whose successor spread shifts
+        schedule:                        # step-function of sim-time (ascending at_seconds)
+          - at_seconds: 0                 # entropy 0 — all mass on step_01
+            weights: { step_01: 1.0 }
+          - at_seconds: 1700s             # sharp jump to uniform over 16 → ~4 bits → BranchingShift
+            weights: { step_01: 1, step_02: 1, step_03: 1, step_04: 1, step_05: 1, step_06: 1,
+                       step_07: 1, step_08: 1, step_09: 1, step_10: 1, step_11: 1, step_12: 1,
+                       step_13: 1, step_14: 1, step_15: 1, step_16: 1 }
+```
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `branch_weight_ramps[].from` | string | required | The state whose outgoing edges the schedule reshapes (must be a declared state) |
+| `branch_weight_ramps[].schedule` | sequence | required | Ascending step-function; each entry `{ at_seconds, weights }` |
+| `branch_weight_ramps[].schedule[].at_seconds` | number/string | `0` | Sim-time boundary (duration format or seconds); active for `T ≥ at_seconds` |
+| `branch_weight_ramps[].schedule[].weights` | map | required | `to`-state → relative weight over `from`'s edges; an omitted edge takes weight `0` |
+
+> **Determinism.** Boundaries are compared in **integer ns** (a pure step-function of `T` — `PlayToTarget(T)`
+> freezes them, no wall-clock). The selection **draw is unchanged** — the existing per-instance `CounterRng`
+> + `DiscreteDist` over the *reshaped* weight vector (LogCraft's certified strict-float regime; no new float
+> path, symmetric to `field_weight_ramps`). Same scenario + seed replays bit-identically.
 
 ---
 
