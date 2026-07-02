@@ -34,10 +34,62 @@ exactly what we **guarantee and test** — the goldens are the proof.
 
 | Folder | What it holds |
 |---|---|
-| [`logcraft-playground/`](logcraft-playground/) | The LogCraft DSL — declare a fleet of services and generate deterministic synthetic log streams. Starter scenarios, the reusable agent library, and the full scenario reference. Content-only, CC-BY-4.0. |
+| [`logcraft-playground/`](logcraft-playground/) | The LogCraft DSL — declare a fleet of services and generate deterministic synthetic log streams. Starter scenarios, the reusable agent library, and the full scenario reference. |
 | [`insight-playground/`](insight-playground/) | InSight's detection contracts — the scenarios and their goldens that pin exactly what fires and what stays silent. No code, all evidence. |
 | [`benchmarks/`](benchmarks/) | Performance measurements + methodology, versioned per release. |
 | [`workflows/`](workflows/) | Golden-workflow definitions — scrubbed evidence of how we build and gate. |
+
+## The rest of CodeRoast in the open
+
+This Hub is the front door, not the whole house. We open **everything you need to verify our
+claims** — and we tell you exactly where the line is.
+
+**The product**
+
+- **[Sift](https://github.com/CodeRoasted/sift-action)** — the GitHub Action. Drop it into any
+  CI: it diffs your logs against the last green run and comments the structural regressions inline.
+  *(MIT — this is the thing you can use today.)*
+
+**The engine, source-visible** — the parts that let you *check* the determinism claim, not guess at it:
+
+- **[insight-canon](https://github.com/CodeRoasted/insight-canon)** — tokenization, canonical
+  events, and the integer/no-libm math core. *(Apache-2.0 — the determinism guarantee is auditable
+  right here.)*
+- **[insight-metalog](https://github.com/CodeRoasted/insight-metalog)** — the MetaLog producer:
+  how a raw log stream collapses into a bounded, diffable structural fingerprint. *(BSL-1.1.)*
+- **[metalog-spec](https://github.com/CodeRoasted/metalog-spec)** — the open MetaLog specification
+  and schemas, so anyone can produce or read a MetaLog. *(MIT.)*
+- **[coderoast-ipc](https://github.com/CodeRoasted/coderoast-ipc)** — the shared-memory frame ABI
+  and SPSC channels the engine moves data over. *(Source-available.)*
+
+**Reproduce our build**
+
+- **[malf-toolchain](https://github.com/CodeRoasted/malf-toolchain)** — the *exact* pinned
+  compilers (gcc-15.3, clang-21, MSVC-14.52) we build and prove bit-identical determinism with,
+  as public releases. Install our toolchain, rebuild, get our bytes. *The determinism claim is
+  toolchain-relative and fetchable — not "trust us."*
+
+**The narration model**
+
+- **[sift-explain-model](https://huggingface.co/CodeRoasted/sift-explain-model)** — the local,
+  bring-your-own model weights Sift uses to *narrate* a report in plain language. It **narrates,
+  never decides**: explanation is an opt-in overlay on a deterministic verdict, not the detector.
+
+**The site**
+
+- **[coderoast.fr](https://coderoast.fr)** + **[coderoast-web](https://github.com/CodeRoasted/coderoast-web)**
+  — the website and browser Lab: the human front door and the "how we build" story in plain language.
+
+**Deliberately closed — the moat.** The LogCraft simulation engine and the InSight / **Eidos**
+detection core stay private. That is the line, stated plainly: we open everything you need to
+*verify* the guarantee, and keep closed the IP that *is* the guarantee. Knowing exactly where the
+boundary sits is the same honesty as the declared error model.
+
+## Licensing
+
+Everything **in this repo** is **[CC-BY-4.0](LICENSE)** — it is all content and evidence
+(scenarios, contracts, goldens, measurements, methodology), never engine code. The other public
+repositories above each carry their own license, noted per entry.
 
 ## How it stays true
 
