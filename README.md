@@ -1,26 +1,27 @@
 # CodeRoast
 
-**CodeRoast reads the *structure* of your logs and tells you — deterministically — when it
-changes. Same inputs, same verdict, every time, with a declared error model.**
+**CodeRoast is deterministic, causal-structural engineering for logs — instruments with a
+declared error model, not dashboards you read or samplers that throw your data away.**
 
-Not a place to store logs. Not a dashboard you have to read. An **instrument**: it measures the
-structural signature of a log stream and reports what moved, why, and how sure it is — as a
-ranked, reproducible verdict a machine or a human can act on.
+CodeRoast is the project. Its engine is **InSight**: it reads the *structure* of your logs and
+tells you, deterministically, when it changes — what moved, why, and how sure it is, as a ranked,
+reproducible verdict a machine or a human can act on. **Sift** is InSight in your CI; **LogCraft**
+is the deterministic simulator InSight is proven against. Same inputs, same verdict, every time.
 
-## What everyone else does, and why we don't
+## What everyone else does, and why InSight doesn't
 
 - **Datadog samples.** To survive volume it throws data away, then charges you for what it kept.
-  Sampling is a bet that the thing that broke was in the part you saved. CodeRoast doesn't
+  Sampling is a bet that the thing that broke was in the part you saved. InSight doesn't
   sample — it reduces every line to structure, so volume makes the signal *sharper*, not thinner.
 - **Honeycomb stores richness.** It keeps everything and hands you a query bar — *you* are still
-  the detector. CodeRoast is the detector: it decides what changed before you ask, and shows its
+  the detector. InSight is the detector: it decides what changed before you ask, and shows its
   work.
 - **The ML anomaly-detectors guess.** DeepLog, LogBERT, and the LLM-on-logs crowd are black boxes
   that score "weird" without a reason and without reproducibility — run it twice, get two answers.
-  CodeRoast is **deterministic** and **causal-structural**: the same stream always yields the same
+  InSight is **deterministic** and **causal-structural**: the same stream always yields the same
   verdict, and every verdict points at the structure that produced it.
 
-The difference is a **declared error model**. CodeRoast tells you what it can and cannot see, and
+The difference is a **declared error model**. InSight tells you what it can and cannot see, and
 never dresses a guess as a fact. That honesty is the product.
 
 ## What this repo is
