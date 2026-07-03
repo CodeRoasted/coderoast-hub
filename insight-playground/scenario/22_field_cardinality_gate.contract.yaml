@@ -1,0 +1,20 @@
+# 22_field_cardinality_gate
+# Contract — what it asserts: A high-cardinality field is gated so it cannot explode the analysis.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  axis: diff
+  inputs:
+    baseline: scenario/22_field_cardinality_gate/baseline.jsonl
+    changed:  scenario/22_field_cardinality_gate/changed.jsonl
+  criticite:
+    kind: invariant
+
+interpretation:
+  ranked_changes:
+    must_fire:
+      - { kind: FieldShift, template: "lb route tier" }
+    must_not_emit:
+      - { kind: FieldShift, template: "db query latency" }
+

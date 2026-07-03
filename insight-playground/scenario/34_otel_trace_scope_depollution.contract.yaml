@@ -1,0 +1,39 @@
+# 34_otel_trace_scope_depollution
+# Contract — what it asserts: Trace-scoping keeps unrelated traces' novelty separate.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  scenario: scenario/34_otel_trace_scope_depollution.yaml
+  target_seconds: 300
+  axis: time
+  pyramid_config:
+    raw_ring_capacity: 13
+    ladder: { levels: 3 }
+    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
+  metalog_config:
+    top_k_size: 128
+    ngram_size: 3
+    max_ngram_keys: 16384
+    max_param_histograms: 4
+    max_histogram_values: 8
+  sequence:
+    branching_delta_threshold_bits: 3.5
+  explain_min_confidence: 0.75
+  criticite:
+    kind: invariant
+  seeds: [42]
+
+signal:
+  must_fire:
+    - coordinate: RAW.acute . Seq . ngram_presence
+      emits: NoveltyNGram
+      scope: { template: "alpha process alpha commit" }
+  control_arms:
+    - name: trace_scoping_disabled
+      metalog_config: { trace_scoping_enabled: false }
+      must_not_fire:
+        - coordinate: RAW.acute . Seq . ngram_presence
+          emits: NoveltyNGram
+          scope: { template: "alpha process alpha commit" }
+

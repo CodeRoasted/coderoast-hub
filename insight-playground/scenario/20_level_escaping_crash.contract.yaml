@@ -1,0 +1,22 @@
+# 20_level_escaping_crash
+# Contract — what it asserts: The escaped-severity crash is caught by the pairwise diff.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  axis: diff
+  inputs:
+    baseline: scenario/20_level_escaping_crash/baseline.log
+    changed:  scenario/20_level_escaping_crash/changed.log
+  vehicle: raw_text
+  criticite:
+    kind: invariant
+
+interpretation:
+  ranked_changes:
+    must_fire:
+      - { kind: NewErrorPattern, polarity: regression, severity: High, template: "Segmentation fault" }
+    must_not_emit:
+      - { kind: NewErrorPattern, template: "segmentation pipeline" }
+      - { kind: NewErrorPattern, template: "page fault" }
+

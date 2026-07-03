@@ -1,0 +1,46 @@
+# 36_plaintext_ordinal_vanish
+# Contract — what it asserts: The vanished recurrence is surfaced.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  axis: diff
+  inputs:
+    baseline: scenario/36_plaintext_ordinal_vanish/baseline.log
+    changed:  scenario/36_plaintext_ordinal_vanish/changed.log
+  vehicle: raw_text
+  criticite:
+    kind: invariant
+
+interpretation:
+  ranked_changes:
+    must_fire:
+      - { kind: VanishedTemplate, template: "order completed", severity: High }
+    must_not_emit:
+      - { kind: FieldShift }
+    top_rank: { kind: VanishedTemplate }
+    attributable_to: ["order completed"]
+
+arms:
+  - name: screenshot_dollar
+    inputs:
+      baseline: scenario/36_plaintext_ordinal_vanish/screenshot_baseline.log
+      changed:  scenario/36_plaintext_ordinal_vanish/changed.log
+    interpretation:
+      ranked_changes:
+        must_fire:
+          - { kind: VanishedTemplate, template: "order completed", severity: High }
+        must_not_emit:
+          - { kind: FieldShift }
+
+  - name: status_survive
+    inputs:
+      baseline: scenario/36_plaintext_ordinal_vanish/status_baseline.log
+      changed:  scenario/36_plaintext_ordinal_vanish/status_changed.log
+    interpretation:
+      ranked_changes:
+        must_fire:
+          - { kind: FieldShift, template: "search" }
+        must_not_emit:
+          - { kind: FieldShift, template: "param[1]" }
+

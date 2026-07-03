@@ -1,0 +1,13 @@
+##[group]Run conan build . --profile clang-21
+conanfile.py (insight_canon/1.4.2): Calling build()
+-- The CXX compiler identification is Clang 21.1.0
+-- Detecting CXX compile features - done
+-- Configuring done (1.3s)
+-- Generating done (0.2s)
+[ 12%] Building CXX object CMakeFiles/insight_canon.dir/src/tokenization/drain.cpp.o
+[ 33%] Building CXX object CMakeFiles/insight_canon.dir/src/tokenization/tokenizer_engine.cpp.o
+[ 58%] Building CXX object CMakeFiles/insight_canon.dir/src/utils/failure_lexicon.cpp.o
+[ 79%] Building CXX object CMakeFiles/insight_canon.dir/src/utils/time_utils.cpp.o
+[100%] Linking CXX static library libinsight_canon.a
+[100%] Built target insight_canon
+##[endgroup]

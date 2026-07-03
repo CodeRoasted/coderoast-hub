@@ -1,0 +1,80 @@
+# 08_baseline_steady_state
+# Scenario — what it does: A healthy service in steady state.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+scenario:
+  name: insight-baseline-steady-state
+  seed: 42
+
+  clock:
+    mode: virtual
+  duration_seconds: 60m
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_baseline_steady
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  agents:
+    - name: api-gateway
+      type: web_server
+      rate_per_second: 25.0
+      message_template: "{method} {path} -> {status_code}"
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [GET, POST, PUT, DELETE]
+          weights: [70, 20, 7, 3]
+        - name: path
+          generator: weighted_choice
+          values: [/api/users, /api/orders, /api/products, /health]
+          weights: [35, 30, 25, 10]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "400", "404", "500"]
+          weights: [78, 10, 7, 3, 2]
+
+    - name: order-service
+      type: api_service
+      rate_per_second: 20.0
+      message_template: "{operation} {entity} -> {outcome}"
+      fields:
+        - name: operation
+          generator: weighted_choice
+          values: [fetch, create, update, validate]
+          weights: [45, 30, 15, 10]
+        - name: entity
+          generator: weighted_choice
+          values: [order, payment, shipment, customer]
+          weights: [40, 30, 20, 10]
+        - name: outcome
+          generator: weighted_choice
+          values: [ok, not_found, invalid, error]
+          weights: [88, 6, 4, 2]
+
+    - name: postgres
+      type: database
+      rate_per_second: 12.0
+      message_template: "{query_type} {table} {rows} rows {duration_ms} ms"
+      fields:
+        - name: query_type
+          generator: weighted_choice
+          values: [SELECT, INSERT, UPDATE, DELETE]
+          weights: [55, 25, 15, 5]
+        - name: table
+          generator: weighted_choice
+          values: [orders, payments, users, sessions]
+          weights: [40, 30, 20, 10]
+        - name: rows
+          generator: range
+          min: 0
+          max: 50
+          integer: true
+        - name: duration_ms
+          generator: range
+          min: 1
+          max: 25
+          integer: true

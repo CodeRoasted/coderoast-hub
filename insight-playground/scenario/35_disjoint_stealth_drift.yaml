@@ -1,0 +1,40 @@
+# 35_disjoint_stealth_drift
+# Scenario — what it does: A slow, stealthy shift in the log distribution over the window.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+scenario:
+  name: "disjoint-stealth-drift"
+  seed: 3535
+  clock:
+    mode: virtual
+  duration_seconds: 2050s
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_disjoint_drift
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  agents:
+    - name: api-svc
+      type: api_service
+      rate_per_second: 50/s
+      message_template: "request processed bucket {bucket} done"
+      fields:
+        - name: bucket
+          generator: weighted_choice
+          values: ["10", "90"]
+          weights: [1.0, 0.0]
+      phases:
+        - name: warm
+          duration_seconds: 550s
+          rate_per_second: 50/s
+        - name: drift
+          duration_seconds: 1500s
+          rate_per_second: 50/s
+          field_weight_ramps:
+            - field: bucket
+              target_weights: [0.0, 1.0]
+              window_seconds: 25

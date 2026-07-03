@@ -1,0 +1,40 @@
+# 05_sudden_traffic_spike
+# Contract — what it asserts: A volume spike on its own does not page — it is admitted only with a corroborating signal.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  scenario: scenario/05_sudden_traffic_spike.yaml
+  target_seconds: 320
+  axis: time
+  pyramid_config:
+    raw_ring_capacity: 13
+    ladder: { levels: 3 }
+    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
+  metalog_config:
+    top_k_size: 128
+    ngram_size: 3
+    max_ngram_keys: 16384
+    max_param_histograms: 4
+    max_histogram_values: 8
+  sequence:
+    branching_delta_threshold_bits: 3.5
+  explain_min_confidence: 0.75
+  criticite:
+    kind: invariant
+  seeds: [42]
+
+signal:
+  must_fire:
+    - coordinate: RAW.acute . Spk . template_count
+      scope: { template: "GET /checkout" }
+  baseline_arm:
+    target_seconds: 150
+    must_not_fire:
+      - coordinate: RAW.acute . Spk . template_count
+        scope: { template: "GET /checkout" }
+
+interpretation:
+  must_not_emit:
+    - { any: true }
+

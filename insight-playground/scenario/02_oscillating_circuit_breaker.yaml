@@ -1,0 +1,141 @@
+# 02_oscillating_circuit_breaker
+# Scenario — what it does: A circuit breaker that oscillates open/closed under intermittent downstream failure.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+scenario:
+  name: "oscillating-circuit-breaker"
+  seed: 42
+
+  clock:
+    mode: virtual
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_osc_circuit_breaker
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+  duration_seconds: 90m
+
+  environment:
+    region: eu-west-1
+    cluster: prod-payments
+    version: v2.3.1
+
+  agents:
+    - name: payment-gateway
+      type: api_service
+      rate_per_second: 80/s
+      error_rate: 0.008
+
+      health_state:
+        latency_multipliers: [1.0, 2.5, 0.05, 1.2]
+        error_rates:         [0.008, 0.12, 0.98, 0.08]
+        transitions:
+          healthy_to_degraded: 0.004
+          degraded_to_failing:  0.12
+          failing_to_recovering: 0.06
+          recovering_to_healthy: 0.20
+
+      fields:
+        - name: method
+          generator: weighted_choice
+          values: [POST, GET]
+          weights: [70, 30]
+        - name: path
+          generator: weighted_choice
+          values: ["/v2/payments/charge", "/v2/payments/refund", "/v2/payments/status"]
+          weights: [55, 15, 30]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "202", "402", "503", "429"]
+          weights: [84, 8, 3, 4, 1]
+        - name: payment_id
+          generator: sequence
+          prefix: "PAY-"
+          start: 880000
+        - name: cb_state
+          generator: weighted_choice
+          values: ["CLOSED", "OPEN", "HALF-OPEN"]
+          weights: [65, 28, 7]
+        - name: upstream_ms
+          generator: range
+          min: 0
+          max: 5000
+          integer: true
+      message_template: "{method} {path} pay={payment_id} -> {status_code} cb={cb_state}"
+
+    - name: payment-processor
+      type: api_service
+      rate_per_second: 60/s
+      error_rate: 0.005
+
+      health_state:
+        latency_multipliers: [1.0, 4.0, 15.0, 2.0]
+        error_rates:         [0.005, 0.10, 0.60, 0.03]
+        transitions:
+          healthy_to_degraded:  0.003
+          degraded_to_failing:  0.15
+          failing_to_recovering: 0.07
+          recovering_to_healthy: 0.18
+
+      fields:
+        - name: operation
+          generator: weighted_choice
+          values: ["authorize", "capture", "void", "refund"]
+          weights: [45, 35, 10, 10]
+        - name: result
+          generator: weighted_choice
+          values: ["approved", "declined", "timeout", "error"]
+          weights: [87, 8, 3, 2]
+        - name: provider
+          generator: weighted_choice
+          values: ["stripe", "adyen", "braintree"]
+          weights: [60, 25, 15]
+      message_template: "{operation} via {provider}: {result}"
+
+    - name: api-gateway
+      type: api_service
+      rate_per_second: 120/s
+      error_rate: 0.003
+
+      fields:
+        - name: path
+          generator: weighted_choice
+          values: ["/checkout", "/order/confirm", "/cart/pay"]
+          weights: [50, 30, 20]
+        - name: status_code
+          generator: weighted_choice
+          values: ["200", "201", "400", "503"]
+          weights: [88, 6, 4, 2]
+        - name: user_id
+          generator: range
+          min: 1000
+          max: 99999
+          integer: true
+      message_template: "POST {path} user={user_id} -> {status_code}"
+
+    - name: circuit-breaker-audit
+      type: background_worker
+      rate_per_second: 1/s
+
+      fields:
+        - name: from_state
+          generator: weighted_choice
+          values: ["CLOSED", "OPEN", "HALF-OPEN"]
+          weights: [50, 30, 20]
+        - name: to_state
+          generator: weighted_choice
+          values: ["CLOSED", "OPEN", "HALF-OPEN"]
+          weights: [40, 40, 20]
+        - name: reason
+          generator: weighted_choice
+          values: ["failure_threshold", "timeout_elapsed", "probe_success", "probe_fail"]
+          weights: [35, 30, 20, 15]
+      message_template: "CircuitBreaker transition {from_state} -> {to_state} reason={reason}"
+
+  auto_cascade:
+    error_threshold: 0.30
+    dampening_factor: 0.4
+    blast_radius: 2

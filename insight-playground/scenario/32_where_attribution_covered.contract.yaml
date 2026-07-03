@@ -1,0 +1,18 @@
+# 32_where_attribution_covered
+# Contract — what it asserts: The change is attributed to the right component (a WHERE gate).
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  axis: diff
+  inputs:
+    baseline: scenario/32_where_attribution_covered/baseline.log
+    changed:  scenario/32_where_attribution_covered/changed.log
+  criticite:
+    kind: invariant
+
+interpretation:
+  ranked_changes:
+    must_fire:
+      - { where: "myapp" }
+

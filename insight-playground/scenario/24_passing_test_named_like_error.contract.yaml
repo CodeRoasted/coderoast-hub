@@ -1,0 +1,42 @@
+# 24_passing_test_named_like_error
+# Contract — what it asserts: True-negative: a passing outcome is not misread as a failure because of its name.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  axis: diff
+  inputs:
+    baseline: scenario/24_passing_test_named_like_error/baseline.log
+    changed:  scenario/24_passing_test_named_like_error/changed_pass.log
+  vehicle: raw_text
+  criticite:
+    kind: invariant
+
+interpretation:
+  ranked_changes:
+    must_not_emit:
+      - { kind: NewErrorPattern }
+      - { polarity: regression }
+
+arms:
+  - name: vanished_mirror
+    inputs:
+      baseline: scenario/24_passing_test_named_like_error/changed_pass.log
+      changed:  scenario/24_passing_test_named_like_error/baseline.log
+    interpretation:
+      ranked_changes:
+        must_not_emit:
+          - { polarity: recovery }
+          - { kind: ResolvedPattern }
+
+  - name: positive_control
+    inputs:
+      baseline: scenario/24_passing_test_named_like_error/baseline.log
+      changed:  scenario/24_passing_test_named_like_error/changed_fail.log
+    interpretation:
+      ranked_changes:
+        must_fire:
+          - { kind: NewErrorPattern, polarity: regression }
+        top_rank: { kind: NewErrorPattern }
+        attributable_to: ["ValueError", "RuntimeException", "NotError", "Failed", "FAILED"]
+

@@ -1,0 +1,26 @@
+Run actions/checkout@v4
+Cache restored from linux-node-modules
+Compiled service module ok
+Job completed
+Run actions/checkout@v4
+Cache restored from linux-node-modules
+Compiled service module ok
+Job completed
+Run actions/checkout@v4
+Cache restored from linux-node-modules
+Compiled service module ok
+Job completed
+Run actions/checkout@v4
+Cache restored from linux-node-modules
+Compiled service module ok
+Job completed
+Run actions/checkout@v4
+Cache restored from linux-node-modules
+Compiled service module ok
+Job completed
+Run actions/checkout@v4
+Cache restored from linux-node-modules
+Compiled service module ok
+Segmentation fault (core dumped)
+image segmentation pipeline complete
+page fault handler registered

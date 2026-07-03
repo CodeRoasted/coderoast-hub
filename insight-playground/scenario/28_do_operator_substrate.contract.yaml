@@ -1,0 +1,33 @@
+# 28_do_operator_substrate
+# Contract — what it asserts: Removing the cause removes the effect on the dependent service, while an independent control is unchanged (a causal-attribution gate).
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  axis: do
+  do_pair:
+    factual:  scenario/28_do_operator_substrate/factual.yaml
+    counterfactual: scenario/28_do_operator_substrate/ablated.yaml
+  target_seconds: 10
+  cube_input: { emit_cube: true }
+  criticite:
+    kind: invariant
+  seeds: [2828]
+
+do:
+  causal:
+    intervention: { kind: ablate_incident, target: { incident: payments_outage } }
+    expect:
+      collapses:
+        - cube_a: { level: ERROR, where: [payments] }
+      reappears_as:
+        - cube_a: { level: INFO, where: [payments] }
+
+  control:
+    intervention: { kind: ablate_incident, target: { incident: payments_outage } }
+    invariant:
+      - cube_a: { level: ERROR, where: [notifier] }
+
+  minimal_intervention:
+    untouched_projection: { exclude_where: [payments] }
+

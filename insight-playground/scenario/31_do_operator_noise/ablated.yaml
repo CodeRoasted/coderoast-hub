@@ -1,0 +1,74 @@
+# 31_do_operator_noise  (ablated arm)
+# Scenario — what it does: The causal-attribution scenario under added background noise.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+scenario:
+  name: insight-do-operator-noise-ablated
+  seed: 3131
+
+  clock:
+    mode: virtual
+  duration_seconds: 10s
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_do_op_noise_ablated
+      format: kv
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  agents:
+    - name: gateway
+      type: web_server
+      rate_per_second: 0
+    - name: payments
+      type: service
+      rate_per_second: 0
+    - name: notifier
+      type: service
+      rate_per_second: 0
+    - name: monitor
+      type: service
+      rate_per_second: 8/s
+      log_level: info
+      error_rate: 0.0
+      message_template: "heartbeat ok"
+      fields:
+        - { name: component, generator: static, value: monitor }
+
+
+  flows:
+    - name: settle
+      instance_rate_per_second: 5/s
+      start_delay_seconds: 1s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: ingress
+      states:
+        ingress:
+          agent: gateway
+          message_template: "accept settle request"
+          fields:
+            - { name: component, generator: static, value: gateway }
+        process:
+          agent: payments
+          message_template: "settle order total"
+          fields:
+            - { name: component, generator: static, value: payments }
+        notify:
+          agent: notifier
+          error_rate: 1.0
+          message_template: "publish settlement event"
+          fields:
+            - { name: component, generator: static, value: notifier }
+        egress:
+          agent: gateway
+          message_template: "settle response ok"
+          fields:
+            - { name: component, generator: static, value: gateway }
+      transitions:
+        - { from: ingress, to: process, network_latency_ms: 2 }
+        - { from: process, to: notify,  network_latency_ms: 3 }
+        - { from: notify,  to: egress,  network_latency_ms: 2 }

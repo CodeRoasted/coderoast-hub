@@ -1,0 +1,34 @@
+# 23_absence_severity_bump
+# Contract — what it asserts: A severity bump on a stable template is surfaced.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  axis: diff
+  inputs:
+    baseline: scenario/23_absence_severity_bump/baseline.jsonl
+    changed:  scenario/23_absence_severity_bump/changed.jsonl
+  criticite:
+    kind: invariant
+
+interpretation:
+  ranked_changes:
+    must_fire:
+      - { kind: VanishedTemplate, severity: High, template: "Checkout completed" }
+      - { kind: VanishedTemplate, severity: High, template: "Cache warmed" }
+      - { kind: FrequencyShift, template: "Request served" }
+    must_not_emit:
+      - { kind: VanishedTemplate, template: "Telemetry flushed" }
+      - { template: "Worker heartbeat" }
+
+arms:
+  - name: nonestablished_lower_edge
+    inputs:
+      baseline: scenario/23_absence_severity_bump/lower_edge_baseline.jsonl
+      changed:  scenario/23_absence_severity_bump/lower_edge_changed.jsonl
+    interpretation:
+      ranked_changes:
+        must_fire:
+          - { kind: VanishedTemplate, severity: High, template: "Snapshot persisted" }
+          - { kind: VanishedTemplate, severity: Low,  template: "Sidecar synced" }
+

@@ -1,0 +1,84 @@
+# 29_do_operator_depth  (ablated arm)
+# Scenario — what it does: The causal-attribution scenario extended across a deeper dependency chain.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+scenario:
+  name: insight-do-operator-depth-ablated
+  seed: 2929
+
+  clock:
+    mode: virtual
+  duration_seconds: 10s
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_do_op_depth_ablated
+      format: kv
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  agents:
+    - name: gateway
+      type: web_server
+      rate_per_second: 0
+    - name: payments
+      type: service
+      rate_per_second: 0
+    - name: ledger
+      type: service
+      rate_per_second: 0
+    - name: fulfillment
+      type: service
+      rate_per_second: 0
+    - name: notifier
+      type: service
+      rate_per_second: 0
+
+
+  flows:
+    - name: settle
+      instance_rate_per_second: 5/s
+      start_delay_seconds: 1s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: ingress
+      states:
+        ingress:
+          agent: gateway
+          message_template: "accept settle request"
+          fields:
+            - { name: component, generator: static, value: gateway }
+        charge:
+          agent: payments
+          message_template: "charge order total"
+          fields:
+            - { name: component, generator: static, value: payments }
+        record:
+          agent: ledger
+          message_template: "post ledger entry"
+          fields:
+            - { name: component, generator: static, value: ledger }
+        ship:
+          agent: fulfillment
+          message_template: "enqueue shipment"
+          fields:
+            - { name: component, generator: static, value: fulfillment }
+        notify:
+          agent: notifier
+          error_rate: 1.0
+          message_template: "publish settlement event"
+          fields:
+            - { name: component, generator: static, value: notifier }
+        egress:
+          agent: gateway
+          message_template: "settle response ok"
+          fields:
+            - { name: component, generator: static, value: gateway }
+      transitions:
+        - { from: ingress, to: charge, network_latency_ms: 2 }
+        - { from: charge,  to: record, network_latency_ms: 3 }
+        - { from: record,  to: ship,   network_latency_ms: 3 }
+        - { from: ship,    to: notify, network_latency_ms: 3 }
+        - { from: notify,  to: egress, network_latency_ms: 2 }

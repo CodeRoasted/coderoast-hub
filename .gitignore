@@ -11,3 +11,14 @@
 .env
 .env.local
 .env.*.local
+
+# Build / conan artifacts (insight-playground/ ships the insight_scenarios conan package)
+build-*/
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+.cache/
+*.tgz
+conanbuild.sh
+conanrun.sh
+conan*.lock

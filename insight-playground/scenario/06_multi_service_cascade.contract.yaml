@@ -1,0 +1,40 @@
+# 06_multi_service_cascade
+# Contract — what it asserts: The cascade is detected as a correlated, multi-service event.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+meta:
+  scenario: scenario/06_multi_service_cascade.yaml
+  target_seconds: 420
+  axis: time
+  pyramid_config:
+    raw_ring_capacity: 13
+    ladder: { levels: 3 }
+    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
+  metalog_config:
+    top_k_size: 128
+    ngram_size: 3
+    max_ngram_keys: 16384
+    max_param_histograms: 4
+    max_histogram_values: 8
+  sequence:
+    branching_delta_threshold_bits: 3.5
+  explain_min_confidence: 0.75
+  criticite:
+    kind: invariant
+  seeds: [42]
+
+signal:
+  must_fire:
+    - RAW.acute . Nep . acute_new_templates
+  baseline_arm:
+    target_seconds: 250
+    must_not_fire:
+      - RAW.acute . Nep . acute_new_templates
+
+interpretation:
+  composite:
+    severity: High
+  must_not_emit:
+    - { severity: Critical }
+
