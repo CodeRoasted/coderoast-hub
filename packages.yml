@@ -1,12 +1,14 @@
 packages:
   # The public InSight scenario + contract corpus, content only (CC-BY-4.0). No code.
-  # Consumed by insight-eidos's private e2e harness (insight_playground, test_requires) and
-  # served read-only at runtime by coderoast-server. The single source of truth for the
-  # scenarios — the rest of coderoast-hub (logcraft-playground, benchmarks, workflows) stays
-  # pure content with no conanfile.
+  # Consumed by insight-eidos's private e2e harness (insight_e2e, test_requires) as an editable, and
+  # served read-only at runtime by coderoast-server. The single source of truth for the scenarios —
+  # the rest of coderoast-hub (logcraft-playground, benchmarks, workflows) stays pure content with no
+  # conanfile. NOT a released conan artifact (release:false): it is published as public GIT content in
+  # this repo and consumed only via editable in the workspace / superproject gate — never installed
+  # from a conan remote. So no release-publish.yml and no compatibility-matrix pin row are required.
   insight_scenarios:
     path: insight-playground
     version: 1.7.1
     public: true
-    release: true
+    release: false
     depends: []
