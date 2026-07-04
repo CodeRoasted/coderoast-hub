@@ -66,9 +66,11 @@ claims** — and we tell you exactly where the line is.
 **Reproduce our build**
 
 - **[malf-toolchain](https://github.com/CodeRoasted/malf-toolchain)** — the *exact* pinned
-  compilers (gcc-15.3, clang-21, MSVC-14.52) we build and prove bit-identical determinism with,
-  as public releases. Install our toolchain, rebuild, get our bytes. *The determinism claim is
-  toolchain-relative and fetchable — not "trust us."*
+  compilers (gcc-15.3, clang-21, MSVC-14.52) we build with, as public releases. We prove the
+  **same bytes out of five independent build legs** — gcc and clang on **x86-64** *and* on
+  **arm64**, plus MSVC on Windows — so the determinism holds across three toolchains **and** two
+  instruction-set architectures, not one lucky corner. Install our toolchain, rebuild, get our
+  bytes. *The determinism claim is toolchain-relative and fetchable — not "trust us."*
 
 **The narration model**
 
