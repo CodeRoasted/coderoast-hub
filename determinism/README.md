@@ -2,7 +2,8 @@
 
 **Machine-checkable proof that the CodeRoast engines are deterministic** — the same
 input yields a **bit-identical** result, and that result is **identical across
-compilers, standard libraries, and optimization levels**. This folder holds the
+compilers, standard libraries, instruction-set architectures, and optimization
+levels**. This folder holds the
 committed *goldens* (the expected output) and their SHA-256 digests. Rebuild the
 engines from source at this release and you get these exact digests back.
 
@@ -25,10 +26,10 @@ sha256sum -c canon.det_proof.txt.sha256
 
 ## The claim, and why it holds
 
-The serialized MetaLog document is **bit-identical** across the full cross-standard-library
-diagonal — GCC-15.3 / libstdc++ **and** Clang-21 / libc++ — plus an MSVC anchor: a
-cross-OS, cross-toolchain result, currently verified on all three toolchains. Determinism
-is a first-class product constraint, engineered for, not hoped for:
+The serialized MetaLog document is **bit-identical** across **five independent build
+legs** — GCC-15.3 / libstdc++ and Clang-21 / libc++ on **both x86-64 and arm64**, plus an
+MSVC anchor on Windows: a cross-OS, cross-toolchain, **cross-ISA** result, verified on every
+leg at each cut. Determinism is a first-class product constraint, engineered for, not hoped for:
 
 - **No machine-divergent float in deterministic content.** Paths that feed the
   serialized output use integer / fixed-point arithmetic; `-ffp-contract=off` is
@@ -40,17 +41,18 @@ is a first-class product constraint, engineered for, not hoped for:
   ordering are fixed for a fixed replay target, not timing-dependent.
 
 This is gated on **every release cut**: the goldens above are regenerated from source
-under each toolchain and compared byte-for-byte. A divergence blocks the release.
+on each of the five legs and compared byte-for-byte. A divergence blocks the release.
 
 ## Reproduce it
 
 1. Provision the pinned toolchains (public actions):
    `setup-gcc153`, `setup-clang21-libcxx`, and — for the Windows anchor — MSVC 14.52.
-2. Build the engines from source at this release.
+2. Build the engines from source at this release, on **both an x86-64 and an arm64 host**
+   (GCC and Clang on each; the MSVC anchor on Windows / x86-64).
 3. Regenerate each engine's determinism proof and hash it.
 
-You should get the digests in the table above, from every toolchain. That equality —
-not any single run — is the guarantee.
+You should get the digests in the table above, from **every leg**. That equality — across
+five legs and two ISAs, not any single run — is the guarantee.
 
 ---
 *Published under CC-BY-4.0. Evidence-only: this folder holds results and method, not a

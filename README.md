@@ -37,6 +37,7 @@ exactly what we **guarantee and test** — the goldens are the proof.
 |---|---|
 | [`logcraft-playground/`](logcraft-playground/) | The LogCraft DSL — declare a fleet of services and generate deterministic synthetic log streams. Starter scenarios, the reusable agent library, and the full scenario reference. |
 | [`insight-playground/`](insight-playground/) | InSight's detection contracts — the scenarios and their goldens that pin exactly what fires and what stays silent. No code, all evidence. |
+| [`determinism/`](determinism/) | The reproducibility goldens — per-engine determinism proofs + SHA-256 digests, bit-identical across the 5-leg cross-ISA build. Regenerated every cut. |
 | [`benchmarks/`](benchmarks/) | Performance measurements + methodology, versioned per release. |
 | [`workflows/`](workflows/) | Golden-workflow definitions — scrubbed evidence of how we build and gate. |
 
