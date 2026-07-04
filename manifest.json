@@ -1,0 +1,23 @@
+{
+  "release_tag": "v1.7.1",
+  "sift_version": null,
+  "license": "CC-BY-4.0",
+  "determinism": {
+    "goldens": [
+      "canon.det_proof.txt",
+      "metalog.determinism_golden.txt",
+      "eidos.parse_replay_golden.txt"
+    ]
+  },
+  "benchmarks": {
+    "packages": [
+      "insight-canon",
+      "insight-metalog",
+      "insight-eidos-detection",
+      "insight-eidos-engine",
+      "logcraft-core",
+      "coderoast-ipc-core"
+    ]
+  },
+  "note": "Public evidence mirrored from the gated private release cut. The Hub holds no secrets."
+}
