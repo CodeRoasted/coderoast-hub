@@ -39,7 +39,7 @@ exactly what we **guarantee and test** — the goldens are the proof.
 | [`insight-playground/`](insight-playground/) | InSight's detection contracts — the scenarios and their goldens that pin exactly what fires and what stays silent. No code, all evidence. |
 | [`determinism/`](determinism/) | The reproducibility goldens — per-engine determinism proofs + SHA-256 digests, bit-identical across the 5-leg cross-ISA build. Regenerated every cut. |
 | [`benchmarks/`](benchmarks/) | Performance measurements + methodology, versioned per release. |
-| [`workflows/`](workflows/) | Golden-workflow definitions — scrubbed evidence of how we build and gate. |
+| [`workflows/`](workflows/) | How we build & gate — pointers to the real, public CI that produces and gates every release (the 5-leg determinism proof, benchmark-gated cuts). Linked, never copied. |
 
 ## The rest of CodeRoast in the open
 
