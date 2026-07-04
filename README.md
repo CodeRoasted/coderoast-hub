@@ -57,7 +57,7 @@ claims** — and we tell you exactly where the line is.
   events, and the integer/no-libm math core. *(Apache-2.0 — the determinism guarantee is auditable
   right here.)*
 - **[insight-metalog](https://github.com/CodeRoasted/insight-metalog)** — the MetaLog producer:
-  how a raw log stream collapses into a bounded, diffable structural fingerprint. *(BSL-1.1.)*
+  how a raw log stream collapses into a bounded, diffable structural fingerprint. *(BUSL-1.1.)*
 - **[metalog-spec](https://github.com/CodeRoasted/metalog-spec)** — the open MetaLog specification
   and schemas, so anyone can produce or read a MetaLog. *(MIT.)*
 - **[coderoast-ipc](https://github.com/CodeRoasted/coderoast-ipc)** — the shared-memory frame ABI
