@@ -1,0 +1,46 @@
+{
+  "corpus": "jenkins-markers",
+  "counts": {
+    "declarative": 2,
+    "freestyle": 1,
+    "matrix": 1,
+    "scripted": 1,
+    "total": 5
+  },
+  "dialect": "Jenkins (Pipeline: declarative / scripted / matrix + freestyle floor)",
+  "generated_by": "coderoast-corpora/jenkins_corpora/marker_corpus/scripts/make_synthetic_slice.py",
+  "purpose": "ADR 0016 \u00a72a public-safe smoke slice \u2014 FABRICATED data, no third-party bytes; reproduces the Jenkins engine-emitted marker skeleton (both plain + timestamper console forms) across all four depth sub-types, so a public reader sees exactly what Canon/Sift recognize. Real-data prevalence/G1 gates run private (trusted runner).",
+  "samples": [
+    {
+      "console_form": "timestamper",
+      "result": "SUCCESS",
+      "sample_id": "acme__widget__main__build42",
+      "sub_type": "declarative"
+    },
+    {
+      "console_form": "timestamper",
+      "result": "FAILURE",
+      "sample_id": "acme__widget__PR-7__build11",
+      "sub_type": "declarative"
+    },
+    {
+      "console_form": "plain",
+      "result": "SUCCESS",
+      "sample_id": "demo__toolkit__master__build88",
+      "sub_type": "scripted"
+    },
+    {
+      "console_form": "timestamper",
+      "result": "UNSTABLE",
+      "sample_id": "demo__engine__main__build205",
+      "sub_type": "matrix"
+    },
+    {
+      "console_form": "plain",
+      "result": "FAILURE",
+      "sample_id": "sample__service__build513",
+      "sub_type": "freestyle"
+    }
+  ],
+  "synthetic": true
+}

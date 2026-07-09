@@ -1,0 +1,14 @@
+[2026-05-01T10:00:00.100Z] Started by GitHub push by acme-bot
+[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+[2026-05-01T10:00:02.102Z] [Pipeline] node
+[2026-05-01T10:00:03.103Z] Running on linux-agent-3 in /home/jenkins/workspace/acme_widget_PR-7
+[2026-05-01T10:00:04.104Z] [Pipeline] { (Declarative: Checkout SCM)
+[2026-05-01T10:00:05.105Z] [Pipeline] stage
+[2026-05-01T10:00:06.106Z] [Pipeline] { (Test)
+[2026-05-01T10:00:07.107Z] [Pipeline] sh
+[2026-05-01T10:00:08.108Z] + ctest --output-on-failure
+[2026-05-01T10:00:09.109Z] The following tests FAILED:
+[2026-05-01T10:00:00.110Z]   17 - widget.serialize (Failed)
+[2026-05-01T10:00:01.111Z] ERROR: script returned exit code 1
+[2026-05-01T10:00:02.112Z] [Pipeline] End of Pipeline
+[2026-05-01T10:00:03.113Z] Finished: FAILURE

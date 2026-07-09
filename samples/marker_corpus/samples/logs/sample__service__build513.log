@@ -1,0 +1,8 @@
+Started by an SCM change
+Building remotely on freestyle-agent-4 in /home/jenkins/workspace/sample_service
+[EnvInject] - Loading node environment variables.
+Checking out Revision 89ab0def (refs/remotes/origin/master)
++ go build ./...
+service/handler.go:88:12: undefined: parseToken
+Build step 'Execute shell' marked build as failure
+Finished: FAILURE
