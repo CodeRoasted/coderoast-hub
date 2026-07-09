@@ -1,0 +1,30 @@
+# Spans 03 — Duration-regime shift (RED / charge blown up)
+# Identical to 03_duration_shift_green.yaml except `charge` moves from a ~20 ms to a ~200 ms
+# regime. Nothing else changes — same spans, same structure, same ids; only charge's
+# endTimeUnixNano - startTimeUnixNano shifts. The silent-latency-regression exhibit, located.
+# Concepts: format: otel_span, span_duration_ms, single duration-regime delta.
+
+scenario:
+  name: span-duration-red
+  seed: 4242
+  duration_seconds: 0.5
+
+  outputs:
+    - { name: spans, type: console, format: otel_span }
+
+  agents:
+    - { name: svc, type: service, rate_per_second: 0, log_level: info }
+
+  flows:
+    - name: checkout
+      instance_rate_per_second: 1/s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: auth
+      states:
+        auth:    { agent: svc, message_template: "auth",    span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
+        charge:  { agent: svc, message_template: "charge",  span_duration_ms: { distribution: normal, mean: 200, stddev: 2 } }   # ← blown-up regime
+        confirm: { agent: svc, message_template: "confirm", span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
+      transitions:
+        - { from: auth,   to: charge }
+        - { from: charge, to: confirm }

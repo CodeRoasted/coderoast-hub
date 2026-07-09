@@ -1,0 +1,42 @@
+# Spans 01 — Added span (RED / one new span)
+# Identical to 01_added_span_green.yaml except the `order` trace gains one `validate` span
+# between process and commit. This is the ONLY difference — the heartbeat control is unchanged.
+# Concepts: format: otel_span, causal flows, single structural delta.
+
+scenario:
+  name: span-added-red
+  seed: 4242
+  duration_seconds: 0.5
+
+  outputs:
+    - { name: spans, type: console, format: otel_span }
+
+  agents:
+    - { name: svc, type: service, rate_per_second: 0, log_level: info }
+
+  flows:
+    - name: heartbeat            # control — identical in green and red
+      instance_rate_per_second: 1/s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: hb_open
+      states:
+        hb_open:  { agent: svc, message_template: "hb open" }
+        hb_close: { agent: svc, message_template: "hb close" }
+      transitions:
+        - { from: hb_open, to: hb_close }
+
+    - name: order                # target — the added `validate` span is the planted change
+      instance_rate_per_second: 1/s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: receive
+      states:
+        receive:  { agent: svc, message_template: "receive" }
+        process:  { agent: svc, message_template: "process" }
+        validate: { agent: svc, message_template: "validate" }   # ← the one added span
+        commit:   { agent: svc, message_template: "commit" }
+      transitions:
+        - { from: receive,  to: process }
+        - { from: process,  to: validate }
+        - { from: validate, to: commit }

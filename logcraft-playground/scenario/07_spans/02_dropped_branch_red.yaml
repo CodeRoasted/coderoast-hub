@@ -1,0 +1,38 @@
+# Spans 02 — Dropped branch (RED / one branch removed)
+# Identical to 02_dropped_branch_green.yaml except the `dispatch` fan-out loses its sms child
+# branch — root now spawns only email. The surviving email span still parents to root.
+# Concepts: format: otel_span, fan_out, single structural delta.
+
+scenario:
+  name: span-dropped-red
+  seed: 4242
+  duration_seconds: 0.5
+
+  outputs:
+    - { name: spans, type: console, format: otel_span }
+
+  agents:
+    - { name: svc, type: service, rate_per_second: 0, log_level: info }
+
+  flows:
+    - name: heartbeat            # control — identical in green and red
+      instance_rate_per_second: 1/s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: hb_open
+      states:
+        hb_open:  { agent: svc, message_template: "hb open" }
+        hb_close: { agent: svc, message_template: "hb close" }
+      transitions:
+        - { from: hb_open, to: hb_close }
+
+    - name: dispatch             # target — the sms branch is dropped (the planted change)
+      instance_rate_per_second: 1/s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: root
+      states:
+        root:  { agent: svc, message_template: "root", fan_out: true }
+        email: { agent: svc, message_template: "email" }
+      transitions:
+        - { from: root, to: email }

@@ -1,0 +1,37 @@
+# Spans 04 — Fan-out: observed DAG vs inferred adjacency (G-O3-2 checkpoint)
+# `pipeline` fans ingest → {transform_a, transform_b}, each to its own sink, with
+# max_concurrent 4 so several traces are in flight at once. The OBSERVED parentage DAG
+# (parentSpanId) is a clean tree; a naive SEQUENTIAL-ADJACENCY graph over the interleaved
+# stream manufactures sibling (transform_a→transform_b) and cross-trace edges the observed
+# DAG never contains — the O0→O2 de-pollution pattern, one grain up (at the DAG).
+# Concepts: format: otel_span, fan_out, max_concurrent interleave.
+
+scenario:
+  name: span-fanout-observed
+  seed: 4242
+  duration_seconds: 1.0
+
+  outputs:
+    - { name: spans, type: console, format: otel_span }
+
+  agents:
+    - { name: svc, type: service, rate_per_second: 0, log_level: info }
+
+  flows:
+    - name: pipeline
+      instance_rate_per_second: 8/s
+      max_concurrent: 4            # >1 ⇒ concurrent traces interleave in emission order
+      max_steps: 16
+      correlation_field: trace_id
+      start: ingest
+      states:
+        ingest:      { agent: svc, message_template: "ingest", fan_out: true }
+        transform_a: { agent: svc, message_template: "transform_a" }
+        transform_b: { agent: svc, message_template: "transform_b" }
+        sink_a:      { agent: svc, message_template: "sink_a" }
+        sink_b:      { agent: svc, message_template: "sink_b" }
+      transitions:                 # under fan_out these are concurrent BRANCHES, not choices
+        - { from: ingest,      to: transform_a }
+        - { from: ingest,      to: transform_b }
+        - { from: transform_a, to: sink_a }
+        - { from: transform_b, to: sink_b }

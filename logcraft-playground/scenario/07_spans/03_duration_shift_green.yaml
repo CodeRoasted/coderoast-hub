@@ -1,0 +1,31 @@
+# Spans 03 — Duration-regime shift (GREEN / stationary control)
+# The `checkout` trace is auth → charge → confirm. `charge` runs a fast ~20 ms regime here;
+# its red twin blows it up to ~200 ms. auth & confirm keep a fixed ~10 ms regime in BOTH.
+# Because span_duration_ms is drawn LAST, green and red differ in ONLY the charge duration —
+# every span id, name, parent and start-time is byte-identical. Green is the control arm.
+# Concepts: format: otel_span, span_duration_ms, silent latency regression at span grain.
+
+scenario:
+  name: span-duration-green
+  seed: 4242
+  duration_seconds: 0.5
+
+  outputs:
+    - { name: spans, type: console, format: otel_span }
+
+  agents:
+    - { name: svc, type: service, rate_per_second: 0, log_level: info }
+
+  flows:
+    - name: checkout
+      instance_rate_per_second: 1/s
+      max_concurrent: 1
+      correlation_field: trace_id
+      start: auth
+      states:
+        auth:    { agent: svc, message_template: "auth",    span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
+        charge:  { agent: svc, message_template: "charge",  span_duration_ms: { distribution: normal, mean: 20,  stddev: 2 } }   # fast regime
+        confirm: { agent: svc, message_template: "confirm", span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
+      transitions:
+        - { from: auth,   to: charge }
+        - { from: charge, to: confirm }

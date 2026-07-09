@@ -221,7 +221,8 @@ Every output except `prometheus` and `statsd` requires a `format:` (or `formats:
 | `hpc` | `bgl` | HPC / Blue Gene/L |
 | `iis_w3c` | `iis` | IIS W3C Extended log |
 | `ecs` | — | Elastic Common Schema 8.x |
-| `otel` | `opentelemetry`, `otlp` | OpenTelemetry OTLP JSON |
+| `otel` | `opentelemetry`, `otlp` | OpenTelemetry OTLP JSON **log record** |
+| `otel_span` | `otlp_span`, `otel_trace` | OpenTelemetry OTLP JSON **span** — one flat span object per line (`traceId` / `spanId` / `parentSpanId` / `name` / `startTimeUnixNano` / `endTimeUnixNano` / `status` / `service.name`). Renders a [causal flow](#causal-flows)'s trace/span context + `span_duration_ms`; a non-flow record becomes a valid synthesised root span. This is the span-native surface (see [Span output](#span-output-otel_span)) |
 | `github_actions` | `gha` | Timestamped line with a GitHub Actions workflow-command prefix (`::error::` / `::warning::`; empty for info/trace) — the surface Sift annotates from |
 | `raw` | `messy`, `stdout` | Unstructured `LEVEL message field=value` line — CI/app-stdout "dirty logs" the structured formats never exercise |
 
@@ -818,6 +819,8 @@ flows:
 | `level` | string | the agent's `log_level` | Per-step base log level; an explicit value **overrides** any inherited escalation |
 | `error_rate` | number | inherit | Per-step probability the record is escalated to `error`. Absent → **inherited** from the agent's effective envelope (A1); an explicit value (incl. `0`) **overrides** — the isolation escape hatch |
 | `fields` | sequence | absent | Step-local field generators (same shape as agent `fields`) |
+| `span_duration_ms` | distribution | absent | **Span-native (`otel_span` only).** The span's declared wall-duration, in **milliseconds**, as a [distribution](#latency) (`uniform` `[min,max]` / `normal` / `percentile`). Sampled once per span from the instance's position-stable RNG, rounded to integer ns → `endTimeUnixNano = start + duration`. Arrival-independent iid; **drawn LAST**, so it never perturbs any id/schedule draw — shifting a state's regime changes only that span's duration. Absent ⇒ a 0-ns span (`start == end`). Inert for every non-span format |
+| `fan_out` | bool | `false` | **Span-native fan-out.** When `true`, reaching this state spawns **one concurrent child branch per outgoing transition** (instead of one weighted successor); each child span parents to this step's span, on its own span-id path + RNG seek, bounded by `max_steps`. This is the concurrent-branch primitive — an observed DAG, not a linear chain (see [Span output](#span-output-otel_span)) |
 
 ### Flow Transition Keys
 
@@ -829,9 +832,59 @@ flows:
 | `network_latency_ms` | number | `0.0` | Inter-step delay before the target step |
 | `network_jitter_ms` | number | `0.0` | Uniform ± jitter on the inter-step delay |
 
-A state with no outgoing transition terminates the instance. Fan-out (a step touching
-several services) is modeled as sequential states — one agent per state keeps the causal
-path a clean linear chain.
+A state with no outgoing transition terminates the instance. A step is a **single-successor**
+walk by default — outgoing edges are a *weighted choice*, so the causal path stays a clean
+linear chain (one agent per state). To model **true concurrent fan-out** (a step spawning
+several branches at once — the observed-DAG shape a distributed trace really has), set
+`fan_out: true` on the state (see [Span output](#span-output-otel_span)); every outgoing edge
+then becomes a concurrent child branch instead of a probabilistic choice.
+
+### Span output (`otel_span`)
+
+Point a flow at an `otel_span` output and each visited state emits a **flat OTLP JSON span**
+(one span object per line) instead of a log line. A flow instance is a *trace*; each step is a
+*span*; the parent is the spawning step's span. Two flow-state keys shape the span:
+`span_duration_ms` (the span's wall-duration → `endTimeUnixNano - startTimeUnixNano`) and
+`fan_out` (concurrent child branches, one per outgoing edge). `status.code` is `ERROR` iff the
+step's effective `level` is `error`/`fatal`, else `UNSET`; `name` is the state name; the bound
+agent's name rides `service.name`. Everything stays bit-identical across replays — span ids are
+`splitmix64` over (flow identity, instance ordinal, branch, step), rendered to OTLP hex only at
+the seam (no float in the id path).
+
+```yaml
+# requires deterministic mode — set a scenario `seed:` (spans are ignored in real mode)
+outputs:
+  - { name: spans, type: console, format: otel_span }
+
+agents:
+  - { name: svc, type: service, rate_per_second: 0, log_level: info }   # flow-driven, silent
+
+flows:
+  - name: pipeline
+    instance_rate_per_second: 8
+    max_concurrent: 4                # >1 ⇒ concurrent traces interleave in the stream
+    start: ingest
+    states:
+      ingest:      { agent: svc, message_template: "ingest", fan_out: true }   # → both children
+      transform_a: { agent: svc, message_template: "transform_a",
+                     span_duration_ms: { distribution: normal, mean: 20, stddev: 2 } }
+      transform_b: { agent: svc, message_template: "transform_b" }
+      sink_a:      { agent: svc, message_template: "sink_a" }
+      sink_b:      { agent: svc, message_template: "sink_b" }
+    transitions:                     # under fan_out these are BRANCHES, not weighted choices
+      - { from: ingest,      to: transform_a }
+      - { from: ingest,      to: transform_b }
+      - { from: transform_a, to: sink_a }
+      - { from: transform_b, to: sink_b }
+```
+
+> **Observed DAG vs inferred adjacency.** The parentage above (`parentSpanId`) is the *observed*
+> causal DAG — `ingest→transform_a`, `ingest→transform_b`, and each transform to its sink, and
+> nothing else. A consumer that instead infers edges from **sequential adjacency** in the emitted
+> stream would manufacture edges the observed DAG never contains (sibling `transform_a→transform_b`,
+> and — with `max_concurrent > 1` — cross-trace edges from the interleave). Span output makes that
+> gap first-class: the worked green/red exhibits live in
+> [`scenario/07_spans/`](scenario/07_spans/).
 
 ### Branch weight ramps — authoring a branching-entropy shift
 
