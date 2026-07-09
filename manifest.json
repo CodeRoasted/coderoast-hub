@@ -19,5 +19,9 @@
       "coderoast-ipc-core"
     ]
   },
-  "note": "Public evidence mirrored from the gated private release cut. The Hub holds no secrets."
+  "note": "Public evidence mirrored from the gated private release cut. The Hub holds no secrets.",
+  "samples": {
+    "version": "v1.7.5",
+    "kinds": []
+  }
 }

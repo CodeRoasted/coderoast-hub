@@ -1,0 +1,16 @@
+[2026-05-01T10:00:00.100Z] Started by upstream project demo/engine-trigger
+[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+[2026-05-01T10:00:02.102Z] [Pipeline] parallel
+[2026-05-01T10:00:03.103Z] [Pipeline] { (Branch: linux-jdk21)
+[2026-05-01T10:00:04.104Z] [Pipeline] { (Branch: linux-jdk17)
+[2026-05-01T10:00:05.105Z] [Pipeline] { (Branch: windows-jdk21)
+[2026-05-01T10:00:06.106Z] [linux-jdk21] Running on linux-agent-1 in /home/jenkins/workspace/demo_engine
+[2026-05-01T10:00:07.107Z] [linux-jdk21] + mvn -B verify
+[2026-05-01T10:00:08.108Z] [linux-jdk21] BUILD SUCCESS
+[2026-05-01T10:00:09.109Z] [windows-jdk21] Running on win-agent-2 in C:\jenkins\workspace\demo_engine
+[2026-05-01T10:00:00.110Z] [windows-jdk21] + mvn -B verify
+[2026-05-01T10:00:01.111Z] [windows-jdk21] Tests run: 120, Failures: 1, Errors: 0
+[2026-05-01T10:00:02.112Z] [windows-jdk21] BUILD UNSTABLE
+[2026-05-01T10:00:03.113Z] [Pipeline] // parallel
+[2026-05-01T10:00:04.114Z] [Pipeline] End of Pipeline
+[2026-05-01T10:00:05.115Z] Finished: UNSTABLE

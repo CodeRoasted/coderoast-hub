@@ -1,0 +1,17 @@
+Started by timer
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on worker-01 in /var/lib/jenkins/workspace/demo_toolkit
+[Pipeline] stage
+[Pipeline] { (build)
+[Pipeline] sh
++ python -m build
+Successfully built toolkit-0.4.2.tar.gz
+[Pipeline] }
+[Pipeline] stage
+[Pipeline] { (test)
+[Pipeline] sh
++ pytest -q
+24 passed in 3.18s
+[Pipeline] }
+Finished: SUCCESS
