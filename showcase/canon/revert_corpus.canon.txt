@@ -1,0 +1,190 @@
+# canon public determinism proof -- v1
+# semantic_identity 990e17d758a2eec145f951b6ceae48f5
+# semantic_packages github@1.1.0 test_frameworks@1.0.0
+## file acme__widget__pr101__run900000101.log
+### templates (9)
+3	##[endgroup]
+1	##[group]Build
+1	##[group]Run actions/checkout@v4
+1	##[group]Test
+1	<*> tests passed, <*> tests failed out of <*>
+1	Syncing repository: acme/widget
+1	[100%] Built target widget
+1	cmake --build build --config Release
+1	ctest --output-on-failure
+### events
+Unknown	--	GroupBegin	##[group]Run actions/checkout@v4
+Unknown	--	None	Syncing repository: acme/widget
+Unknown	--	GroupEnd	##[endgroup]
+Unknown	--	GroupBegin	##[group]Build
+Unknown	--	None	cmake --build build --config Release
+Unknown	--	None	[100%] Built target widget
+Unknown	--	GroupEnd	##[endgroup]
+Unknown	--	GroupBegin	##[group]Test
+Unknown	--	None	ctest --output-on-failure
+Error	F-	None	<*> tests passed, <*> tests failed out of <*>
+Unknown	--	GroupEnd	##[endgroup]
+### det_math total=11 sum_c_log2c_qk=5228054097396
+## file acme__widget__pr102__run900000102.log
+### templates (9)
+2	##[endgroup]
+1	##[error]Process completed with exit code <*>
+1	##[group]Build
+1	##[group]Test
+1	<*> - widget.serialize (Failed)
+1	The following tests FAILED:
+1	[100%] Built target widget
+1	cmake --build build --config Release
+1	ctest --output-on-failure
+### events
+Unknown	--	GroupBegin	##[group]Build
+Unknown	--	None	cmake --build build --config Release
+Unknown	--	None	[100%] Built target widget
+Unknown	--	GroupEnd	##[endgroup]
+Unknown	--	GroupBegin	##[group]Test
+Unknown	--	None	ctest --output-on-failure
+Error	F-	None	The following tests FAILED:
+Error	F-	None	<*> - widget.serialize (Failed)
+Error	F-	Terminator	##[error]Process completed with exit code <*>
+Unknown	--	GroupEnd	##[endgroup]
+### det_math total=10 sum_c_log2c_qk=2199023255552
+## file demo__toolkit__pr55__run900000055.log
+### templates (8)
+2	##[endgroup]
+1	##[group]Package
+1	##[group]Run tests
+1	........................ [100%]
+1	<*> passed in <*>
+1	Successfully built toolkit-0.4.2.tar.gz
+1	pytest -q
+1	python -m build
+### events
+Unknown	--	GroupBegin	##[group]Run tests
+Unknown	--	None	pytest -q
+Unknown	--	None	........................ [100%]
+Unknown	--	None	<*> passed in <*>
+Unknown	--	GroupEnd	##[endgroup]
+Unknown	--	GroupBegin	##[group]Package
+Unknown	--	None	python -m build
+Unknown	--	None	Successfully built toolkit-0.4.2.tar.gz
+Unknown	--	GroupEnd	##[endgroup]
+### det_math total=9 sum_c_log2c_qk=2199023255552
+## file demo__toolkit__pr56__run900000056.log
+### templates (7)
+2	##[endgroup]
+1	##[group]Lint
+1	##[group]Run tests
+1	<*> passed in <*>
+1	All checks passed!
+1	pytest -q
+1	ruff check .
+### events
+Unknown	--	GroupBegin	##[group]Lint
+Unknown	--	None	ruff check .
+Unknown	--	None	All checks passed!
+Unknown	--	GroupEnd	##[endgroup]
+Unknown	--	GroupBegin	##[group]Run tests
+Unknown	--	None	pytest -q
+Unknown	--	None	<*> passed in <*>
+Unknown	--	GroupEnd	##[endgroup]
+### det_math total=8 sum_c_log2c_qk=2199023255552
+## file sample__service__pr7__run900000007.log
+### templates (5)
+1	##[endgroup]
+1	##[error]Process completed with exit code <*>
+1	##[group]Build
+1	go build ./...
+1	service/handler.go:<*>:<*>: undefined: parseToken
+### events
+Unknown	--	GroupBegin	##[group]Build
+Unknown	--	None	go build ./...
+Unknown	--	None	service/handler.go:<*>:<*>: undefined: parseToken
+Error	F-	Terminator	##[error]Process completed with exit code <*>
+Unknown	--	GroupEnd	##[endgroup]
+### det_math total=5 sum_c_log2c_qk=0
+## file acme__widget__pr101__run900000101.log
+### templates (8)
+1	<*> tests passed, <*> tests failed out of <*>
+1	Build
+1	Run actions/checkout@v4
+1	Syncing repository: acme/widget
+1	Test
+1	[100%] Built target widget
+1	cmake --build build --config Release
+1	ctest --output-on-failure
+### events
+Unknown	--	None	Run actions/checkout@v4
+Unknown	--	None	Syncing repository: acme/widget
+Unknown	--	None	Build
+Unknown	--	None	cmake --build build --config Release
+Unknown	--	None	[100%] Built target widget
+Unknown	--	None	Test
+Unknown	--	None	ctest --output-on-failure
+Error	F-	None	<*> tests passed, <*> tests failed out of <*>
+### det_math total=8 sum_c_log2c_qk=0
+## file acme__widget__pr102__run900000102.log
+### templates (8)
+1	<*> - widget.serialize (Failed)
+1	Build
+1	Process completed with exit code <*>
+1	Test
+1	The following tests FAILED:
+1	[100%] Built target widget
+1	cmake --build build --config Release
+1	ctest --output-on-failure
+### events
+Unknown	--	None	Build
+Unknown	--	None	cmake --build build --config Release
+Unknown	--	None	[100%] Built target widget
+Unknown	--	None	Test
+Unknown	--	None	ctest --output-on-failure
+Error	F-	None	The following tests FAILED:
+Error	F-	None	<*> - widget.serialize (Failed)
+Unknown	--	None	Process completed with exit code <*>
+### det_math total=8 sum_c_log2c_qk=0
+## file demo__toolkit__pr55__run900000055.log
+### templates (7)
+1	........................ [100%]
+1	<*> passed in <*>
+1	Package
+1	Run tests
+1	Successfully built toolkit-0.4.2.tar.gz
+1	pytest -q
+1	python -m build
+### events
+Unknown	--	None	Run tests
+Unknown	--	None	pytest -q
+Unknown	--	None	........................ [100%]
+Unknown	--	None	<*> passed in <*>
+Unknown	--	None	Package
+Unknown	--	None	python -m build
+Unknown	--	None	Successfully built toolkit-0.4.2.tar.gz
+### det_math total=7 sum_c_log2c_qk=0
+## file demo__toolkit__pr56__run900000056.log
+### templates (6)
+1	<*> passed in <*>
+1	All checks passed!
+1	Lint
+1	Run tests
+1	pytest -q
+1	ruff check .
+### events
+Unknown	--	None	Lint
+Unknown	--	None	ruff check .
+Unknown	--	None	All checks passed!
+Unknown	--	None	Run tests
+Unknown	--	None	pytest -q
+Unknown	--	None	<*> passed in <*>
+### det_math total=6 sum_c_log2c_qk=0
+## file sample__service__pr7__run900000007.log
+### templates (4)
+1	Build
+1	Process completed with exit code <*>
+1	go build ./...
+1	service/handler.go:<*>:<*>: undefined: parseToken
+### events
+Unknown	--	None	Build
+Unknown	--	None	go build ./...
+Unknown	--	None	service/handler.go:<*>:<*>: undefined: parseToken
+Unknown	--	None	Process completed with exit code <*>
+### det_math total=4 sum_c_log2c_qk=0

@@ -1,0 +1,178 @@
+# canon public determinism proof -- v1
+# semantic_identity 990e17d758a2eec145f951b6ceae48f5
+# semantic_packages github@1.1.0 test_frameworks@1.0.0
+## file acme__widget__PR-7__build11.log
+### templates (14)
+1	[2026-05-01T10:00:00.100Z] Started by GitHub push by acme-bot
+1	[2026-05-01T10:00:00.110Z] <*> - widget.serialize (Failed)
+1	[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+1	[2026-05-01T10:00:01.111Z] ERROR: script returned exit code 1
+1	[2026-05-01T10:00:02.102Z] [Pipeline] node
+1	[2026-05-01T10:00:02.112Z] [Pipeline] End of Pipeline
+1	[2026-05-01T10:00:03.103Z] Running on linux-agent-3 in /home/jenkins/workspace/acme_widget_PR-7
+1	[2026-05-01T10:00:03.113Z] Finished: FAILURE
+1	[2026-05-01T10:00:04.104Z] [Pipeline] { (Declarative: Checkout SCM)
+1	[2026-05-01T10:00:05.105Z] [Pipeline] stage
+1	[2026-05-01T10:00:06.106Z] [Pipeline] { (Test)
+1	[2026-05-01T10:00:07.107Z] [Pipeline] sh
+1	[2026-05-01T10:00:08.108Z] + ctest --output-on-failure
+1	[2026-05-01T10:00:09.109Z] The following tests FAILED:
+### events
+Unknown	--	None	[2026-05-01T10:00:00.100Z] Started by GitHub push by acme-bot
+Unknown	--	None	[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+Unknown	--	None	[2026-05-01T10:00:02.102Z] [Pipeline] node
+Unknown	--	None	[2026-05-01T10:00:03.103Z] Running on linux-agent-3 in /home/jenkins/workspace/acme_widget_PR-7
+Unknown	--	None	[2026-05-01T10:00:04.104Z] [Pipeline] { (Declarative: Checkout SCM)
+Unknown	--	None	[2026-05-01T10:00:05.105Z] [Pipeline] stage
+Unknown	--	None	[2026-05-01T10:00:06.106Z] [Pipeline] { (Test)
+Unknown	--	None	[2026-05-01T10:00:07.107Z] [Pipeline] sh
+Unknown	--	None	[2026-05-01T10:00:08.108Z] + ctest --output-on-failure
+Error	F-	None	[2026-05-01T10:00:09.109Z] The following tests FAILED:
+Error	F-	None	[2026-05-01T10:00:00.110Z] <*> - widget.serialize (Failed)
+Error	F-	None	[2026-05-01T10:00:01.111Z] ERROR: script returned exit code 1
+Unknown	--	None	[2026-05-01T10:00:02.112Z] [Pipeline] End of Pipeline
+Fatal	F-	None	[2026-05-01T10:00:03.113Z] Finished: FAILURE
+### det_math total=14 sum_c_log2c_qk=0
+## file acme__widget__main__build42.log
+### templates (24)
+1	[2026-05-01T10:00:00.100Z] Started by user Acme CI
+1	[2026-05-01T10:00:00.110Z] [Pipeline] stage
+1	[2026-05-01T10:00:00.120Z] <*> tests passed, <*> tests failed out of <*>
+1	[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+1	[2026-05-01T10:00:01.111Z] [Pipeline] { (Build)
+1	[2026-05-01T10:00:01.121Z] [Pipeline] }
+1	[2026-05-01T10:00:02.102Z] [Pipeline] node
+1	[2026-05-01T10:00:02.112Z] [Pipeline] sh
+1	[2026-05-01T10:00:02.122Z] [Pipeline] End of Pipeline
+1	[2026-05-01T10:00:03.103Z] Running on built-in-agent in /home/jenkins/workspace/acme_widget_main
+1	[2026-05-01T10:00:03.113Z] + cmake --build build --config Release
+1	[2026-05-01T10:00:03.123Z] Finished: SUCCESS
+1	[2026-05-01T10:00:04.104Z] [Pipeline] {
+1	[2026-05-01T10:00:04.114Z] [100%] Built target widget
+1	[2026-05-01T10:00:05.105Z] [Pipeline] stage
+1	[2026-05-01T10:00:05.115Z] [Pipeline] }
+1	[2026-05-01T10:00:06.106Z] [Pipeline] { (Declarative: Checkout SCM)
+1	[2026-05-01T10:00:06.116Z] [Pipeline] stage
+1	[2026-05-01T10:00:07.107Z] [Pipeline] checkout
+1	[2026-05-01T10:00:07.117Z] [Pipeline] { (Test)
+1	[2026-05-01T10:00:08.108Z] Checking out Revision <*> (refs/remotes/origin/main)
+1	[2026-05-01T10:00:08.118Z] [Pipeline] sh
+1	[2026-05-01T10:00:09.109Z] [Pipeline] }
+1	[2026-05-01T10:00:09.119Z] + ctest --output-on-failure
+### events
+Unknown	--	None	[2026-05-01T10:00:00.100Z] Started by user Acme CI
+Unknown	--	None	[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+Unknown	--	None	[2026-05-01T10:00:02.102Z] [Pipeline] node
+Unknown	--	None	[2026-05-01T10:00:03.103Z] Running on built-in-agent in /home/jenkins/workspace/acme_widget_main
+Unknown	--	None	[2026-05-01T10:00:04.104Z] [Pipeline] {
+Unknown	--	None	[2026-05-01T10:00:05.105Z] [Pipeline] stage
+Unknown	--	None	[2026-05-01T10:00:06.106Z] [Pipeline] { (Declarative: Checkout SCM)
+Unknown	--	None	[2026-05-01T10:00:07.107Z] [Pipeline] checkout
+Unknown	--	None	[2026-05-01T10:00:08.108Z] Checking out Revision <*> (refs/remotes/origin/main)
+Unknown	--	None	[2026-05-01T10:00:09.109Z] [Pipeline] }
+Unknown	--	None	[2026-05-01T10:00:00.110Z] [Pipeline] stage
+Unknown	--	None	[2026-05-01T10:00:01.111Z] [Pipeline] { (Build)
+Unknown	--	None	[2026-05-01T10:00:02.112Z] [Pipeline] sh
+Unknown	--	None	[2026-05-01T10:00:03.113Z] + cmake --build build --config Release
+Unknown	--	None	[2026-05-01T10:00:04.114Z] [100%] Built target widget
+Unknown	--	None	[2026-05-01T10:00:05.115Z] [Pipeline] }
+Unknown	--	None	[2026-05-01T10:00:06.116Z] [Pipeline] stage
+Unknown	--	None	[2026-05-01T10:00:07.117Z] [Pipeline] { (Test)
+Unknown	--	None	[2026-05-01T10:00:08.118Z] [Pipeline] sh
+Unknown	--	None	[2026-05-01T10:00:09.119Z] + ctest --output-on-failure
+Error	F-	None	[2026-05-01T10:00:00.120Z] <*> tests passed, <*> tests failed out of <*>
+Unknown	--	None	[2026-05-01T10:00:01.121Z] [Pipeline] }
+Unknown	--	None	[2026-05-01T10:00:02.122Z] [Pipeline] End of Pipeline
+Unknown	--	None	[2026-05-01T10:00:03.123Z] Finished: SUCCESS
+### det_math total=24 sum_c_log2c_qk=0
+## file demo__engine__main__build205.log
+### templates (16)
+1	[2026-05-01T10:00:00.100Z] Started by upstream project demo/engine-trigger
+1	[2026-05-01T10:00:00.110Z] [windows-jdk21] + mvn -B verify
+1	[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+1	[2026-05-01T10:00:01.111Z] [windows-jdk21] Tests run: <*> Failures: <*> Errors: <*>
+1	[2026-05-01T10:00:02.102Z] [Pipeline] parallel
+1	[2026-05-01T10:00:02.112Z] [windows-jdk21] BUILD UNSTABLE
+1	[2026-05-01T10:00:03.103Z] [Pipeline] { (Branch: linux-jdk21)
+1	[2026-05-01T10:00:03.113Z] [Pipeline] // parallel
+1	[2026-05-01T10:00:04.104Z] [Pipeline] { (Branch: linux-jdk17)
+1	[2026-05-01T10:00:04.114Z] [Pipeline] End of Pipeline
+1	[2026-05-01T10:00:05.105Z] [Pipeline] { (Branch: windows-jdk21)
+1	[2026-05-01T10:00:05.115Z] Finished: UNSTABLE
+1	[2026-05-01T10:00:06.106Z] [linux-jdk21] Running on linux-agent-1 in /home/jenkins/workspace/demo_engine
+1	[2026-05-01T10:00:07.107Z] [linux-jdk21] + mvn -B verify
+1	[2026-05-01T10:00:08.108Z] [linux-jdk21] BUILD SUCCESS
+1	[2026-05-01T10:00:09.109Z] [windows-jdk21] Running on win-agent-2 in C:\jenkins\workspace\demo_engine
+### events
+Unknown	--	None	[2026-05-01T10:00:00.100Z] Started by upstream project demo/engine-trigger
+Unknown	--	None	[2026-05-01T10:00:01.101Z] [Pipeline] Start of Pipeline
+Unknown	--	None	[2026-05-01T10:00:02.102Z] [Pipeline] parallel
+Unknown	--	None	[2026-05-01T10:00:03.103Z] [Pipeline] { (Branch: linux-jdk21)
+Unknown	--	None	[2026-05-01T10:00:04.104Z] [Pipeline] { (Branch: linux-jdk17)
+Unknown	--	None	[2026-05-01T10:00:05.105Z] [Pipeline] { (Branch: windows-jdk21)
+Unknown	--	None	[2026-05-01T10:00:06.106Z] [linux-jdk21] Running on linux-agent-1 in /home/jenkins/workspace/demo_engine
+Unknown	--	None	[2026-05-01T10:00:07.107Z] [linux-jdk21] + mvn -B verify
+Unknown	--	None	[2026-05-01T10:00:08.108Z] [linux-jdk21] BUILD SUCCESS
+Unknown	--	None	[2026-05-01T10:00:09.109Z] [windows-jdk21] Running on win-agent-2 in C:\jenkins\workspace\demo_engine
+Unknown	--	None	[2026-05-01T10:00:00.110Z] [windows-jdk21] + mvn -B verify
+Unknown	--	None	[2026-05-01T10:00:01.111Z] [windows-jdk21] Tests run: <*> Failures: <*> Errors: <*>
+Unknown	--	None	[2026-05-01T10:00:02.112Z] [windows-jdk21] BUILD UNSTABLE
+Unknown	--	None	[2026-05-01T10:00:03.113Z] [Pipeline] // parallel
+Unknown	--	None	[2026-05-01T10:00:04.114Z] [Pipeline] End of Pipeline
+Unknown	--	None	[2026-05-01T10:00:05.115Z] Finished: UNSTABLE
+### det_math total=16 sum_c_log2c_qk=0
+## file demo__toolkit__master__build88.log
+### templates (14)
+1	+ pytest -q
+1	+ python -m build
+1	<*> passed in <*>
+1	Finished: SUCCESS
+1	Running on worker-01 in /var/lib/jenkins/workspace/demo_toolkit
+1	Started by timer
+1	Successfully built toolkit-0.4.2.tar.gz
+1	[Pipeline] Start of Pipeline
+1	[Pipeline] node
+2	[Pipeline] sh
+2	[Pipeline] stage
+1	[Pipeline] { (build)
+1	[Pipeline] { (test)
+2	[Pipeline] }
+### events
+Unknown	--	None	Started by timer
+Unknown	--	None	[Pipeline] Start of Pipeline
+Unknown	--	None	[Pipeline] node
+Unknown	--	None	Running on worker-01 in /var/lib/jenkins/workspace/demo_toolkit
+Unknown	--	None	[Pipeline] stage
+Unknown	--	None	[Pipeline] { (build)
+Unknown	--	None	[Pipeline] sh
+Unknown	--	None	+ python -m build
+Unknown	--	None	Successfully built toolkit-0.4.2.tar.gz
+Unknown	--	None	[Pipeline] }
+Unknown	--	None	[Pipeline] stage
+Unknown	--	None	[Pipeline] { (test)
+Unknown	--	None	[Pipeline] sh
+Unknown	--	None	+ pytest -q
+Unknown	--	None	<*> passed in <*>
+Unknown	--	None	[Pipeline] }
+Unknown	--	None	Finished: SUCCESS
+### det_math total=17 sum_c_log2c_qk=6597069766656
+## file sample__service__build513.log
+### templates (8)
+1	+ go build ./...
+1	Build step 'Execute shell' marked build as failure
+1	Building remotely on freestyle-agent-4 in /home/jenkins/workspace/sample_service
+1	Checking out Revision <*> (refs/remotes/origin/master)
+1	Finished: FAILURE
+1	Started by an SCM change
+1	[EnvInject] - Loading node environment variables.
+1	service/handler.go:<*>:<*>: undefined: parseToken
+### events
+Unknown	--	None	Started by an SCM change
+Unknown	--	None	Building remotely on freestyle-agent-4 in /home/jenkins/workspace/sample_service
+Unknown	--	None	[EnvInject] - Loading node environment variables.
+Unknown	--	None	Checking out Revision <*> (refs/remotes/origin/master)
+Unknown	--	None	+ go build ./...
+Unknown	--	None	service/handler.go:<*>:<*>: undefined: parseToken
+Unknown	--	None	Build step 'Execute shell' marked build as failure
+Fatal	F-	None	Finished: FAILURE
+### det_math total=8 sum_c_log2c_qk=0
