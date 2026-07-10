@@ -1,6 +1,6 @@
-# canon public determinism proof -- v1
-# semantic_identity 990e17d758a2eec145f951b6ceae48f5
-# semantic_packages github@1.1.0 test_frameworks@1.0.0
+# canon public determinism proof -- v2
+# semantic_identity 0deba976a154e7101c47150f82cd2425
+# semantic_packages github@1.2.0 jenkins@1.0.0 test_frameworks@1.0.0
 ## file ci_build.log
 ### templates (14)
 1	Build failed with <*> error
@@ -33,6 +33,7 @@ Unknown	--	None	test billing.charge passed
 Error	F-	None	error: test gateway.route failed: connection refused
 Error	F-	None	Build failed with <*> error
 ### det_math total=14 sum_c_log2c_qk=0
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file github_actions.log
 ### templates (12)
 1	##[endgroup]
@@ -61,6 +62,79 @@ Unknown	--	None	test billing.charge passed
 Error	F-	Terminator	##[error]test gateway.route failed: connection refused
 Error	F-	Terminator	##[error]Process completed with exit code 1
 ### det_math total=12 sum_c_log2c_qk=0
+### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
+## file jenkins_pipeline.log
+### templates (29)
+1	+ cmake --build build --config Release -j <*>
+1	+ ctest --output-on-failure --timeout <*>
+1	+ tar czf proof-engine-1.4.2.tar.gz build/dist
+1	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
+1	<*> tests passed, <*> tests failed out of <*>
+1	Archiving artifacts
+1	Checking out Revision <*> (refs/remotes/origin/main)
+1	ERROR: expected <*> sealed windows, observed <*>
+1	Finished: UNSTABLE
+1	Recording test results
+1	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
+1	Started by user CodeRoast CI
+1	Test project /home/jenkins/workspace/proof_pipeline_main/build
+1	[ <*> Building CXX object src/engine/core.cpp.o
+1	[100%] Built target proof_engine
+1	[Pipeline] End of Pipeline
+1	[Pipeline] Start of Pipeline
+1	[Pipeline] archiveArtifacts
+1	[Pipeline] checkout
+1	[Pipeline] junit
+1	[Pipeline] node
+3	[Pipeline] sh
+4	[Pipeline] stage
+1	[Pipeline] {
+1	[Pipeline] { (Build)
+1	[Pipeline] { (Declarative: Checkout SCM)
+1	[Pipeline] { (Package)
+1	[Pipeline] { (Test)
+5	[Pipeline] }
+### events
+Unknown	--	None	Started by user CodeRoast CI
+Unknown	--	None	[Pipeline] Start of Pipeline
+Unknown	--	None	[Pipeline] node
+Unknown	--	None	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
+Unknown	--	None	[Pipeline] {
+Unknown	--	None	[Pipeline] stage
+Unknown	--	None	[Pipeline] { (Declarative: Checkout SCM)
+Unknown	--	None	[Pipeline] checkout
+Unknown	--	None	Checking out Revision <*> (refs/remotes/origin/main)
+Unknown	--	None	[Pipeline] }
+Unknown	--	None	[Pipeline] stage
+Unknown	--	None	[Pipeline] { (Build)
+Unknown	--	None	[Pipeline] sh
+Unknown	--	None	+ cmake --build build --config Release -j <*>
+Unknown	--	None	[ <*> Building CXX object src/engine/core.cpp.o
+Unknown	--	None	[100%] Built target proof_engine
+Unknown	--	None	[Pipeline] }
+Unknown	--	None	[Pipeline] stage
+Unknown	--	None	[Pipeline] { (Test)
+Unknown	--	None	[Pipeline] sh
+Unknown	--	None	+ ctest --output-on-failure --timeout <*>
+Unknown	--	None	Test project /home/jenkins/workspace/proof_pipeline_main/build
+Error	F-	None	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
+Error	F-	None	ERROR: expected <*> sealed windows, observed <*>
+Error	F-	None	<*> tests passed, <*> tests failed out of <*>
+Unknown	--	None	[Pipeline] junit
+Unknown	--	None	Recording test results
+Unknown	--	None	[Pipeline] }
+Unknown	--	None	[Pipeline] stage
+Unknown	--	None	[Pipeline] { (Package)
+Unknown	--	None	[Pipeline] sh
+Unknown	--	None	+ tar czf proof-engine-1.4.2.tar.gz build/dist
+Unknown	--	None	[Pipeline] archiveArtifacts
+Unknown	--	None	Archiving artifacts
+Unknown	--	None	[Pipeline] }
+Unknown	--	None	[Pipeline] }
+Unknown	--	None	[Pipeline] End of Pipeline
+Unknown	--	None	Finished: UNSTABLE
+### det_math total=38 sum_c_log2c_qk=26789081815544
+### run_outcome dialect=Jenkins marker=1 token=UNSTABLE resolved=UNSTABLE
 ## file json_ordinals.log
 ### templates (1)
 12	db query completed via shard "primary"
@@ -78,6 +152,7 @@ Info	--	None	db query completed via shard "primary"
 Info	--	None	db query completed via shard "primary"
 Info	--	None	db query completed via shard "primary"
 ### det_math total=12 sum_c_log2c_qk=47300495456208
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file masking_v4.log
 ### templates (4)
 3	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
@@ -95,6 +170,7 @@ Unknown	--	None	order completed total=$<*>
 Unknown	--	None	order completed total=$<*>
 Unknown	--	None	order completed total=$<*>
 ### det_math total=9 sum_c_log2c_qk=14024147119604
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file syslog.log
 ### templates (7)
 1	GET /api/orders <*>
@@ -114,3 +190,4 @@ Unknown	--	None	upstream timeout on shard <*>
 Unknown	F-	None	request failed after <*>
 Unknown	--	None	Out of memory: Killed process <*> (app)
 ### det_math total=8 sum_c_log2c_qk=2199023255552
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
