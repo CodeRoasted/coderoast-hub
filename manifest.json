@@ -23,5 +23,11 @@
   "samples": {
     "version": "v1.7.5",
     "kinds": []
+  },
+  "showcase": {
+    "canon": {
+      "version": "v1.7.6",
+      "path": "showcase/canon/"
+    }
   }
 }
