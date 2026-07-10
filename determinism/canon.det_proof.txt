@@ -1,6 +1,6 @@
 # canon public determinism proof -- v1
-# semantic_identity bd2ab8e5de25f5be0ff11c576f0aa7de
-# semantic_packages github@1.0.0 test_frameworks@1.0.0
+# semantic_identity 990e17d758a2eec145f951b6ceae48f5
+# semantic_packages github@1.1.0 test_frameworks@1.0.0
 ## file ci_build.log
 ### templates (14)
 1	Build failed with <*> error
