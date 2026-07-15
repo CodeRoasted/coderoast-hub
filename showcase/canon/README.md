@@ -9,8 +9,8 @@ It is a **transparency showcase, not a test result**: nothing here passes or fai
 It lets you read, line by line, what Canon does to a log before any of our proprietary
 analysis runs. The end-to-end detection is exercised elsewhere (Eidos + Sift).
 
-- `semantic_identity 990e17d758a2eec145f951b6ceae48f5`
-- `packages: github@1.1.0 test_frameworks@1.0.0`
+- `semantic_identity 0deba976a154e7101c47150f82cd2425`
+- `packages: github@1.2.0 jenkins@1.0.0 test_frameworks@1.0.0`
 
 ## What each `*.canon.txt` shows
 

@@ -1,6 +1,6 @@
-# canon public determinism proof -- v1
-# semantic_identity 990e17d758a2eec145f951b6ceae48f5
-# semantic_packages github@1.1.0 test_frameworks@1.0.0
+# canon public determinism proof -- v2
+# semantic_identity 0deba976a154e7101c47150f82cd2425
+# semantic_packages github@1.2.0 jenkins@1.0.0 test_frameworks@1.0.0
 ## file Android_2k.log
 ### templates (238)
 1	*** register callback for com.android.systemui.statusbar.policy.KeyguardMonitor@712d093
@@ -2243,6 +2243,7 @@ Info	--	None	HBM brightnessIn =38
 Info	--	None	HBM brightnessOut =38
 Debug	--	None	Animating brightness: target=<*> rate=<*>
 ### det_math total=2000 sum_c_log2c_qk=10964472263037219
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Apache_2k.log
 ### templates (6)
 32	Directory index forbidden by rule: /var/www/html/
@@ -4253,6 +4254,7 @@ Unknown	--	None	jk2_init() Found child <*> in scoreboard slot <*>
 Unknown	--	None	workerEnv.init() ok /etc/httpd/conf/workers2.properties
 Error	F-	None	mod_jk child workerEnv in error state <*>
 ### det_math total=2000 sum_c_log2c_qk=20296988670904401
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file BGL_2k.log
 ### templates (984)
 1	<*> L3 EDRAM error(s) (dcr <*> detected and corrected
@@ -7241,6 +7243,7 @@ Info	--	None	instruction cache parity error corrected
 Info	--	None	instruction cache parity error corrected
 Info	--	None	ciod: generated <*> core files for program /g/g24/germann2/SPaSM_mini/MEAM/r13
 ### det_math total=2000 sum_c_log2c_qk=6636498479296104
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file HDFS_2k.log
 ### templates (1277)
 11	<*> <*> <*> INFO dfs.DataBlockScanner: Verification succeeded for blk_-<*>
@@ -10522,6 +10525,7 @@ Info	--	None	<*> <*> <*> INFO dfs.DataNode$DataXceiver: Receiving block blk_-<*>
 Info	--	None	<*> <*> <*> INFO dfs.DataNode$PacketResponder: PacketResponder <*> for block blk_5225719677049010638 terminating
 Info	--	None	<*> <*> <*> INFO dfs.DataNode$DataXceiver: Receiving block blk_4343207286455274569 src: /10.250.9.207:59759 dest: /10.250.9.207:50010
 ### det_math total=2000 sum_c_log2c_qk=5186154101866839
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file HPC_2k.log
 ### templates (222)
 3	<*> full partition status <*> <*> blocked
@@ -12748,6 +12752,7 @@ Unknown	--	None	NIFF: node node-161 has detected an available network connection
 Unknown	--	None	NIFF: node node-73 has detected an available network connection on network <*> via interface alt0
 Unknown	--	None	NIFF: node node-171 has detected an available network connection on network <*> via interface ee0
 ### det_math total=2000 sum_c_log2c_qk=14316133479171774
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Hadoop_2k.log
 ### templates (284)
 2	<*> failures on node MININT-FNANLI5.fareast.corp.microsoft.com
@@ -15036,6 +15041,7 @@ Info	--	None	Retrying connect to server: msra-sa-41:<*>. Already tried <*> time(
 Error	F-	None	ERROR IN CONTACTING RM.
 Warn	-W	None	Address change detected. Old: msra-sa-41/<*>:<*> New: msra-sa-41:<*>
 ### det_math total=2000 sum_c_log2c_qk=13881389015213212
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file HealthApp_2k.log
 ### templates (108)
 1	20171223-22:15:35:12|Step_SPUtils|30002312|setTodayTotalDetailSteps=<*>
@@ -17148,6 +17154,7 @@ Unknown	--	None	<*> action:android.intent.action.TIME_TICK
 Unknown	--	None	<*> action:android.intent.action.TIME_TICK
 Unknown	--	None	<*> action:android.intent.action.TIME_TICK
 ### det_math total=2000 sum_c_log2c_qk=14750625217773508
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Linux_2k.log
 ### templates (160)
 1	*** info [mice.c(1766)]:
@@ -19312,6 +19319,7 @@ Unknown	--	None	isapnp: No Plug & Play device found
 Unknown	--	None	Real Time Clock Driver v1.12
 Unknown	--	None	Linux agpgart interface v0.100 (c) Dave Jones
 ### det_math total=2000 sum_c_log2c_qk=12057284700174166
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Mac_2k.log
 ### templates (644)
 10	############################## _getSysMsgList
@@ -21960,6 +21968,7 @@ Unknown	--	None	AppleCamIn::systemWakeCall - messageType = <*>
 Unknown	--	None	Wake reason: RTC (Alarm)
 Unknown	--	None	AppleCamIn::wakeEventHandlerThread
 ### det_math total=2000 sum_c_log2c_qk=6140597505821842
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file OpenSSH_2k.log
 ### templates (197)
 1	Accepted password for fztu from <*> port <*> ssh2
@@ -24161,6 +24170,7 @@ Unknown	--	None	Received disconnect from <*> <*> Bye Bye [preauth]
 Unknown	--	None	pam_unix(sshd:auth): authentication failure; logname= uid=<*> euid=<*> tty=ssh ruser= rhost=<*> user=root
 Unknown	--	None	Failed password for invalid user user from <*> port <*> ssh2
 ### det_math total=2000 sum_c_log2c_qk=14722140684037806
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file OpenStack_2k.log
 ### templates (81)
 22	nova-api.log.1.2017-05-16_13:<*>:<*> <*> <*> <*> INFO nova.api.openstack.compute.server_external_events [req-<*> <*> <*> - - -] Creating event network-vif-plugged:<*> for instance <*>
@@ -26246,6 +26256,7 @@ Unknown	--	None	nova-api.log.1.2017-05-16_13:<*>:<*> <*> <*> <*> INFO nova.metad
 Unknown	--	None	nova-compute.log.1.2017-05-16_13:<*>:<*> <*> <*> <*> INFO nova.virt.libvirt.driver [-] [instance: <*>] Instance destroyed successfully.
 Unknown	--	None	nova-api.log.1.2017-05-16_13:<*>:<*> <*> <*> <*> INFO nova.osapi_compute.wsgi.server [req-<*> <*> <*> - - -] <*> "GET /v2/<*>/servers/detail HTTP/<*>" status: <*> len: <*> time: <*>
 ### det_math total=2000 sum_c_log2c_qk=13942161177350184
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Proxifier_2k.log
 ### templates (873)
 1	- <*> close, <*> bytes (13.9 KB) sent, <*> bytes (35.8 KB) received, lifetime <*>
@@ -29123,6 +29134,7 @@ Unknown	--	None	- t12.baidu.com:<*> close, <*> bytes sent, <*> bytes received, l
 Unknown	--	None	- mhfm9.us.cdndm5.com:<*> close, <*> bytes sent, <*> bytes received, lifetime <*>
 Unknown	--	None	- t12.baidu.com:<*> close, <*> bytes sent, <*> bytes received, lifetime <*>
 ### det_math total=2000 sum_c_log2c_qk=7299445675550255
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Spark_2k.log
 ### templates (389)
 1	Block broadcast_0 stored as values in memory (estimated size <*> B, free <*> KB)
@@ -31516,6 +31528,7 @@ Info	--	None	Got assigned task <*>
 Info	--	None	Running task <*> in stage <*> (TID <*>
 Info	--	None	Found block rdd_42_32 locally
 ### det_math total=2000 sum_c_log2c_qk=13271910149412768
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Thunderbird_2k.log
 ### templates (304)
 1	#38#-rh1 (Release Date: Fri Dec <*> <*> EST <*>
@@ -33824,6 +33837,7 @@ Unknown	--	None	synchronized to <*> stratum <*>
 Unknown	--	None	synchronized to <*> stratum <*>
 Unknown	--	None	synchronized to <*> stratum <*>
 ### det_math total=2000 sum_c_log2c_qk=11947193917136032
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Windows_2k.log
 ### templates (353)
 1	<*> CSI Store <*> (0x00000000002ec640) initialized
@@ -36181,6 +36195,7 @@ Info	--	None	Read out cached package applicability for package: Package_for_KB30
 Info	--	None	Session: <*> initialized by client WindowsUpdateAgent.
 Info	--	None	Read out cached package applicability for package: Package_for_KB2928120~31bf3856ad364e35~amd64~~6.1.1.2, ApplicableState: <*> CurrentState:<*>
 ### det_math total=2000 sum_c_log2c_qk=13276825669783280
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file Zookeeper_2k.log
 ### templates (598)
 1	******* GOODBYE /10.10.34.11:52264 ********
@@ -38783,3 +38798,4 @@ Info	--	None	Expiring session <*> timeout of <*> exceeded
 Info	--	None	Expiring session <*> timeout of <*> exceeded
 Info	--	None	Processed session termination for sessionid: <*>
 ### det_math total=2000 sum_c_log2c_qk=11684543882194538
+### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
