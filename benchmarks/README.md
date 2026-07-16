@@ -3,7 +3,7 @@
 **Measurements + methodology** — the performance evidence for the CodeRoast engines,
 published as data you can read and reproduce the *shape* of, never as a runnable harness.
 
-> Evidence snapshot for **v1.7.7**. Each engine measures itself fresh on the release runner at
+> Evidence snapshot for **v1.8.0**. Each engine measures itself fresh on the release runner at
 > the cut and publishes here.
 
 ## What lives here
