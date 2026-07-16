@@ -83,7 +83,7 @@ worker. Each agent runs independently and generates log records at its own rate.
 ```yaml
 agents:
   - name: api-gateway
-    type: web_server         # Free-form label; purely descriptive
+    intent: web_server       # What the agent IS — its intent (reaches the log line)
     rate_per_second: 200/s   # Records per second
     error_rate: 0.03         # 3% of records are ERROR level
     log_level: info          # Default severity when not an error

@@ -267,7 +267,7 @@ required and must contain at least one entry.
 ```yaml
 agents:
   - name: api-gateway             # Required
-    type: web_server              # Free-form label (metadata only)
+    intent: web_server            # What the agent IS (see Intent below)
     rate_per_second: 100                     # Records per second
     error_rate: 0.03              # Probability of ERROR-level log (0.0–1.0)
     log_level: info               # Base log level
@@ -285,8 +285,8 @@ agents:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `name` | string | required | Unique identifier; expanded to `name-1`, `-2` when `instances > 1` |
-| `type` | string | `""` | Free-form label (e.g. `web_server`, `database`) |
-| `rate_per_second` | string/number | `1.0` | Records/s as a number or `"200/s"` string |
+| `intent` | string/map | `""` | What the agent IS — its structural axis (see [Intent](#intent)) |
+| `rate_per_second` | string/number | `1.0` / `0` | Records/s as a number or `"200/s"` string. Unbound default depends on the intent: `1.0` for a generic-world agent, `0` (banner-only) for a structural quantum — see [Intent](#intent) |
 | `log_level` | string | `"info"` | Default severity: `trace`, `debug`, `info`, `warn`, `error`, `fatal` |
 | `level_weights` | map | `{}` | Explicit level distribution weights (auto-normalized) |
 | `error_rate` | number | `0.0` | Global ERROR probability (0.0–1.0) |
@@ -310,6 +310,60 @@ agents:
 | `outputs` | sequence | `[]` | Route to specific named outputs (empty = all) |
 
 ---
+
+### Intent
+
+An agent's `intent:` declares **what the agent is** — its structure. It is the agent's one
+structural axis. (It replaces the old agent-scope `type:` key, which is now rejected with an
+error. `type:` remains valid for output sinks, format nodes and rate models.)
+
+Intent declares **structure only**. The *dynamics* — `rate_per_second`, `error_rate`,
+`latency_ms` — are bound separately by the scenario. A structural declaration never carries
+behaviour.
+
+**Scalar form** — a generic-world intent. This is what `type: web_server` used to say:
+
+```yaml
+agents:
+  - name: api-gateway
+    intent: web_server        # the agent's identity; reaches the log line
+    rate_per_second: 200/s
+```
+
+The name is not decorative — it is emitted on every record (the `type` field in `json`
+output, `[agent/type]` in `text`). Omit `intent:` entirely and you get the unnamed generic
+world: an ordinary flux agent.
+
+**Mapping form** — a declared quantum in a dialect world (e.g. GitHub Actions). `kind:` is
+required and must be `job` (container) or `step` (leaf):
+
+```yaml
+agents:
+  - name: build-job
+    intent: { kind: job, payload: "build" }        # container: emits its banner only
+  - name: lint-step
+    intent: { kind: step, payload: "yarn lint" }   # leaf: banner, then its content flux
+    rate_per_second: 20/s
+    error_rate: 0.02
+```
+
+Agents in declaration order form the document tree. A `job` is a container — it emits its
+banner and nothing else. A `step` opens with its banner, then emits content under it.
+
+**The unbound-rate default follows the intent's kind**, which is why intent is parsed first:
+
+| Intent | Unbound `rate_per_second` | Meaning |
+|--------|---------------------------|---------|
+| scalar / absent (generic world) | `1.0` | An ordinary flux agent |
+| `kind: job` or `kind: step` | `0` | Banner-only — a structural quantum has no flux of its own |
+
+So a banner-only step needs no `rate_per_second: 0` boilerplate — declaring the quantum is
+enough. Binding a rate explicitly always wins, and `rate_per_second: 0` stays a legitimate
+explicit binding on a generic agent (that is how flow-driven agents are silenced).
+
+Rejected, deliberately, with an error rather than a silent fallback: agent-scope `type:`; the
+mapping form without `kind:`; `kind: none` (a quantum with no quantum — use the scalar form);
+and any unrecognized `kind:` spelling.
 
 ## Fields & Generators
 
@@ -857,7 +911,7 @@ outputs:
   - { name: spans, type: console, format: otel_span }
 
 agents:
-  - { name: svc, type: service, rate_per_second: 0, log_level: info }   # flow-driven, silent
+  - { name: svc, intent: service, rate_per_second: 0, log_level: info }   # flow-driven, silent
 
 flows:
   - name: pipeline

@@ -10,7 +10,7 @@ Copy an agent definition from this folder and customize it for your scenario:
 ```yaml
 # From agents/nginx_v1.yaml
 - name: my-nginx
-  type: web_server
+  intent: web_server
   rate: 100/s
   error_rate: 0.02
   latency_ms:
@@ -35,7 +35,7 @@ templates:
 
 agents:
   - name: my-nginx
-    type: web_server
+    intent: web_server
     use: nginx_template
     fields: [...]
 ```
