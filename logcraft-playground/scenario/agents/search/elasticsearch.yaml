@@ -1,7 +1,7 @@
 # Elasticsearch node agent — models an ES cluster node.
 agent:
   name: elasticsearch
-  type: search_engine
+  intent: search_engine
   rate_per_second: 200/s
   error_rate: 0.008
   contention:

@@ -1,7 +1,7 @@
 # Minimal database agent — basic query logging.
 agent:
   name: simple-db
-  type: database
+  intent: database
   rate_per_second: 100/s
   error_rate: 0.005
   message_template: "{query_type} {table} ({row_count} rows)"

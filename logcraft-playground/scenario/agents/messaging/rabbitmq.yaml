@@ -1,7 +1,7 @@
 # RabbitMQ agent — models AMQP message broker.
 agent:
   name: rabbitmq
-  type: message_queue
+  intent: message_queue
   rate_per_second: 300/s
   error_rate: 0.003
   latency_ms:

@@ -20,7 +20,7 @@ scenario:
 
   agents:
     - name: checkout-api
-      type: web_server
+      intent: web_server
       rate_per_second: 30.0
       message_template: "{method} {path} -> {status_code}"
       fields:
@@ -49,7 +49,7 @@ scenario:
           rate_per_second: 35/s
 
     - name: inventory-service
-      type: api_service
+      intent: api_service
       rate_per_second: 15.0
       message_template: "lookup sku={sku} qty={qty} -> {result}"
       fields:

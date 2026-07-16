@@ -17,7 +17,7 @@ scenario:
       shm_backpressure_policy: block
   agents:
     - name: api-svc
-      type: api_service
+      intent: api_service
       rate_per_second: 50/s
       message_template: "request bucket {bucket} processed"
       fields:
@@ -37,6 +37,6 @@ scenario:
               target_weights: [0.0, 1.0]
               window_seconds: 25
     - name: hb
-      type: service
+      intent: service
       rate_per_second: 50/s
       message_template: "heartbeat ok"

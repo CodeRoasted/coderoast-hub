@@ -17,7 +17,7 @@ scenario:
 
   agents:
     - name: fast-api
-      type: web_server
+      intent: web_server
       rate_per_second: 10000/s
       error_rate: 0.01
       message_template: "{method} {path} {status_code} {latency_ms}ms"

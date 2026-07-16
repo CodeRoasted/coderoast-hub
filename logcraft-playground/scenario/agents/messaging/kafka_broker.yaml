@@ -1,7 +1,7 @@
 # Kafka broker agent — models message broker with topic/partition logging.
 agent:
   name: kafka-broker
-  type: message_queue
+  intent: message_queue
   rate_per_second: 500/s
   error_rate: 0.002
   contention:

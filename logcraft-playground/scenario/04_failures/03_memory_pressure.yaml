@@ -9,7 +9,7 @@ scenario:
 
   agents:
     - name: app-server
-      type: worker
+      intent: worker
       rate_per_second: 60/s
       error_rate: 0.005
       latency_ms:
@@ -50,7 +50,7 @@ scenario:
           value: "0.20"
 
     - name: health-monitor
-      type: monitor
+      intent: monitor
       rate_per_second: 1/s    # one health probe per second
       message_template: "health check: {status}"
       fields:

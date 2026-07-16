@@ -22,7 +22,7 @@ scenario:
 
   agents:
     - name: api-gateway
-      type: web_server
+      intent: web_server
       rate_per_second: 5/s
       error_rate: 0.04
       message_template: "{method} {path} -> {status_code}"

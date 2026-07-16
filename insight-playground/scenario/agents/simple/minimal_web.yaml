@@ -2,7 +2,7 @@
 # Use this as a starting point for new agents.
 agent:
   name: simple-web
-  type: web_server
+  intent: web_server
   rate_per_second: 10/s
   message_template: "{method} {path} -> {status_code}"
   fields:

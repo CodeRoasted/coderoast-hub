@@ -1,6 +1,6 @@
 agent:
   name: postgres
-  type: database
+  intent: database
   rate_per_second: 300
   error_rate: 0.005
   message_template: "{query_type} {table} ({row_count} rows, {query_time_ms}ms)"

@@ -9,7 +9,7 @@ scenario:
 
   agents:
     - name: api-gateway
-      type: web_server
+      intent: web_server
       rate_per_second: 200/s
       error_rate: 0.01
       latency_ms:
@@ -43,7 +43,7 @@ scenario:
           weights: [68, 15, 7, 3, 5, 2]
 
     - name: order-service
-      type: api_service
+      intent: api_service
       rate_per_second: 80/s
       error_rate: 0.015
       latency_ms:
@@ -67,7 +67,7 @@ scenario:
           weights: [90, 5, 3, 2]
 
     - name: payment-processor
-      type: external_api
+      intent: external_api
       rate_per_second: 30/s
       error_rate: 0.02
       # Payment gateways are slow with long tails — p99 of 3.5s is realistic

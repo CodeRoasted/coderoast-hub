@@ -27,7 +27,7 @@ scenario:
 
   agents:
     - name: frontend
-      type: web_server
+      intent: web_server
       rate_per_second: 300/s
       error_rate: 0.005
       latency_ms: [5, 30]
@@ -46,7 +46,7 @@ scenario:
           weights: [80, 10, 7, 3]
 
     - name: api-gateway
-      type: api_service
+      intent: api_service
       rate_per_second: 290/s
       error_rate: 0.008
       latency_ms:
@@ -64,7 +64,7 @@ scenario:
           values: [/api/users, /api/orders, /api/products]
 
     - name: user-service
-      type: api_service
+      intent: api_service
       rate_per_second: 120/s
       error_rate: 0.005
       latency_ms:
@@ -84,7 +84,7 @@ scenario:
           weights: [60, 25, 15]
 
     - name: order-service
-      type: api_service
+      intent: api_service
       rate_per_second: 170/s
       error_rate: 0.006
       latency_ms:
@@ -103,7 +103,7 @@ scenario:
           weights: [25, 55, 15, 5]
 
     - name: postgres
-      type: database
+      intent: database
       rate_per_second: 350/s
       error_rate: 0.002
       latency_ms:
@@ -127,7 +127,7 @@ scenario:
           integer: true
 
     - name: redis-cache
-      type: cache
+      intent: cache
       rate_per_second: 500/s
       error_rate: 0.001
       latency_ms: [0, 3]

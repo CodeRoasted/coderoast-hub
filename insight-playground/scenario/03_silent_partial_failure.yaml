@@ -26,7 +26,7 @@ scenario:
 
   agents:
     - name: worker-01
-      type: background_worker
+      intent: background_worker
       rate_per_second: 15/s
       error_rate: 0.005
       fields:
@@ -49,7 +49,7 @@ scenario:
       message_template: "worker=01 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
 
     - name: worker-02
-      type: background_worker
+      intent: background_worker
       rate_per_second: 15/s
       error_rate: 0.005
       fields:
@@ -72,7 +72,7 @@ scenario:
       message_template: "worker=02 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
 
     - name: worker-03
-      type: background_worker
+      intent: background_worker
       rate_per_second: 15/s
       error_rate: 0.005
       fields:
@@ -95,7 +95,7 @@ scenario:
       message_template: "worker=03 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
 
     - name: worker-04
-      type: background_worker
+      intent: background_worker
       error_rate: 0.005
       fields:
         - name: job_type
@@ -124,7 +124,7 @@ scenario:
           rate_per_second: 0.001/s
 
     - name: queue-monitor
-      type: background_worker
+      intent: background_worker
       rate_per_second: 1/s
       error_rate: 0.0
 
@@ -152,7 +152,7 @@ scenario:
       message_template: "queue depth={queue_depth} workers={workers_active} throughput={throughput_eps}/s"
 
     - name: queue-manager
-      type: background_worker
+      intent: background_worker
       rate_per_second: 0.5/s
       fields:
         - name: event

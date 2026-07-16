@@ -19,7 +19,7 @@ scenario:
 
   agents:
     - name: api-svc
-      type: api_service
+      intent: api_service
       rate_per_second: 50/s
       message_template: "request processed bucket {bucket} done"
       fields:

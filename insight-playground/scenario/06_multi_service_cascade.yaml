@@ -20,7 +20,7 @@ scenario:
 
   agents:
     - name: web-frontend
-      type: web_server
+      intent: web_server
       rate_per_second: 25.0
       message_template: "{method} {path} -> {status_code}"
       fields:
@@ -38,7 +38,7 @@ scenario:
           weights: [85, 8, 5, 2]
 
     - name: order-api
-      type: api_service
+      intent: api_service
       rate_per_second: 30.0
       message_template: "{operation} order={order_id} -> {status}"
       fields:
@@ -55,7 +55,7 @@ scenario:
           weights: [90, 5, 3, 2]
 
     - name: postgres-db
-      type: database
+      intent: database
       rate_per_second: 18.0
       message_template: "{query_type} {table} duration={duration_ms}ms -> {result}"
       fields:

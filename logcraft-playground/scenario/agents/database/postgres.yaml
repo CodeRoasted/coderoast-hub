@@ -1,7 +1,7 @@
 # PostgreSQL database agent with contention and slow queries.
 agent:
   name: postgres
-  type: database
+  intent: database
   rate_per_second: 300/s
   error_rate: 0.005
   contention:

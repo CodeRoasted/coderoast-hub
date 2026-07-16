@@ -9,7 +9,7 @@ scenario:
 
   agents:
     - name: app-server
-      type: application
+      intent: application
       rate_per_second: 10/s
       message_template: "Request to {endpoint} returned {status_code} in {latency_ms}ms"
       fields:

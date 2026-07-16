@@ -1,7 +1,7 @@
 # Minimal API service agent — lightweight microservice.
 agent:
   name: simple-api
-  type: api_service
+  intent: api_service
   rate_per_second: 50/s
   error_rate: 0.01
   message_template: "{action} {resource}: {result}"

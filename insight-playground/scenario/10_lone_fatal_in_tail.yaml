@@ -21,7 +21,7 @@ scenario:
 
   agents:
     - name: conan-resolver
-      type: background_worker
+      intent: background_worker
       message_template: "{lib} resolved from cache"
       rate_per_second: 15/s
       fields:
@@ -32,7 +32,7 @@ scenario:
                    brotli, cares, libuv, tinyxml, yamlcpp, jsoncpp, nlohmann, catch2]
 
     - name: compiler
-      type: background_worker
+      intent: background_worker
       message_template: "{unit}.cpp object built ok"
       rate_per_second: 15/s
       fields:
@@ -44,7 +44,7 @@ scenario:
                    packer, differ, composer, validator, serializer]
 
     - name: cmake-linker
-      type: background_worker
+      intent: background_worker
       message_template: "lib{target} link complete"
       rate_per_second: 10/s
       fields:
@@ -54,7 +54,7 @@ scenario:
                    kappa, lambda, mu, nu, xi, omicron]
 
     - name: pytest
-      type: background_worker
+      intent: background_worker
       message_template: "{test} PASSED"
       rate_per_second: 10/s
       fields:
@@ -69,7 +69,7 @@ scenario:
                    test_manifest_verify, test_manifest_sign]
 
     - name: build-terminator
-      type: background_worker
+      intent: background_worker
       message_template: "Process completed with exit code 2."
       rate_per_second: 0.02/s
       error_rate: 1.0

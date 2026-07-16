@@ -1,7 +1,7 @@
 # MySQL database agent.
 agent:
   name: mysql
-  type: database
+  intent: database
   rate_per_second: 250/s
   error_rate: 0.004
   contention:

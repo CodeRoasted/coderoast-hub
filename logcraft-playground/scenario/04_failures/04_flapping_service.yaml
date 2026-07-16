@@ -9,7 +9,7 @@ scenario:
 
   agents:
     - name: payment-api
-      type: api_service
+      intent: api_service
       rate_per_second: 40/s
       error_rate: 0.01
       latency_ms:
@@ -44,7 +44,7 @@ scenario:
           weights: [90, 5, 3, 2]
 
     - name: fraud-detector
-      type: ml_service
+      intent: ml_service
       rate_per_second: 40/s    # called for every payment attempt
       error_rate: 0.005
       latency_ms:

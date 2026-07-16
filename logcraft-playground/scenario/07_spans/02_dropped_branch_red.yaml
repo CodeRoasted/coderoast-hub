@@ -12,7 +12,7 @@ scenario:
     - { name: spans, type: console, format: otel_span }
 
   agents:
-    - { name: svc, type: service, rate_per_second: 0, log_level: info }
+    - { name: svc, intent: service, rate_per_second: 0, log_level: info }
 
   flows:
     - name: heartbeat            # control — identical in green and red

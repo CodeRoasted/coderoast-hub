@@ -9,7 +9,7 @@ scenario:
 
   agents:
     - name: nginx
-      type: web_server
+      intent: web_server
       rate_per_second: 20/s
       message_template: "{method} {path} -> {status_code}"
       fields:

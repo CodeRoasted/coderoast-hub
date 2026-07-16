@@ -1,7 +1,7 @@
 # Kubernetes / container orchestrator agent — models kubelet/scheduler logs.
 agent:
   name: k8s-controller
-  type: orchestrator
+  intent: orchestrator
   rate_per_second: 30/s
   error_rate: 0.01
   message_template: "{event_type} {resource_kind}/{resource_name} in {namespace}: {reason}"

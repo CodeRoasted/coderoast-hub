@@ -22,7 +22,7 @@ scenario:
 
   agents:
     - name: api-server
-      type: web_server
+      intent: web_server
       rate_per_second: 100/s
       error_rate: 0.01
       latency_ms:
@@ -59,7 +59,7 @@ scenario:
           weights: [82, 8, 7, 3]
 
     - name: postgres
-      type: database
+      intent: database
       rate_per_second: 80/s
       error_rate: 0.003
       latency_ms:

@@ -1,7 +1,7 @@
 # CDN / edge proxy agent — models CloudFront/Cloudflare style edge.
 agent:
   name: cdn-edge
-  type: proxy
+  intent: proxy
   rate_per_second: 2000/s
   error_rate: 0.002
   latency_ms:

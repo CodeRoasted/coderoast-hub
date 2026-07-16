@@ -21,13 +21,13 @@ scenario:
 
   agents:
     - name: gateway
-      type: web_server
+      intent: web_server
       rate_per_second: 0
     - name: payments
-      type: service
+      intent: service
       rate_per_second: 0
     - name: notifier
-      type: service
+      intent: service
       rate_per_second: 0
 
 

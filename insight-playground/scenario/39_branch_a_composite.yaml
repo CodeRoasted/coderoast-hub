@@ -19,10 +19,10 @@ scenario:
 
   agents:
     - name: svc
-      type: service
+      intent: service
       rate_per_second: 0/s
     - name: hb
-      type: service
+      intent: service
       rate_per_second: 50/s
       message_template: "heartbeat ok"
 

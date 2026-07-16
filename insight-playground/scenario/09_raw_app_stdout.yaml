@@ -21,7 +21,7 @@ scenario:
 
   agents:
     - name: checkout-service
-      type: api_service
+      intent: api_service
       message_template: "checkout completed order={order_id} amount={amount} in {dur}ms"
       fields:
         - name: order_id
@@ -44,7 +44,7 @@ scenario:
           rate_per_second: 10/s
 
     - name: db-pool
-      type: api_service
+      intent: api_service
       message_template: "connection refused to db {host} after {retries} retries"
       fields:
         - name: host

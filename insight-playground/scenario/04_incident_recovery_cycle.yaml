@@ -25,7 +25,7 @@ scenario:
 
   agents:
     - name: payment-api
-      type: api_service
+      intent: api_service
       rate_per_second: 120/s
       error_rate: 0.005
       latency_ms: [5, 40]
@@ -74,7 +74,7 @@ scenario:
           latency_ms: [6, 55]
 
     - name: postgres-primary
-      type: database
+      intent: database
       rate_per_second: 200/s
       error_rate: 0.002
       latency_ms: [2, 15]

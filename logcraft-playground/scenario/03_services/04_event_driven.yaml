@@ -15,7 +15,7 @@ scenario:
 
   agents:
     - name: event-producer
-      type: api_service
+      intent: api_service
       rate_per_second: 80/s
       message_template: "produce event_type={event_type} topic={topic} bytes={payload_bytes}"
       fields:
@@ -39,7 +39,7 @@ scenario:
           integer: true
 
     - name: kafka-broker
-      type: message_broker
+      intent: message_broker
       rate_per_second: 200/s    # broker sees all produces + replication + fetches
       error_rate: 0.001
       latency_ms:
@@ -70,7 +70,7 @@ scenario:
           start: 0
 
     - name: event-consumer
-      type: worker
+      intent: worker
       rate_per_second: 75/s    # slightly behind the producer: consumer lag builds up
       error_rate: 0.005
       latency_ms:

@@ -1,7 +1,7 @@
 # Redis cache agent — models an in-memory cache/store.
 agent:
   name: redis-cache
-  type: cache
+  intent: cache
   rate_per_second: 1000/s
   error_rate: 0.001
   latency_ms:

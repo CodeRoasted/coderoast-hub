@@ -9,7 +9,7 @@ scenario:
 
   agents:
     - name: web-api
-      type: web_server
+      intent: web_server
       rate_per_second: 500/s    # peak rate — business_hours multiplier scales this down off-peak
       error_rate: 0.01
       latency_ms:
@@ -38,7 +38,7 @@ scenario:
           weights: [80, 10, 8, 2]
 
     - name: batch-processor
-      type: worker
+      intent: worker
       rate_per_second: 20/s
       error_rate: 0.005
       # ETL and archive jobs are busy at night, quiet during business hours

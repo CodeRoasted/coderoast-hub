@@ -1,6 +1,6 @@
 agent:
   name: auth
-  type: microservice
+  intent: microservice
   rate_per_second: 150
   error_rate: 0.02
   message_template: "Auth {action} for {user_id}: {result}"

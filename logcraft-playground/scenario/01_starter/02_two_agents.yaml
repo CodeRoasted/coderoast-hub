@@ -12,7 +12,7 @@ scenario:
 
   agents:
     - name: web-server
-      type: web_server
+      intent: web_server
       rate_per_second: 3/s
       error_rate: 0.03
       message_template: "{method} {path} -> {status_code}"
@@ -30,7 +30,7 @@ scenario:
           weights: [80, 10, 7, 3]
 
     - name: database
-      type: database
+      intent: database
       rate_per_second: 5/s
       error_rate: 0.01
       message_template: "{query} on {table} -> {row_count} rows"

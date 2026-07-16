@@ -1,7 +1,7 @@
 # Payment gateway agent — external API with availability modeling.
 agent:
   name: payment-gateway
-  type: external_api
+  intent: external_api
   rate_per_second: 50/s
   error_rate: 0.008
   availability:

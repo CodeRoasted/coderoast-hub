@@ -25,7 +25,7 @@ scenario:
 
   agents:
     - name: payment-gateway
-      type: api_service
+      intent: api_service
       rate_per_second: 80/s
       error_rate: 0.008
 
@@ -67,7 +67,7 @@ scenario:
       message_template: "{method} {path} pay={payment_id} -> {status_code} cb={cb_state}"
 
     - name: payment-processor
-      type: api_service
+      intent: api_service
       rate_per_second: 60/s
       error_rate: 0.005
 
@@ -96,7 +96,7 @@ scenario:
       message_template: "{operation} via {provider}: {result}"
 
     - name: api-gateway
-      type: api_service
+      intent: api_service
       rate_per_second: 120/s
       error_rate: 0.003
 
@@ -117,7 +117,7 @@ scenario:
       message_template: "POST {path} user={user_id} -> {status_code}"
 
     - name: circuit-breaker-audit
-      type: background_worker
+      intent: background_worker
       rate_per_second: 1/s
 
       fields:

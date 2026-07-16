@@ -1,6 +1,6 @@
 agent:
   name: nginx
-  type: web_server
+  intent: web_server
   rate_per_second: 200
   error_rate: 0.01
   message_template: "{method} {path} -> {status_code} ({response_time_ms}ms)"

@@ -19,7 +19,7 @@ scenario:
 
   agents:
     - name: api-svc
-      type: api_service
+      intent: api_service
       rate_per_second: 30/s
       message_template: "request processed bucket {bucket} done"
       fields:
@@ -40,7 +40,7 @@ scenario:
               window_seconds: 25
 
     - name: api-burst
-      type: api_service
+      intent: api_service
       rate_per_second: 900/s
       start_delay_seconds: 1700
       message_template: "request processed bucket {bucket} done"

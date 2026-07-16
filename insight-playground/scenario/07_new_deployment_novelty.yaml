@@ -20,7 +20,7 @@ scenario:
 
   agents:
     - name: payment-service-v1
-      type: api_service
+      intent: api_service
       message_template: "payment {status} amount={amount} ref={ref}"
       fields:
         - name: status
@@ -47,7 +47,7 @@ scenario:
           rate_per_second: 0.01/s
 
     - name: payment-service-v2
-      type: api_service
+      intent: api_service
       message_template: "txn.processed txn_id={txn_id} amount={amount} currency={currency} result={result}"
       fields:
         - name: txn_id
@@ -78,7 +78,7 @@ scenario:
           rate_per_second: 70/s
 
     - name: audit-logger
-      type: background_worker
+      intent: background_worker
       rate_per_second: 5.0
       message_template: "audit action={action} user={user_id} ok={ok}"
       fields:

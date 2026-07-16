@@ -15,7 +15,7 @@ scenario:
 
   agents:
     - name: ingestor
-      type: data_pipeline
+      intent: data_pipeline
       rate_per_second: 500/s
       error_rate: 0.002
       # Ingestor has slightly higher duplication than the global default
@@ -41,7 +41,7 @@ scenario:
           value: "ingest"
 
     - name: transformer
-      type: data_pipeline
+      intent: data_pipeline
       rate_per_second: 490/s    # slightly slower than ingestor — some records are dropped
       error_rate: 0.01
       latency_ms:
@@ -67,7 +67,7 @@ scenario:
           value: "transform"
 
     - name: loader
-      type: data_pipeline
+      intent: data_pipeline
       rate_per_second: 480/s
       error_rate: 0.003
       latency_ms:

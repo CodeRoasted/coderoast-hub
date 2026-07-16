@@ -20,17 +20,17 @@ scenario:
 
   agents:
     - name: alpha-svc
-      type: service
+      intent: service
       rate_per_second: 40.0
       message_template: "alpha request handled successfully"
 
     - name: beta-svc
-      type: service
+      intent: service
       rate_per_second: 40.0
       message_template: "beta worker task done"
 
     - name: cache-warmer
-      type: service
+      intent: service
       rate_per_second: 150.0
       start_delay_seconds: 28s
       message_template: "cache warmer populated entry"
