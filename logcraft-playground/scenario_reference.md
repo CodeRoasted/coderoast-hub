@@ -52,7 +52,7 @@ adding `seed:` selects **deterministic mode** — bit-identical logs on every ru
 - [Users & Personas](#users--personas)
 - [Entity Pool](#entity-pool)
 - [Field Variations](#field-variations)
-- [Log Format](#log-format)
+- [Output Field Projection](#output-field-projection)
 - [System Archetypes](#system-archetypes)
   - [Contention](#contention)
   - [Slow Queries](#slow-queries)
@@ -95,7 +95,6 @@ scenario:
 | `personas` | sequence | absent | User behavior profiles |
 | `entity_pool` | sequence | absent | Shared entity IDs for cross-agent correlation |
 | `field_variations` | sequence | absent | Numeric field jitter config |
-| `log_format` | map | absent | Output field selection |
 | `templates` | map | absent | Named reusable agent presets |
 | `flows` | sequence | absent | Causal flows — deterministic instanced traces (see [Causal Flows](#causal-flows)) |
 | `rules` | sequence | absent | Propagation rules |
@@ -289,6 +288,7 @@ All options are parsed per-sink and ignored when not applicable to the sink type
 | `type` | string | `"console"` | all | Sink type (see table above) |
 | `format` | string | `"json"` | all | Single format (see table above) |
 | `formats` | sequence | `[]` | all | Multi-format; overrides `format` when non-empty |
+| `fields` | sequence | `[]` (= all fields) | all | Field allowlist/projection — when set, only these fields are emitted, in this order (the *which-fields* half, orthogonal to `format`) |
 | `intent_channel` | string | `""` (= writer default, `annotated`) | dialect formats | Which materialization to render (see [Intent channel](#intent-channel)). Only meaningful for a format that has more than one — today `github_actions` |
 | `path` | string | `""` | `file`, `recording`, `prometheus` | Output file path or metric prefix |
 | `max_size_bytes` | integer | `0` | `file` | Rotate when file exceeds this size (0 = no rotation) |
@@ -1403,7 +1403,7 @@ entity_pool:
 
 ## Field Variations
 
-Add random jitter to numeric fields globally or under `log_format.field_variation`.
+Add random jitter to numeric fields via the top-level `field_variations`.
 
 ```yaml
 field_variations:
@@ -1420,29 +1420,30 @@ field_variations:
 
 ---
 
-## Log Format
+## Output Field Projection
 
-Define the output field ordering and selection. Also supports per-format field
-variation under `field_variation`.
+Field selection and ordering is a **per-output** concern: each output declares an
+optional `fields:` allowlist. Empty (the default) emits every field; when set, the
+formatter projects each record onto exactly these fields, in this order. It is the
+*which-fields* half of an output, orthogonal to `format` (the *how-to-serialize*
+half) — so the InSight bus and a console can project differently.
 
 ```yaml
-log_format:
-  type: json
-  fields:
-    - timestamp
-    - level
-    - service
-    - trace_id
-    - span_id
-    - message
-    - latency_ms
+outputs:
+  - name: insight
+    type: insight_shm
+    channel: calibration
+    format: json
+    fields:                # projection — only these fields reach this sink, in order
+      - timestamp
+      - level
+      - service
+      - trace_id
+      - message
+      - latency_ms
 ```
 
-| Key | Type | Description |
-|-----|------|-------------|
-| `type` | string | Format type (`json`) |
-| `fields` | sequence | Ordered list of fields to include |
-| `field_variation` | sequence | Per-format jitter (same structure as `field_variations`) |
+See [Output Options](#output-options) for the full per-output key table.
 
 ---
 
