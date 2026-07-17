@@ -7,10 +7,6 @@ deterministic_scenario:
   name: insight-late-emerging-benign
   seed: 1616
 
-  clock:
-    mode: virtual
-  duration_seconds: 30s
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -18,19 +14,21 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  agents:
-    - name: alpha-svc
-      intent: service
-      rate_per_second: 40.0
-      message_template: "alpha request handled successfully"
+  time_axis:
+    duration_seconds: 30s
+    agents:
+      - name: alpha-svc
+        intent: service
+        rate_per_second: 40.0
+        message_template: "alpha request handled successfully"
 
-    - name: beta-svc
-      intent: service
-      rate_per_second: 40.0
-      message_template: "beta worker task done"
+      - name: beta-svc
+        intent: service
+        rate_per_second: 40.0
+        message_template: "beta worker task done"
 
-    - name: cache-warmer
-      intent: service
-      rate_per_second: 150.0
-      start_delay_seconds: 28s
-      message_template: "cache warmer populated entry"
+      - name: cache-warmer
+        intent: service
+        rate_per_second: 150.0
+        start_delay_seconds: 28s
+        message_template: "cache warmer populated entry"

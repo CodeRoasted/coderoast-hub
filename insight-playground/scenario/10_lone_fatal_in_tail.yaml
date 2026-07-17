@@ -7,10 +7,6 @@ deterministic_scenario:
   name: insight-lone-fatal-in-tail
   seed: 1010
 
-  clock:
-    mode: virtual
-  duration_seconds: 4m
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -19,57 +15,47 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  agents:
-    - name: conan-resolver
-      intent: background_worker
-      message_template: "{lib} resolved from cache"
-      rate_per_second: 15/s
-      fields:
-        - name: lib
-          generator: choice
-          values: [zlib, openssl, fmt, spdlog, boost, gtest, benchmark, curl, re2,
-                   simdjson, abseil, protobuf, grpc, sqlite, lz4, zstd, snappy,
-                   brotli, cares, libuv, tinyxml, yamlcpp, jsoncpp, nlohmann, catch2]
+  time_axis:
+    duration_seconds: 4m
+    agents:
+      - name: conan-resolver
+        intent: background_worker
+        message_template: "{lib} resolved from cache"
+        rate_per_second: 15/s
+        fields:
+          - name: lib
+            generator: choice
+            values: [zlib, openssl, fmt, spdlog, boost, gtest, benchmark, curl, re2, simdjson, abseil, protobuf, grpc, sqlite, lz4, zstd, snappy, brotli, cares, libuv, tinyxml, yamlcpp, jsoncpp, nlohmann, catch2]
 
-    - name: compiler
-      intent: background_worker
-      message_template: "{unit}.cpp object built ok"
-      rate_per_second: 15/s
-      fields:
-        - name: unit
-          generator: choice
-          values: [tokenizer, drain, parser, lexer, emitter, reducer, planner,
-                   scheduler, allocator, arena, ringbuffer, consumer, producer,
-                   shard, window, sealer, reconciler, detector, pyramid, explainer,
-                   packer, differ, composer, validator, serializer]
+      - name: compiler
+        intent: background_worker
+        message_template: "{unit}.cpp object built ok"
+        rate_per_second: 15/s
+        fields:
+          - name: unit
+            generator: choice
+            values: [tokenizer, drain, parser, lexer, emitter, reducer, planner, scheduler, allocator, arena, ringbuffer, consumer, producer, shard, window, sealer, reconciler, detector, pyramid, explainer, packer, differ, composer, validator, serializer]
 
-    - name: cmake-linker
-      intent: background_worker
-      message_template: "lib{target} link complete"
-      rate_per_second: 10/s
-      fields:
-        - name: target
-          generator: choice
-          values: [alpha, beta, gamma, delta, epsilon, zeta, eta, theta, iota,
-                   kappa, lambda, mu, nu, xi, omicron]
+      - name: cmake-linker
+        intent: background_worker
+        message_template: "lib{target} link complete"
+        rate_per_second: 10/s
+        fields:
+          - name: target
+            generator: choice
+            values: [alpha, beta, gamma, delta, epsilon, zeta, eta, theta, iota, kappa, lambda, mu, nu, xi, omicron]
 
-    - name: pytest
-      intent: background_worker
-      message_template: "{test} PASSED"
-      rate_per_second: 10/s
-      fields:
-        - name: test
-          generator: choice
-          values: [test_auth_login, test_auth_logout, test_token_refresh,
-                   test_session_create, test_session_expire, test_quota_enforce,
-                   test_quota_reset, test_ledger_append, test_ledger_compact,
-                   test_socket_bind, test_socket_rebind, test_keyring_rotate,
-                   test_cache_flush, test_cache_warm, test_index_build,
-                   test_index_merge, test_replica_sync, test_replica_promote,
-                   test_manifest_verify, test_manifest_sign]
+      - name: pytest
+        intent: background_worker
+        message_template: "{test} PASSED"
+        rate_per_second: 10/s
+        fields:
+          - name: test
+            generator: choice
+            values: [test_auth_login, test_auth_logout, test_token_refresh, test_session_create, test_session_expire, test_quota_enforce, test_quota_reset, test_ledger_append, test_ledger_compact, test_socket_bind, test_socket_rebind, test_keyring_rotate, test_cache_flush, test_cache_warm, test_index_build, test_index_merge, test_replica_sync, test_replica_promote, test_manifest_verify, test_manifest_sign]
 
-    - name: build-terminator
-      intent: background_worker
-      message_template: "Process completed with exit code 2."
-      rate_per_second: 0.02/s
-      error_rate: 1.0
+      - name: build-terminator
+        intent: background_worker
+        message_template: "Process completed with exit code 2."
+        rate_per_second: 0.02/s
+        error_rate: 1.0

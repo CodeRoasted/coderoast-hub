@@ -70,42 +70,73 @@ adding `seed:` selects **deterministic mode** — bit-identical logs on every ru
 
 ## Scenario Root Keys
 
-Every file starts with a `scenario:` block. Unrecognized top-level keys produce a
-warning but do not fail parsing.
+A file starts with **one** root key: `scenario:` (the REAL, wall-clock world) or
+`deterministic_scenario:` (the DETERMINISTIC, virtual-clock world — a `seed:` is required). See
+[Engine Modes](#engine-modes). Unrecognized keys warn but do not fail parsing.
+
+The worlds differ in **shape**: the real world is **flat**; the deterministic world nests the **clock
++ the world it scopes** under a `time_axis:` block, keeping scenario **config** at the root.
 
 ```yaml
+# REAL — flat, no axis
 scenario:
   name: "my-scenario"
   duration_seconds: 5m
   agents:
-    - name: api-server
-      rate_per_second: 100
+    - { name: api-server, rate_per_second: 100 }
+
+# DETERMINISTIC — the world nests under time_axis
+deterministic_scenario:
+  name: "my-scenario"
+  seed: 42                    # config lives at the root
+  outputs: [ ... ]            # config
+  time_axis:                  # the clock + the world it scopes
+    duration_seconds: 5m
+    tick_duration_ns: 1s      # the epoch grid (optional; default 1s)
+    agents:
+      - { name: api-server, rate_per_second: 100 }
+    incidents: [ ... ]
+    flows: [ ... ]
 ```
+
+**Config keys — at the root in both worlds:**
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `name` | string | `"unnamed"` | Human-readable scenario name |
-| `duration_seconds` | string/number | `0` | Auto-stop duration (`0` = run forever). Accepts a duration string (`"5m"`) or plain seconds. See [Duration Format](#duration-format) |
-| `seed` | uint64 | absent | Sets deterministic mode — bit-identical replay. See [Engine Modes](#engine-modes) |
-| `agents` | sequence | required | One or more agent definitions |
+| `seed` | uint64 | 42 (det) | The RNG root. **Required** under `deterministic_scenario:`; **rejected** under `scenario:`. See [Engine Modes](#engine-modes) |
 | `outputs` | sequence | `[{type: console, format: json}]` | Output sink definitions |
+| `pipeline` | map | absent | Sharded pipeline config |
+| `templates` | map | absent | Named reusable agent presets |
+| `registry` | map | absent | External agent file registry |
+| `includes` | sequence | absent | Merge other YAML files |
+| `builds` | sequence | absent | The BuildId axis (deterministic; the outer axis wrapping `time_axis`) |
+
+**World keys — under `time_axis:` in the deterministic world; flat at the root in the real world:**
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| `duration_seconds` | string/number | `0` | Auto-stop duration (`0` = run forever). Duration string (`"5m"`) or seconds. See [Duration Format](#duration-format) |
+| `tick_duration_ns` | int/duration | `1s` | *(deterministic)* the epoch grid → `epoch_duration_ns`. Int ns or `1s`/`250ms`/`1us` |
+| `start_time_unix_ns` | int | `0` | *(deterministic)* the virtual-clock start |
+| `timezone` / `offset_minutes` | string/int | `UTC` / `0` | Calendar context; `local` is real-only |
+| `agents` | sequence | required | One or more agent definitions |
 | `environment` | map | absent | Global metadata (region, cluster, version) |
 | `noise` | map | absent | Global noise settings |
 | `users` | map | absent | Simulated user pool |
 | `personas` | sequence | absent | User behavior profiles |
 | `entity_pool` | sequence | absent | Shared entity IDs for cross-agent correlation |
 | `field_variations` | sequence | absent | Numeric field jitter config |
-| `templates` | map | absent | Named reusable agent presets |
-| `flows` | sequence | absent | Causal flows — deterministic instanced traces (see [Causal Flows](#causal-flows)) |
-| `rules` | sequence | absent | Propagation rules |
 | `incidents` | sequence | absent | Time- or probability-triggered events |
-| `auto_cascade` | map | absent | Automatic error cascading |
-| `registry` | map | absent | External agent file registry |
-| `includes` | sequence | absent | Merge other YAML files |
-| `replay` | map | absent | Replay a recorded session |
-| `clock` | map | absent | Simulation clock config |
-| `pipeline` | map | absent | Sharded pipeline config |
-| `time` | map | absent | Timezone context |
+| `flows` | sequence | absent | Causal flows — deterministic instanced traces (see [Causal Flows](#causal-flows)) |
+
+**Real-world-only keys — at the root under `scenario:`; rejected under `deterministic_scenario:`:**
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `rules` | sequence | Propagation rules |
+| `auto_cascade` | map | Automatic error cascading |
+| `replay` | map | Replay a recorded session |
 
 ---
 
@@ -158,11 +189,12 @@ phase that **omits** the key keeps the current rate. The per-field default (agen
 
 | Mode | Selected by | Clock | Notes |
 |------|-------------|-------|-------|
-| **Real** | no `seed:` | `real` | Default. Randomized each run. |
-| **Deterministic** | `seed:` present | `virtual` (required) | Same logs every run. Requires `pipeline.policy: block`. Rejects `time.timezone: local`. |
+| **Real** | `scenario:` root (no `seed:`) | real wall-clock (structural) | Default. Randomized each run. Flat — no axis. |
+| **Deterministic** | `deterministic_scenario:` root (`seed:` required) | virtual (structural; no `clock:`/`mode:`) | Same logs every run. The clock + world nest under `time_axis`; `tick_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
 
-In deterministic mode, the loader auto-creates a `clock: {mode: virtual}` and sets
-`pipeline.policy: block` when those blocks are absent, and emits a notice.
+In deterministic mode the clock is **virtual by construction** (the `deterministic_scenario:` root
+types the world — there is no `clock:`/`mode:`); the loader forces `pipeline.policy: block` when the
+pipeline block is absent, and emits a notice.
 
 ---
 
@@ -1602,18 +1634,19 @@ Replay requires a `recording` output to have been used during the original run.
 
 ## Clock
 
-Controls time advancement. In most cases you do not need to set this explicitly; the
-loader auto-configures it based on whether `seed:` is present.
+In the **deterministic** world the clock lives **inside `time_axis:`** — there is no separate
+`clock:` block and no `mode:` (the `deterministic_scenario:` root types the clock **virtual**; the
+real world is always wall-clock). The `time_axis` clock keys:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `mode` | string | `"real"` / `"virtual"` | `"real"` (auto-advance) or `"virtual"` (manual stepping). Deterministic mode requires `"virtual"`; real mode forbids it. |
-| `start_time_unix_ns` | int64 | `0` | Unix epoch nanoseconds; `0` = system time (real) or seed-derived (deterministic) |
-| `tick_duration_ns` | string/number | `"1ms"` | Step size used by `SimulationClock::step()` (duration string or seconds, e.g. `"1ms"`) |
+| `duration_seconds` | string/number | `0` | The run horizon (`0` = run forever) |
+| `start_time_unix_ns` | int64 | `0` | Unix epoch nanoseconds start; `0` = seed-derived |
+| `tick_duration_ns` | int/duration | `1s` | The epoch grid → `TimelineConfig::epoch_duration_ns` (the materialization/parallelism grain + window-seal cadence). Int ns or a duration (`1s`/`250ms`/`1us`); sub-second is supported (a de-risked pure materialization grain) |
 
-**Mode policy:**
-- `seed:` present → `clock.mode: virtual` is required (auto-created if absent)
-- `seed:` absent → `clock.mode: real` (default); `virtual` is rejected
+The whole world (agents, incidents, flows, environment, noise, personas, users, entity_pool,
+field_variations, timezone) nests under `time_axis` alongside these clock keys — see
+[Scenario Root Keys](#scenario-root-keys).
 
 ---
 

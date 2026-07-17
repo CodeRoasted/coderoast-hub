@@ -10,8 +10,6 @@ deterministic_scenario:
   name: insight-multi-service-cascade
   seed: 606
 
-  duration_seconds: 20m
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -19,91 +17,93 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  agents:
-    - name: web-frontend
-      intent: web_server
-      rate_per_second: 25.0
-      message_template: "{method} {path} -> {status_code}"
-      fields:
-        - name: method
-          generator: weighted_choice
-          values: [GET, POST]
-          weights: [75, 25]
-        - name: path
-          generator: weighted_choice
-          values: [/shop, /cart, /orders, /account]
-          weights: [50, 25, 15, 10]
-        - name: status_code
-          generator: weighted_choice
-          values: ["200", "201", "400", "503"]
-          weights: [85, 8, 5, 2]
+  time_axis:
+    duration_seconds: 20m
+    agents:
+      - name: web-frontend
+        intent: web_server
+        rate_per_second: 25.0
+        message_template: "{method} {path} -> {status_code}"
+        fields:
+          - name: method
+            generator: weighted_choice
+            values: [GET, POST]
+            weights: [75, 25]
+          - name: path
+            generator: weighted_choice
+            values: [/shop, /cart, /orders, /account]
+            weights: [50, 25, 15, 10]
+          - name: status_code
+            generator: weighted_choice
+            values: ["200", "201", "400", "503"]
+            weights: [85, 8, 5, 2]
 
-    - name: order-api
-      intent: api_service
-      rate_per_second: 30.0
-      message_template: "{operation} order={order_id} -> {status}"
-      fields:
-        - name: operation
-          generator: weighted_choice
-          values: [create_order, get_order, update_order, cancel_order]
-          weights: [40, 35, 15, 10]
-        - name: order_id
-          generator: sequence
-          start: 50000
-        - name: status
-          generator: weighted_choice
-          values: [ok, validation_failed, db_timeout, internal_error]
-          weights: [90, 5, 3, 2]
+      - name: order-api
+        intent: api_service
+        rate_per_second: 30.0
+        message_template: "{operation} order={order_id} -> {status}"
+        fields:
+          - name: operation
+            generator: weighted_choice
+            values: [create_order, get_order, update_order, cancel_order]
+            weights: [40, 35, 15, 10]
+          - name: order_id
+            generator: sequence
+            start: 50000
+          - name: status
+            generator: weighted_choice
+            values: [ok, validation_failed, db_timeout, internal_error]
+            weights: [90, 5, 3, 2]
 
-    - name: postgres-db
-      intent: database
-      rate_per_second: 18.0
-      message_template: "{query_type} {table} duration={duration_ms}ms -> {result}"
-      fields:
-        - name: query_type
-          generator: weighted_choice
-          values: [SELECT, INSERT, UPDATE, DELETE]
-          weights: [55, 25, 15, 5]
-        - name: table
-          generator: weighted_choice
-          values: [orders, order_items, customers, inventory]
-          weights: [40, 30, 20, 10]
-        - name: duration_ms
-          generator: range
-          min: 1
-          max: 30
-          integer: true
-        - name: result
-          generator: weighted_choice
-          values: [ok, slow_query]
-          weights: [98, 2]
-      phases:
-        - name: healthy
-          duration_seconds: 5m
-          rate_per_second: 18/s
-          error_rate: 0.0
-        - name: overloaded
-          duration_seconds: 10m
-          rate_per_second: 180/s
-          error_rate: 0.70
-          latency_ms:
-            distribution: percentile
-            p50: 3500
-            p95: 12000
-            p99: 30000
-        - name: recovering
-          duration_seconds: 5m
-          rate_per_second: 22/s
-          error_rate: 0.03
+      - name: postgres-db
+        intent: database
+        rate_per_second: 18.0
+        message_template: "{query_type} {table} duration={duration_ms}ms -> {result}"
+        fields:
+          - name: query_type
+            generator: weighted_choice
+            values: [SELECT, INSERT, UPDATE, DELETE]
+            weights: [55, 25, 15, 5]
+          - name: table
+            generator: weighted_choice
+            values: [orders, order_items, customers, inventory]
+            weights: [40, 30, 20, 10]
+          - name: duration_ms
+            generator: range
+            min: 1
+            max: 30
+            integer: true
+          - name: result
+            generator: weighted_choice
+            values: [ok, slow_query]
+            weights: [98, 2]
+        phases:
+          - name: healthy
+            duration_seconds: 5m
+            rate_per_second: 18/s
+            error_rate: 0.0
+          - name: overloaded
+            duration_seconds: 10m
+            rate_per_second: 180/s
+            error_rate: 0.70
+            latency_ms:
+              distribution: percentile
+              p50: 3500
+              p95: 12000
+              p99: 30000
+          - name: recovering
+            duration_seconds: 5m
+            rate_per_second: 22/s
+            error_rate: 0.03
 
   # The cascade, DECLARED: when postgres-db enters its `overloaded` phase (t = 5m), the failure propagates
   # to the services that depend on it. Errors are dampened per hop (≈0.45, mirroring the old auto_cascade):
   # order-api at hop 1 (0.70·0.45 ≈ 0.32, db timeouts), web-frontend at hop 2 (0.32·0.45 ≈ 0.14, 5xx). The
   # window matches the DB overload (10m), then everything recovers.
-  incidents:
-    - name: db_overload_cascade
-      trigger: "time > 5m"
-      duration_seconds: 10m
-      effects:
-        - { target: order-api, error_rate: 0.32, latency_multiplier: 8.0 }
-        - { target: web-frontend, error_rate: 0.14, latency_multiplier: 3.0 }
+    incidents:
+      - name: db_overload_cascade
+        trigger: "time > 5m"
+        duration_seconds: 10m
+        effects:
+          - {target: order-api, error_rate: 0.32, latency_multiplier: 8.0}
+          - {target: web-frontend, error_rate: 0.14, latency_multiplier: 3.0}

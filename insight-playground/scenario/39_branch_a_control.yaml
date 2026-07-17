@@ -6,10 +6,6 @@
 deterministic_scenario:
   name: "branch-a-control"
   seed: 3939
-  clock:
-    mode: virtual
-  duration_seconds: 2050s
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -17,59 +13,60 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  agents:
-    - name: svc
-      intent: service
-      rate_per_second: 0/s
-    - name: hb
-      intent: service
-      rate_per_second: 50/s
-      message_template: "heartbeat ok"
+  time_axis:
+    duration_seconds: 2050s
+    agents:
+      - name: svc
+        intent: service
+        rate_per_second: 0/s
+      - name: hb
+        intent: service
+        rate_per_second: 50/s
+        message_template: "heartbeat ok"
 
-  flows:
-    - name: walk
-      instance_rate_per_second: 50/s
-      start: process
-      states:
-        process: { agent: svc, message_template: "request bucket {bucket} processed",
-                   fields: [ { name: bucket, generator: weighted_choice, values: ["10", "90"], weights: [1.0, 0.0] } ] }
-        step_01: { agent: svc, message_template: "step_01" }
-        step_02: { agent: svc, message_template: "step_02" }
-        step_03: { agent: svc, message_template: "step_03" }
-        step_04: { agent: svc, message_template: "step_04" }
-        step_05: { agent: svc, message_template: "step_05" }
-        step_06: { agent: svc, message_template: "step_06" }
-        step_07: { agent: svc, message_template: "step_07" }
-        step_08: { agent: svc, message_template: "step_08" }
-        step_09: { agent: svc, message_template: "step_09" }
-        step_10: { agent: svc, message_template: "step_10" }
-        step_11: { agent: svc, message_template: "step_11" }
-        step_12: { agent: svc, message_template: "step_12" }
-        step_13: { agent: svc, message_template: "step_13" }
-        step_14: { agent: svc, message_template: "step_14" }
-        step_15: { agent: svc, message_template: "step_15" }
-        step_16: { agent: svc, message_template: "step_16" }
-      transitions:
-        - { from: process, to: step_01, weight: 1.0 }
-        - { from: process, to: step_02, weight: 0.0 }
-        - { from: process, to: step_03, weight: 0.0 }
-        - { from: process, to: step_04, weight: 0.0 }
-        - { from: process, to: step_05, weight: 0.0 }
-        - { from: process, to: step_06, weight: 0.0 }
-        - { from: process, to: step_07, weight: 0.0 }
-        - { from: process, to: step_08, weight: 0.0 }
-        - { from: process, to: step_09, weight: 0.0 }
-        - { from: process, to: step_10, weight: 0.0 }
-        - { from: process, to: step_11, weight: 0.0 }
-        - { from: process, to: step_12, weight: 0.0 }
-        - { from: process, to: step_13, weight: 0.0 }
-        - { from: process, to: step_14, weight: 0.0 }
-        - { from: process, to: step_15, weight: 0.0 }
-        - { from: process, to: step_16, weight: 0.0 }
-      field_weight_ramps:
-        - state: process
-          field: bucket
-          target_weights: [0.0, 1.0]
-          start_seconds: 550s
-          duration_seconds: 1500s
-          window_seconds: 25
+    flows:
+      - name: walk
+        instance_rate_per_second: 50/s
+        start: process
+        states:
+          process: {agent: svc, message_template: "request bucket {bucket} processed", fields: [{name: bucket, generator: weighted_choice, values: ["10", "90"], weights: [1.0, 0.0]}]}
+          step_01: {agent: svc, message_template: "step_01"}
+          step_02: {agent: svc, message_template: "step_02"}
+          step_03: {agent: svc, message_template: "step_03"}
+          step_04: {agent: svc, message_template: "step_04"}
+          step_05: {agent: svc, message_template: "step_05"}
+          step_06: {agent: svc, message_template: "step_06"}
+          step_07: {agent: svc, message_template: "step_07"}
+          step_08: {agent: svc, message_template: "step_08"}
+          step_09: {agent: svc, message_template: "step_09"}
+          step_10: {agent: svc, message_template: "step_10"}
+          step_11: {agent: svc, message_template: "step_11"}
+          step_12: {agent: svc, message_template: "step_12"}
+          step_13: {agent: svc, message_template: "step_13"}
+          step_14: {agent: svc, message_template: "step_14"}
+          step_15: {agent: svc, message_template: "step_15"}
+          step_16: {agent: svc, message_template: "step_16"}
+        transitions:
+          - {from: process, to: step_01, weight: 1.0}
+          - {from: process, to: step_02, weight: 0.0}
+          - {from: process, to: step_03, weight: 0.0}
+          - {from: process, to: step_04, weight: 0.0}
+          - {from: process, to: step_05, weight: 0.0}
+          - {from: process, to: step_06, weight: 0.0}
+          - {from: process, to: step_07, weight: 0.0}
+          - {from: process, to: step_08, weight: 0.0}
+          - {from: process, to: step_09, weight: 0.0}
+          - {from: process, to: step_10, weight: 0.0}
+          - {from: process, to: step_11, weight: 0.0}
+          - {from: process, to: step_12, weight: 0.0}
+          - {from: process, to: step_13, weight: 0.0}
+          - {from: process, to: step_14, weight: 0.0}
+          - {from: process, to: step_15, weight: 0.0}
+          - {from: process, to: step_16, weight: 0.0}
+        field_weight_ramps:
+          - state: process
+            field: bucket
+            target_weights: [0.0, 1.0]
+            start_seconds: 550s
+            duration_seconds: 1500s
+            window_seconds: 25

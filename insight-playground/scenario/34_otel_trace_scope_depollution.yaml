@@ -7,10 +7,6 @@ deterministic_scenario:
   name: insight-otel-trace-scope-depollution
   seed: 42
 
-  clock:
-    mode: virtual
-  duration_seconds: 10m
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -19,50 +15,52 @@ deterministic_scenario:
       shm_backpressure_policy: block
       format: otel
 
-  agents:
-    - name: heartbeat
-      intent: background_worker
-      rate_per_second: 40/s
-      error_rate: 0.0
-      log_level: info
-      message_template: "heartbeat ok"
+  time_axis:
+    duration_seconds: 10m
+    agents:
+      - name: heartbeat
+        intent: background_worker
+        rate_per_second: 40/s
+        error_rate: 0.0
+        log_level: info
+        message_template: "heartbeat ok"
 
-    - name: alpha-svc
-      intent: flow_service
-      rate_per_second: 0
-      error_rate: 0.0
-      log_level: info
-    - name: beta-svc
-      intent: flow_service
-      rate_per_second: 0
-      error_rate: 0.0
-      log_level: info
+      - name: alpha-svc
+        intent: flow_service
+        rate_per_second: 0
+        error_rate: 0.0
+        log_level: info
+      - name: beta-svc
+        intent: flow_service
+        rate_per_second: 0
+        error_rate: 0.0
+        log_level: info
 
-  flows:
-    - name: alpha
-      instance_rate_per_second: 25/s
-      start_delay_seconds: 180s
-      max_concurrent: 64
-      correlation_field: trace_id
-      start: a_receive
-      states:
-        a_receive: { agent: alpha-svc, message_template: "alpha receive" }
-        a_process: { agent: alpha-svc, message_template: "alpha process" }
-        a_commit:  { agent: alpha-svc, message_template: "alpha commit" }
-      transitions:
-        - { from: a_receive, to: a_process, network_latency_ms: 80 }
-        - { from: a_process, to: a_commit,  network_latency_ms: 80 }
+    flows:
+      - name: alpha
+        instance_rate_per_second: 25/s
+        start_delay_seconds: 180s
+        max_concurrent: 64
+        correlation_field: trace_id
+        start: a_receive
+        states:
+          a_receive: {agent: alpha-svc, message_template: "alpha receive"}
+          a_process: {agent: alpha-svc, message_template: "alpha process"}
+          a_commit: {agent: alpha-svc, message_template: "alpha commit"}
+        transitions:
+          - {from: a_receive, to: a_process, network_latency_ms: 80}
+          - {from: a_process, to: a_commit, network_latency_ms: 80}
 
-    - name: beta
-      instance_rate_per_second: 25/s
-      start_delay_seconds: 180s
-      max_concurrent: 64
-      correlation_field: trace_id
-      start: b_open
-      states:
-        b_open:  { agent: beta-svc, message_template: "beta open" }
-        b_query: { agent: beta-svc, message_template: "beta query" }
-        b_close: { agent: beta-svc, message_template: "beta close" }
-      transitions:
-        - { from: b_open,  to: b_query, network_latency_ms: 80 }
-        - { from: b_query, to: b_close, network_latency_ms: 80 }
+      - name: beta
+        instance_rate_per_second: 25/s
+        start_delay_seconds: 180s
+        max_concurrent: 64
+        correlation_field: trace_id
+        start: b_open
+        states:
+          b_open: {agent: beta-svc, message_template: "beta open"}
+          b_query: {agent: beta-svc, message_template: "beta query"}
+          b_close: {agent: beta-svc, message_template: "beta close"}
+        transitions:
+          - {from: b_open, to: b_query, network_latency_ms: 80}
+          - {from: b_query, to: b_close, network_latency_ms: 80}

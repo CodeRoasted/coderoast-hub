@@ -7,168 +7,165 @@ deterministic_scenario:
   name: "silent-partial-failure-instance-freeze"
   seed: 42
 
-  clock:
-    mode: virtual
-
   outputs:
     - name: insight-stream
       type: insight_shm
       channel: ipl_silent_partial
       shm_slot_count: 256
       shm_backpressure_policy: block
-  duration_seconds: 90m
+  time_axis:
+    duration_seconds: 90m
+    environment:
+      region: us-west-2
+      cluster: prod-batch
+      queue: job-processing-queue
+      version: v1.8.4
 
-  environment:
-    region: us-west-2
-    cluster: prod-batch
-    queue: job-processing-queue
-    version: v1.8.4
+    agents:
+      - name: worker-01
+        intent: background_worker
+        rate_per_second: 15/s
+        error_rate: 0.005
+        fields:
+          - name: job_type
+            generator: weighted_choice
+            values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
+            weights: [35, 30, 25, 10]
+          - name: job_id
+            generator: sequence
+            start: 10000
+          - name: duration_ms
+            generator: range
+            min: 50
+            max: 8000
+            integer: true
+          - name: outcome
+            generator: weighted_choice
+            values: ["success", "retry", "failed"]
+            weights: [94, 4, 2]
+        message_template: "worker=01 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
 
-  agents:
-    - name: worker-01
-      intent: background_worker
-      rate_per_second: 15/s
-      error_rate: 0.005
-      fields:
-        - name: job_type
-          generator: weighted_choice
-          values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
-          weights: [35, 30, 25, 10]
-        - name: job_id
-          generator: sequence
-          start: 10000
-        - name: duration_ms
-          generator: range
-          min: 50
-          max: 8000
-          integer: true
-        - name: outcome
-          generator: weighted_choice
-          values: ["success", "retry", "failed"]
-          weights: [94, 4, 2]
-      message_template: "worker=01 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
+      - name: worker-02
+        intent: background_worker
+        rate_per_second: 15/s
+        error_rate: 0.005
+        fields:
+          - name: job_type
+            generator: weighted_choice
+            values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
+            weights: [35, 30, 25, 10]
+          - name: job_id
+            generator: sequence
+            start: 20000
+          - name: duration_ms
+            generator: range
+            min: 50
+            max: 8000
+            integer: true
+          - name: outcome
+            generator: weighted_choice
+            values: ["success", "retry", "failed"]
+            weights: [94, 4, 2]
+        message_template: "worker=02 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
 
-    - name: worker-02
-      intent: background_worker
-      rate_per_second: 15/s
-      error_rate: 0.005
-      fields:
-        - name: job_type
-          generator: weighted_choice
-          values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
-          weights: [35, 30, 25, 10]
-        - name: job_id
-          generator: sequence
-          start: 20000
-        - name: duration_ms
-          generator: range
-          min: 50
-          max: 8000
-          integer: true
-        - name: outcome
-          generator: weighted_choice
-          values: ["success", "retry", "failed"]
-          weights: [94, 4, 2]
-      message_template: "worker=02 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
+      - name: worker-03
+        intent: background_worker
+        rate_per_second: 15/s
+        error_rate: 0.005
+        fields:
+          - name: job_type
+            generator: weighted_choice
+            values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
+            weights: [35, 30, 25, 10]
+          - name: job_id
+            generator: sequence
+            start: 30000
+          - name: duration_ms
+            generator: range
+            min: 50
+            max: 8000
+            integer: true
+          - name: outcome
+            generator: weighted_choice
+            values: ["success", "retry", "failed"]
+            weights: [94, 4, 2]
+        message_template: "worker=03 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
 
-    - name: worker-03
-      intent: background_worker
-      rate_per_second: 15/s
-      error_rate: 0.005
-      fields:
-        - name: job_type
-          generator: weighted_choice
-          values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
-          weights: [35, 30, 25, 10]
-        - name: job_id
-          generator: sequence
-          start: 30000
-        - name: duration_ms
-          generator: range
-          min: 50
-          max: 8000
-          integer: true
-        - name: outcome
-          generator: weighted_choice
-          values: ["success", "retry", "failed"]
-          weights: [94, 4, 2]
-      message_template: "worker=03 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
+      - name: worker-04
+        intent: background_worker
+        error_rate: 0.005
+        fields:
+          - name: job_type
+            generator: weighted_choice
+            values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
+            weights: [35, 30, 25, 10]
+          - name: job_id
+            generator: sequence
+            start: 40000
+          - name: duration_ms
+            generator: range
+            min: 50
+            max: 8000
+            integer: true
+          - name: outcome
+            generator: weighted_choice
+            values: ["success", "retry", "failed"]
+            weights: [94, 4, 2]
+        message_template: "worker=04 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
+        phases:
+          - name: normal
+            duration_seconds: 30m
+            rate_per_second: 15/s
+          - name: frozen
+            duration_seconds: 60m
+            rate_per_second: 0.001/s
 
-    - name: worker-04
-      intent: background_worker
-      error_rate: 0.005
-      fields:
-        - name: job_type
-          generator: weighted_choice
-          values: ["encode_video", "resize_image", "generate_thumbnail", "transcode_audio"]
-          weights: [35, 30, 25, 10]
-        - name: job_id
-          generator: sequence
-          start: 40000
-        - name: duration_ms
-          generator: range
-          min: 50
-          max: 8000
-          integer: true
-        - name: outcome
-          generator: weighted_choice
-          values: ["success", "retry", "failed"]
-          weights: [94, 4, 2]
-      message_template: "worker=04 {job_type} job={job_id} duration={duration_ms}ms -> {outcome}"
-      phases:
-        - name: normal
-          duration_seconds: 30m
-          rate_per_second: 15/s
-        - name: frozen
-          duration_seconds: 60m
-          rate_per_second: 0.001/s
+      - name: queue-monitor
+        intent: background_worker
+        rate_per_second: 1/s
+        error_rate: 0.0
 
-    - name: queue-monitor
-      intent: background_worker
-      rate_per_second: 1/s
-      error_rate: 0.0
+        state:
+          backlog:
+            initial: 100
+            max_value: 50000
+            growth_per_request: 0.0
 
-      state:
-        backlog:
-          initial: 100
-          max_value: 50000
-          growth_per_request: 0.0
+        fields:
+          - name: queue_depth
+            generator: range
+            min: 80
+            max: 120
+            integer: true
+          - name: workers_active
+            generator: weighted_choice
+            values: ["4", "3"]
+            weights: [50, 50]
+          - name: throughput_eps
+            generator: range
+            min: 55
+            max: 65
+            integer: true
+        message_template: "queue depth={queue_depth} workers={workers_active} throughput={throughput_eps}/s"
 
-      fields:
-        - name: queue_depth
-          generator: range
-          min: 80
-          max: 120
-          integer: true
-        - name: workers_active
-          generator: weighted_choice
-          values: ["4", "3"]
-          weights: [50, 50]
-        - name: throughput_eps
-          generator: range
-          min: 55
-          max: 65
-          integer: true
-      message_template: "queue depth={queue_depth} workers={workers_active} throughput={throughput_eps}/s"
+      - name: queue-manager
+        intent: background_worker
+        rate_per_second: 0.5/s
+        fields:
+          - name: event
+            generator: weighted_choice
+            values: ["lease_renewed", "lease_expired", "consumer_registered", "consumer_deregistered"]
+            weights: [70, 15, 10, 5]
+          - name: consumer_id
+            generator: weighted_choice
+            values: ["worker-01", "worker-02", "worker-03", "worker-04"]
+            weights: [25, 25, 25, 25]
+        message_template: "QueueManager {event} consumer={consumer_id}"
 
-    - name: queue-manager
-      intent: background_worker
-      rate_per_second: 0.5/s
-      fields:
-        - name: event
-          generator: weighted_choice
-          values: ["lease_renewed", "lease_expired", "consumer_registered", "consumer_deregistered"]
-          weights: [70, 15, 10, 5]
-        - name: consumer_id
-          generator: weighted_choice
-          values: ["worker-01", "worker-02", "worker-03", "worker-04"]
-          weights: [25, 25, 25, 25]
-      message_template: "QueueManager {event} consumer={consumer_id}"
-
-  incidents:
-    - name: worker04_lease_timeout
-      trigger: "time > 35m"
-      duration_seconds: 0
-      effects:
-        - target: queue-manager
-          error_rate: 0.20
+    incidents:
+      - name: worker04_lease_timeout
+        trigger: "time > 35m"
+        duration_seconds: 0
+        effects:
+          - target: queue-manager
+            error_rate: 0.20

@@ -7,10 +7,6 @@ deterministic_scenario:
   name: insight-new-deployment-novelty
   seed: 42
 
-  clock:
-    mode: virtual
-  duration_seconds: 10m
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -18,80 +14,82 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  agents:
-    - name: payment-service-v1
-      intent: api_service
-      message_template: "payment {status} amount={amount} ref={ref}"
-      fields:
-        - name: status
-          generator: weighted_choice
-          values: [approved, declined, pending, failed]
-          weights: [82, 10, 5, 3]
-        - name: amount
-          generator: range
-          min: 1
-          max: 50000
-          integer: true
-        - name: ref
-          generator: sequence
-          start: 1000
-      phases:
-        - name: active
-          duration_seconds: 3m
-          rate_per_second: 60/s
-        - name: rolling_out
-          duration_seconds: 4m
-          rate_per_second: 15/s
-        - name: decommissioned
-          duration_seconds: 3m
-          rate_per_second: 0.01/s
+  time_axis:
+    duration_seconds: 10m
+    agents:
+      - name: payment-service-v1
+        intent: api_service
+        message_template: "payment {status} amount={amount} ref={ref}"
+        fields:
+          - name: status
+            generator: weighted_choice
+            values: [approved, declined, pending, failed]
+            weights: [82, 10, 5, 3]
+          - name: amount
+            generator: range
+            min: 1
+            max: 50000
+            integer: true
+          - name: ref
+            generator: sequence
+            start: 1000
+        phases:
+          - name: active
+            duration_seconds: 3m
+            rate_per_second: 60/s
+          - name: rolling_out
+            duration_seconds: 4m
+            rate_per_second: 15/s
+          - name: decommissioned
+            duration_seconds: 3m
+            rate_per_second: 0.01/s
 
-    - name: payment-service-v2
-      intent: api_service
-      message_template: "txn.processed txn_id={txn_id} amount={amount} currency={currency} result={result}"
-      fields:
-        - name: txn_id
-          generator: sequence
-          start: 900000
-        - name: amount
-          generator: range
-          min: 1
-          max: 50000
-          integer: true
-        - name: currency
-          generator: weighted_choice
-          values: [USD, EUR, GBP, JPY]
-          weights: [60, 25, 10, 5]
-        - name: result
-          generator: weighted_choice
-          values: [approved, declined, pending, failed]
-          weights: [83, 10, 4, 3]
-      phases:
-        - name: not_deployed
-          duration_seconds: 3m
-          rate_per_second: 0.0/s
-        - name: canary
-          duration_seconds: 4m
-          rate_per_second: 80/s
-        - name: full_traffic
-          duration_seconds: 3m
-          rate_per_second: 70/s
+      - name: payment-service-v2
+        intent: api_service
+        message_template: "txn.processed txn_id={txn_id} amount={amount} currency={currency} result={result}"
+        fields:
+          - name: txn_id
+            generator: sequence
+            start: 900000
+          - name: amount
+            generator: range
+            min: 1
+            max: 50000
+            integer: true
+          - name: currency
+            generator: weighted_choice
+            values: [USD, EUR, GBP, JPY]
+            weights: [60, 25, 10, 5]
+          - name: result
+            generator: weighted_choice
+            values: [approved, declined, pending, failed]
+            weights: [83, 10, 4, 3]
+        phases:
+          - name: not_deployed
+            duration_seconds: 3m
+            rate_per_second: 0.0/s
+          - name: canary
+            duration_seconds: 4m
+            rate_per_second: 80/s
+          - name: full_traffic
+            duration_seconds: 3m
+            rate_per_second: 70/s
 
-    - name: audit-logger
-      intent: background_worker
-      rate_per_second: 5.0
-      message_template: "audit action={action} user={user_id} ok={ok}"
-      fields:
-        - name: action
-          generator: weighted_choice
-          values: [read, write, delete, auth]
-          weights: [50, 30, 10, 10]
-        - name: user_id
-          generator: range
-          min: 1000
-          max: 9999
-          integer: true
-        - name: ok
-          generator: weighted_choice
-          values: ["true", "false"]
-          weights: [95, 5]
+      - name: audit-logger
+        intent: background_worker
+        rate_per_second: 5.0
+        message_template: "audit action={action} user={user_id} ok={ok}"
+        fields:
+          - name: action
+            generator: weighted_choice
+            values: [read, write, delete, auth]
+            weights: [50, 30, 10, 10]
+          - name: user_id
+            generator: range
+            min: 1000
+            max: 9999
+            integer: true
+          - name: ok
+            generator: weighted_choice
+            values: ["true", "false"]
+            weights: [95, 5]

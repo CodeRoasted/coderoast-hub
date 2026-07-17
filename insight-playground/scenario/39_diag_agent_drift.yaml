@@ -6,37 +6,36 @@
 deterministic_scenario:
   name: "diag-agent-drift"
   seed: 3939
-  clock:
-    mode: virtual
-  duration_seconds: 2050s
   outputs:
     - name: insight-stream
       type: insight_shm
       channel: ipl_diag
       shm_slot_count: 256
       shm_backpressure_policy: block
-  agents:
-    - name: api-svc
-      intent: api_service
-      rate_per_second: 50/s
-      message_template: "request bucket {bucket} processed"
-      fields:
-        - name: bucket
-          generator: weighted_choice
-          values: ["10", "90"]
-          weights: [1.0, 0.0]
-      phases:
-        - name: warm
-          duration_seconds: 550s
-          rate_per_second: 50/s
-        - name: drift
-          duration_seconds: 1500s
-          rate_per_second: 50/s
-          field_weight_ramps:
-            - field: bucket
-              target_weights: [0.0, 1.0]
-              window_seconds: 25
-    - name: hb
-      intent: service
-      rate_per_second: 50/s
-      message_template: "heartbeat ok"
+  time_axis:
+    duration_seconds: 2050s
+    agents:
+      - name: api-svc
+        intent: api_service
+        rate_per_second: 50/s
+        message_template: "request bucket {bucket} processed"
+        fields:
+          - name: bucket
+            generator: weighted_choice
+            values: ["10", "90"]
+            weights: [1.0, 0.0]
+        phases:
+          - name: warm
+            duration_seconds: 550s
+            rate_per_second: 50/s
+          - name: drift
+            duration_seconds: 1500s
+            rate_per_second: 50/s
+            field_weight_ramps:
+              - field: bucket
+                target_weights: [0.0, 1.0]
+                window_seconds: 25
+      - name: hb
+        intent: service
+        rate_per_second: 50/s
+        message_template: "heartbeat ok"

@@ -7,23 +7,12 @@ deterministic_scenario:
   name: "gradual-degradation-memory-leak"
   seed: 42
 
-  clock:
-    mode: virtual
-
   outputs:
     - name: insight-stream
       type: insight_shm
       channel: ipl_gradual_memleak
       shm_slot_count: 256
       shm_backpressure_policy: block
-  duration_seconds: 90m
-
-  environment:
-    region: us-east-1
-    cluster: prod-ecommerce
-    service: order-service
-    version: v4.1.2-SNAPSHOT
-
   templates:
     jvm_worker:
       intent: api_service
@@ -35,127 +24,135 @@ deterministic_scenario:
         p95: 80
         p99: 250
 
-  agents:
-    - name: order-service
-      intent: api_service
-      use_template: jvm_worker
-      level_weights: {debug: 0.07, info: 0.80, warn: 0.13, error: 0.85, fatal: 0.15}
+  time_axis:
+    duration_seconds: 90m
+    environment:
+      region: us-east-1
+      cluster: prod-ecommerce
+      service: order-service
+      version: v4.1.2-SNAPSHOT
 
-      state:
-        heap_mb:
-          initial: 512
-          max_value: 8192
-          growth_per_request: 0.0285
+    agents:
+      - name: order-service
+        intent: api_service
+        use_template: jvm_worker
+        level_weights: {debug: 0.07, info: 0.80, warn: 0.13, error: 0.85, fatal: 0.15}
 
-      effects:
-        - condition: "heap_mb > 2048"
-          error_rate: 0.010
-          latency_ms:
-            distribution: percentile
-            p50: 28
-            p95: 140
-            p99: 500
-        - condition: "heap_mb > 4096"
-          error_rate: 0.050
-          latency_ms:
-            distribution: percentile
-            p50: 55
-            p95: 350
-            p99: 1800
-        - condition: "heap_mb > 6144"
-          error_rate: 0.150
-          latency_ms:
-            distribution: percentile
-            p50: 120
-            p95: 900
-            p99: 4500
-        - condition: "heap_mb > 7680"
-          error_rate: 0.450
-          latency_ms:
-            distribution: percentile
-            p50: 350
-            p95: 3000
-            p99: 12000
+        state:
+          heap_mb:
+            initial: 512
+            max_value: 8192
+            growth_per_request: 0.0285
 
-      fields:
-        - name: method
-          generator: weighted_choice
-          values: [GET, POST, PUT]
-          weights: [55, 35, 10]
-        - name: path
-          generator: weighted_choice
-          values: ["/api/orders", "/api/orders/status", "/api/orders/cancel"]
-          weights: [50, 35, 15]
-        - name: status_code
-          generator: weighted_choice
-          values: ["200", "201", "400", "500", "503"]
-          weights: [85, 8, 4, 2, 1]
-        - name: order_id
-          generator: sequence
-          start: 100000
-        - name: error_code
-          generator: weighted_choice
-          values: ["NONE", "TIMEOUT", "DB_LOCK", "OOM_RETRY", "UNKNOWN"]
-          weights: [94, 3, 2, 0, 1]
-      message_template: "{method} {path} order={order_id} -> {status_code}"
+        effects:
+          - condition: "heap_mb > 2048"
+            error_rate: 0.010
+            latency_ms:
+              distribution: percentile
+              p50: 28
+              p95: 140
+              p99: 500
+          - condition: "heap_mb > 4096"
+            error_rate: 0.050
+            latency_ms:
+              distribution: percentile
+              p50: 55
+              p95: 350
+              p99: 1800
+          - condition: "heap_mb > 6144"
+            error_rate: 0.150
+            latency_ms:
+              distribution: percentile
+              p50: 120
+              p95: 900
+              p99: 4500
+          - condition: "heap_mb > 7680"
+            error_rate: 0.450
+            latency_ms:
+              distribution: percentile
+              p50: 350
+              p95: 3000
+              p99: 12000
 
-    - name: order-service-gc
-      intent: background_worker
-      rate_per_second: 2/s
-      error_rate: 0.0
-      level_weights: {debug: 0.10, info: 0.60, warn: 0.30}
+        fields:
+          - name: method
+            generator: weighted_choice
+            values: [GET, POST, PUT]
+            weights: [55, 35, 10]
+          - name: path
+            generator: weighted_choice
+            values: ["/api/orders", "/api/orders/status", "/api/orders/cancel"]
+            weights: [50, 35, 15]
+          - name: status_code
+            generator: weighted_choice
+            values: ["200", "201", "400", "500", "503"]
+            weights: [85, 8, 4, 2, 1]
+          - name: order_id
+            generator: sequence
+            start: 100000
+          - name: error_code
+            generator: weighted_choice
+            values: ["NONE", "TIMEOUT", "DB_LOCK", "OOM_RETRY", "UNKNOWN"]
+            weights: [94, 3, 2, 0, 1]
+        message_template: "{method} {path} order={order_id} -> {status_code}"
 
-      state:
-        heap_ratio:
-          initial: 0.06
-          max_value: 1.0
-          growth_per_request: 0.0000034
+      - name: order-service-gc
+        intent: background_worker
+        rate_per_second: 2/s
+        error_rate: 0.0
+        level_weights: {debug: 0.10, info: 0.60, warn: 0.30}
 
-      effects:
-        - condition: "heap_ratio > 0.25"
-          rate_per_second: 4/s
-        - condition: "heap_ratio > 0.50"
-          rate_per_second: 8/s
-        - condition: "heap_ratio > 0.75"
-          rate_per_second: 16/s
+        state:
+          heap_ratio:
+            initial: 0.06
+            max_value: 1.0
+            growth_per_request: 0.0000034
 
-      fields:
-        - name: gc_type
-          generator: weighted_choice
-          values: ["minor", "major", "concurrent_mark"]
-          weights: [75, 15, 10]
-        - name: gc_duration_ms
-          generator: range
-          min: 2
-          max: 4000
-          integer: true
-        - name: heap_pct
-          generator: range
-          min: 6
-          max: 100
-          integer: true
-      message_template: "GC {gc_type} pause={gc_duration_ms}ms heap={heap_pct}%"
+        effects:
+          - condition: "heap_ratio > 0.25"
+            rate_per_second: 4/s
+          - condition: "heap_ratio > 0.50"
+            rate_per_second: 8/s
+          - condition: "heap_ratio > 0.75"
+            rate_per_second: 16/s
 
-    - name: read-replica
-      intent: database
-      rate_per_second: 30/s
-      error_rate: 0.001
-      latency_ms:
-        distribution: normal
-        mean: 5
-        stddev: 2
-      fields:
-        - name: query_type
-          generator: weighted_choice
-          values: ["SELECT", "COUNT"]
-          weights: [80, 20]
-        - name: table
-          generator: choice
-          values: ["orders", "order_items", "customers"]
-        - name: rows
-          generator: range
-          min: 1
-          max: 500
-          integer: true
-      message_template: "{query_type} {table} rows={rows}"
+        fields:
+          - name: gc_type
+            generator: weighted_choice
+            values: ["minor", "major", "concurrent_mark"]
+            weights: [75, 15, 10]
+          - name: gc_duration_ms
+            generator: range
+            min: 2
+            max: 4000
+            integer: true
+          - name: heap_pct
+            generator: range
+            min: 6
+            max: 100
+            integer: true
+        message_template: "GC {gc_type} pause={gc_duration_ms}ms heap={heap_pct}%"
+
+      - name: read-replica
+        intent: database
+        rate_per_second: 30/s
+        error_rate: 0.001
+        latency_ms:
+          distribution: normal
+          mean: 5
+          stddev: 2
+        fields:
+          - name: query_type
+            generator: weighted_choice
+            values: ["SELECT", "COUNT"]
+            weights: [80, 20]
+          - name: table
+            generator: choice
+            values: ["orders", "order_items", "customers"]
+          - name: rows
+            generator: range
+            min: 1
+            max: 500
+            integer: true
+        message_template: "{query_type} {table} rows={rows}"
 

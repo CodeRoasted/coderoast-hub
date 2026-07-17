@@ -7,10 +7,6 @@ deterministic_scenario:
   name: insight-do-operator-fanout-factual
   seed: 3030
 
-  clock:
-    mode: virtual
-  duration_seconds: 10s
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -19,69 +15,71 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  agents:
-    - name: gateway
-      intent: web_server
-      rate_per_second: 0
-    - name: payments
-      intent: service
-      rate_per_second: 0
-    - name: notifier
-      intent: service
-      rate_per_second: 0
+  time_axis:
+    duration_seconds: 10s
+    agents:
+      - name: gateway
+        intent: web_server
+        rate_per_second: 0
+      - name: payments
+        intent: service
+        rate_per_second: 0
+      - name: notifier
+        intent: service
+        rate_per_second: 0
 
-  incidents:
-    - name: payments_outage
-      trigger: "time > 0.5s"
-      duration_seconds: 60s
-      effects:
-        - target: payments
-          error_rate: 1.0
+    incidents:
+      - name: payments_outage
+        trigger: "time > 0.5s"
+        duration_seconds: 60s
+        effects:
+          - target: payments
+            error_rate: 1.0
 
-  flows:
-    - name: settle
-      instance_rate_per_second: 20/s
-      start_delay_seconds: 1s
-      max_concurrent: 1
-      correlation_field: trace_id
-      start: ingress
-      states:
-        ingress:
-          agent: gateway
-          message_template: "accept settle request"
-          fields:
-            - { name: component, generator: static, value: gateway }
-        pay_card:
-          agent: payments
-          message_template: "charge via card"
-          fields:
-            - { name: component, generator: static, value: card }
-        pay_wallet:
-          agent: payments
-          message_template: "charge via wallet"
-          fields:
-            - { name: component, generator: static, value: wallet }
-        pay_bank:
-          agent: payments
-          message_template: "charge via bank"
-          fields:
-            - { name: component, generator: static, value: bank }
-        notify:
-          agent: notifier
-          error_rate: 1.0
-          message_template: "publish settlement event"
-          fields:
-            - { name: component, generator: static, value: notifier }
-        egress:
-          agent: gateway
-          message_template: "settle response ok"
-          fields:
-            - { name: component, generator: static, value: gateway }
-      transitions:
-        - { from: ingress, to: pay_card,   weight: 1.0, network_latency_ms: 2 }
-        - { from: ingress, to: pay_wallet, weight: 1.0, network_latency_ms: 2 }
-        - { from: ingress, to: pay_bank,   weight: 1.0, network_latency_ms: 2 }
-        - { from: pay_card,   to: notify, network_latency_ms: 3 }
-        - { from: pay_wallet, to: notify, network_latency_ms: 3 }
-        - { from: pay_bank,   to: notify, network_latency_ms: 3 }
-        - { from: notify,     to: egress, network_latency_ms: 2 }
+    flows:
+      - name: settle
+        instance_rate_per_second: 20/s
+        start_delay_seconds: 1s
+        max_concurrent: 1
+        correlation_field: trace_id
+        start: ingress
+        states:
+          ingress:
+            agent: gateway
+            message_template: "accept settle request"
+            fields:
+              - {name: component, generator: static, value: gateway}
+          pay_card:
+            agent: payments
+            message_template: "charge via card"
+            fields:
+              - {name: component, generator: static, value: card}
+          pay_wallet:
+            agent: payments
+            message_template: "charge via wallet"
+            fields:
+              - {name: component, generator: static, value: wallet}
+          pay_bank:
+            agent: payments
+            message_template: "charge via bank"
+            fields:
+              - {name: component, generator: static, value: bank}
+          notify:
+            agent: notifier
+            error_rate: 1.0
+            message_template: "publish settlement event"
+            fields:
+              - {name: component, generator: static, value: notifier}
+          egress:
+            agent: gateway
+            message_template: "settle response ok"
+            fields:
+              - {name: component, generator: static, value: gateway}
+        transitions:
+          - {from: ingress, to: pay_card, weight: 1.0, network_latency_ms: 2}
+          - {from: ingress, to: pay_wallet, weight: 1.0, network_latency_ms: 2}
+          - {from: ingress, to: pay_bank, weight: 1.0, network_latency_ms: 2}
+          - {from: pay_card, to: notify, network_latency_ms: 3}
+          - {from: pay_wallet, to: notify, network_latency_ms: 3}
+          - {from: pay_bank, to: notify, network_latency_ms: 3}
+          - {from: notify, to: egress, network_latency_ms: 2}

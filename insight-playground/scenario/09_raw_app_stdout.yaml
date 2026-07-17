@@ -7,10 +7,6 @@ deterministic_scenario:
   name: insight-raw-app-stdout
   seed: 909
 
-  clock:
-    mode: virtual
-  duration_seconds: 3m
-
   outputs:
     - name: insight-stream
       type: insight_shm
@@ -19,51 +15,53 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  agents:
-    - name: checkout-service
-      intent: api_service
-      message_template: "checkout completed order={order_id} amount={amount} in {dur}ms"
-      fields:
-        - name: order_id
-          generator: sequence
-          prefix: "ORD-"
-          start: 100000
-        - name: amount
-          generator: range
-          min: 5
-          max: 5000
-          integer: true
-        - name: dur
-          generator: range
-          min: 4
-          max: 90
-          integer: true
-      phases:
-        - name: steady
-          duration_seconds: 3m
-          rate_per_second: 10/s
+  time_axis:
+    duration_seconds: 3m
+    agents:
+      - name: checkout-service
+        intent: api_service
+        message_template: "checkout completed order={order_id} amount={amount} in {dur}ms"
+        fields:
+          - name: order_id
+            generator: sequence
+            prefix: "ORD-"
+            start: 100000
+          - name: amount
+            generator: range
+            min: 5
+            max: 5000
+            integer: true
+          - name: dur
+            generator: range
+            min: 4
+            max: 90
+            integer: true
+        phases:
+          - name: steady
+            duration_seconds: 3m
+            rate_per_second: 10/s
 
-    - name: db-pool
-      intent: api_service
-      message_template: "connection refused to db {host} after {retries} retries"
-      fields:
-        - name: host
-          generator: weighted_choice
-          values: [db-01, db-02, db-03]
-          weights: [50, 30, 20]
-        - name: retries
-          generator: range
-          min: 1
-          max: 5
-          integer: true
-      phases:
-        - name: quiet
-          duration_seconds: 1m
-          rate_per_second: 0/s
-        - name: failing
-          duration_seconds: 1m
-          rate_per_second: 5/s
-          error_rate: 1.0
-        - name: recovered
-          duration_seconds: 1m
-          rate_per_second: 0/s
+      - name: db-pool
+        intent: api_service
+        message_template: "connection refused to db {host} after {retries} retries"
+        fields:
+          - name: host
+            generator: weighted_choice
+            values: [db-01, db-02, db-03]
+            weights: [50, 30, 20]
+          - name: retries
+            generator: range
+            min: 1
+            max: 5
+            integer: true
+        phases:
+          - name: quiet
+            duration_seconds: 1m
+            rate_per_second: 0/s
+          - name: failing
+            duration_seconds: 1m
+            rate_per_second: 5/s
+            error_rate: 1.0
+          - name: recovered
+            duration_seconds: 1m
+            rate_per_second: 0/s
