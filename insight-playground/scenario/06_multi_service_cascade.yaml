@@ -2,9 +2,13 @@
 # Scenario — what it does: A failure in one service propagating across the services that depend on it.
 #
 # A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+# Deterministic: the DB-overload window drives a DECLARED cascade (one incident with per-service effects) —
+# the reproducible do-edge form of the old emergent `auto_cascade` (which was a no-op here anyway: no
+# `dependencies:` were declared, so there was no caller graph to propagate along).
 
-scenario:
+deterministic_scenario:
   name: insight-multi-service-cascade
+  seed: 606
 
   duration_seconds: 20m
 
@@ -92,7 +96,14 @@ scenario:
           rate_per_second: 22/s
           error_rate: 0.03
 
-  auto_cascade:
-    error_threshold: 0.35
-    dampening_factor: 0.45
-    blast_radius: 2
+  # The cascade, DECLARED: when postgres-db enters its `overloaded` phase (t = 5m), the failure propagates
+  # to the services that depend on it. Errors are dampened per hop (≈0.45, mirroring the old auto_cascade):
+  # order-api at hop 1 (0.70·0.45 ≈ 0.32, db timeouts), web-frontend at hop 2 (0.32·0.45 ≈ 0.14, 5xx). The
+  # window matches the DB overload (10m), then everything recovers.
+  incidents:
+    - name: db_overload_cascade
+      trigger: "time > 5m"
+      duration_seconds: 10m
+      effects:
+        - { target: order-api, error_rate: 0.32, latency_multiplier: 8.0 }
+        - { target: web-frontend, error_rate: 0.14, latency_multiplier: 3.0 }

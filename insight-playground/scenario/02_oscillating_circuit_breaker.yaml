@@ -2,9 +2,14 @@
 # Scenario — what it does: A circuit breaker that oscillates open/closed under intermittent downstream failure.
 #
 # A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+# Deterministic: the breaker's open/closed oscillation is DECLARED as a repeating incident schedule (four
+# OPEN windows across the run) — the reproducible do-edge form of the old stochastic `health_state`
+# machine. The old `auto_cascade` was a no-op (no `dependencies:`); its intent is now an explicit dampened
+# effect on the api-gateway inside each window.
 
-scenario:
+deterministic_scenario:
   name: "oscillating-circuit-breaker"
+  seed: 202
 
   outputs:
     - name: insight-stream
@@ -23,17 +28,7 @@ scenario:
     - name: payment-gateway
       intent: api_service
       rate_per_second: 80/s
-      error_rate: 0.008
-
-      health_state:
-        latency_multipliers: [1.0, 2.5, 0.05, 1.2]
-        error_rates:         [0.008, 0.12, 0.98, 0.08]
-        transitions:
-          healthy_to_degraded: 0.004
-          degraded_to_failing:  0.12
-          failing_to_recovering: 0.06
-          recovering_to_healthy: 0.20
-
+      error_rate: 0.008    # CLOSED (healthy) baseline; the OPEN windows are declared as incidents below
       fields:
         - name: method
           generator: weighted_choice
@@ -65,17 +60,7 @@ scenario:
     - name: payment-processor
       intent: api_service
       rate_per_second: 60/s
-      error_rate: 0.005
-
-      health_state:
-        latency_multipliers: [1.0, 4.0, 15.0, 2.0]
-        error_rates:         [0.005, 0.10, 0.60, 0.03]
-        transitions:
-          healthy_to_degraded:  0.003
-          degraded_to_failing:  0.15
-          failing_to_recovering: 0.07
-          recovering_to_healthy: 0.18
-
+      error_rate: 0.005    # CLOSED (healthy) baseline
       fields:
         - name: operation
           generator: weighted_choice
@@ -131,7 +116,37 @@ scenario:
           weights: [35, 30, 20, 15]
       message_template: "CircuitBreaker transition {from_state} -> {to_state} reason={reason}"
 
-  auto_cascade:
-    error_threshold: 0.30
-    dampening_factor: 0.4
-    blast_radius: 2
+  # The breaker oscillation, DECLARED: four OPEN windows across the 90m run. In each, the gateway fast-fails
+  # (error 0.98, latency ×0.05 — an open breaker returns immediately) and the processor saturates (error
+  # 0.60, latency ×15), and the failure propagates dampened (≈0.4) onto the api-gateway (0.24). Between
+  # windows the breaker is CLOSED (baseline). This is the deterministic do-edge form of the old stochastic
+  # health_state oscillation — same four-state pathology (healthy ⇄ failing), reproducibly placed.
+  incidents:
+    - name: breaker_open_1
+      trigger: "time > 12m"
+      duration_seconds: 4m
+      effects:
+        - { target: payment-gateway, error_rate: 0.98, latency_multiplier: 0.05 }
+        - { target: payment-processor, error_rate: 0.60, latency_multiplier: 15.0 }
+        - { target: api-gateway, error_rate: 0.24 }
+    - name: breaker_open_2
+      trigger: "time > 34m"
+      duration_seconds: 4m
+      effects:
+        - { target: payment-gateway, error_rate: 0.98, latency_multiplier: 0.05 }
+        - { target: payment-processor, error_rate: 0.60, latency_multiplier: 15.0 }
+        - { target: api-gateway, error_rate: 0.24 }
+    - name: breaker_open_3
+      trigger: "time > 56m"
+      duration_seconds: 4m
+      effects:
+        - { target: payment-gateway, error_rate: 0.98, latency_multiplier: 0.05 }
+        - { target: payment-processor, error_rate: 0.60, latency_multiplier: 15.0 }
+        - { target: api-gateway, error_rate: 0.24 }
+    - name: breaker_open_4
+      trigger: "time > 76m"
+      duration_seconds: 4m
+      effects:
+        - { target: payment-gateway, error_rate: 0.98, latency_multiplier: 0.05 }
+        - { target: payment-processor, error_rate: 0.60, latency_multiplier: 15.0 }
+        - { target: api-gateway, error_rate: 0.24 }
