@@ -5,10 +5,7 @@
 
 scenario:
   name: insight-multi-service-cascade
-  seed: 42
 
-  clock:
-    mode: virtual
   duration_seconds: 20m
 
   outputs:

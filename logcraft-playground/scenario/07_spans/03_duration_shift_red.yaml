@@ -4,7 +4,7 @@
 # endTimeUnixNano - startTimeUnixNano shifts. The silent-latency-regression exhibit, located.
 # Concepts: format: otel_span, span_duration_ms, single duration-regime delta.
 
-scenario:
+deterministic_scenario:
   name: span-duration-red
   seed: 4242
   duration_seconds: 0.5

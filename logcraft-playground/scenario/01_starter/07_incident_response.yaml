@@ -12,6 +12,7 @@ scenario:
 
   templates:
     api_service:
+      intent: api_service
       rate_per_second: 5/s
       error_rate: 0.01
       latency_ms:
@@ -54,7 +55,6 @@ scenario:
 
   agents:
     - name: api-gateway
-      intent: web_server
       use_template: api_service
       message_template: "{method} {path} -> {status_code}"
       fields:

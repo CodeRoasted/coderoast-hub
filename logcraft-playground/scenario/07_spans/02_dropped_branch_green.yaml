@@ -3,7 +3,7 @@
 # `fan_out: true` makes root spawn one concurrent child span per outgoing edge.
 # Concepts: format: otel_span, fan_out, matched control.
 
-scenario:
+deterministic_scenario:
   name: span-dropped-green
   seed: 4242
   duration_seconds: 0.5

@@ -6,7 +6,7 @@
 # DAG never contains — the O0→O2 de-pollution pattern, one grain up (at the DAG).
 # Concepts: format: otel_span, fan_out, max_concurrent interleave.
 
-scenario:
+deterministic_scenario:
   name: span-fanout-observed
   seed: 4242
   duration_seconds: 1.0

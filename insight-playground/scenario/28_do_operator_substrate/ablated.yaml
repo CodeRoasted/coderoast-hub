@@ -3,7 +3,7 @@
 #
 # A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
 
-scenario:
+deterministic_scenario:
   name: insight-do-operator-substrate-ablated
   seed: 2828
 

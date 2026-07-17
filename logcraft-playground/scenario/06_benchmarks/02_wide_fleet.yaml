@@ -9,6 +9,7 @@ scenario:
 
   templates:
     fleet_node:
+      intent: service
       rate_per_second: 10/s       # 10/s each × 50 instances = 500/s for this agent type
       error_rate: 0.01
       latency_ms:

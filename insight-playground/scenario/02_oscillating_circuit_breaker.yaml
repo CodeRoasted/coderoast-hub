@@ -5,10 +5,6 @@
 
 scenario:
   name: "oscillating-circuit-breaker"
-  seed: 42
-
-  clock:
-    mode: virtual
 
   outputs:
     - name: insight-stream

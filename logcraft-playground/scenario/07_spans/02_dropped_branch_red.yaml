@@ -3,7 +3,7 @@
 # branch — root now spawns only email. The surviving email span still parents to root.
 # Concepts: format: otel_span, fan_out, single structural delta.
 
-scenario:
+deterministic_scenario:
   name: span-dropped-red
   seed: 4242
   duration_seconds: 0.5

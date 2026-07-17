@@ -3,7 +3,7 @@
 #
 # A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
 
-scenario:
+deterministic_scenario:
   name: insight-new-deployment-novelty
   seed: 42
 

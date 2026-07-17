@@ -3,7 +3,7 @@
 # span between process and commit; the `heartbeat` control flow is identical in both.
 # Concepts: format: otel_span, causal flows, matched control.
 
-scenario:
+deterministic_scenario:
   name: span-added-green
   seed: 4242
   duration_seconds: 0.5

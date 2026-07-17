@@ -8,6 +8,7 @@ scenario:
 
   templates:
     go_api:
+      intent: service
       rate_per_second: 100/s
       error_rate: 0.008
       latency_ms:

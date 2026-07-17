@@ -3,7 +3,7 @@
 # between process and commit. This is the ONLY difference — the heartbeat control is unchanged.
 # Concepts: format: otel_span, causal flows, single structural delta.
 
-scenario:
+deterministic_scenario:
   name: span-added-red
   seed: 4242
   duration_seconds: 0.5
