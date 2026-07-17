@@ -9,7 +9,6 @@ meta:
     factual:        scenario/29_do_operator_depth/factual.yaml
     counterfactual: scenario/29_do_operator_depth/ablated.yaml
   target_seconds: 10
-  cube_input: { emit_cube: true }
   criticite:
     kind: invariant
   seeds: [2929]

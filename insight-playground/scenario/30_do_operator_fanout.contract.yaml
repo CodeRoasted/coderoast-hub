@@ -9,7 +9,6 @@ meta:
     factual:        scenario/30_do_operator_fanout/factual.yaml
     counterfactual: scenario/30_do_operator_fanout/ablated.yaml
   target_seconds: 10
-  cube_input: { emit_cube: true }
   criticite:
     kind: invariant
   seeds: [3030]

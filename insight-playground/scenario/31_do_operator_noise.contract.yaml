@@ -9,7 +9,6 @@ meta:
     factual:        scenario/31_do_operator_noise/factual.yaml
     counterfactual: scenario/31_do_operator_noise/ablated.yaml
   target_seconds: 10
-  cube_input: { emit_cube: true }
   criticite:
     kind: invariant
   seeds: [3131]
