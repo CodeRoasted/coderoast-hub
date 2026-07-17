@@ -16,9 +16,6 @@ meta:
   metalog_config:
     top_k_size: 64
     reservoir_size: 64
-  criticite:
-    kind: invariant
-  seeds: [default]
 
 signal:
   must_fire:

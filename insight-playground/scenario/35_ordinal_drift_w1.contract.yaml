@@ -8,8 +8,6 @@ meta:
   inputs:
     baseline: scenario/35_ordinal_drift_w1/lat_fast.jsonl
     changed:  scenario/35_ordinal_drift_w1/lat_slow.jsonl
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:

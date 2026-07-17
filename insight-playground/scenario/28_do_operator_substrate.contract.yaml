@@ -9,9 +9,6 @@ meta:
     factual:  scenario/28_do_operator_substrate/factual.yaml
     counterfactual: scenario/28_do_operator_substrate/ablated.yaml
   target_seconds: 10
-  criticite:
-    kind: invariant
-  seeds: [2828]
 
 do:
   causal:

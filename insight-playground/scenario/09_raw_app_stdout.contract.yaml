@@ -15,9 +15,6 @@ meta:
     ladder: { levels: 1 }
     raw_strides: []
   explain_min_confidence: 0.75
-  criticite:
-    kind: invariant
-  seeds: [default]
 
 signal:
   per_window:

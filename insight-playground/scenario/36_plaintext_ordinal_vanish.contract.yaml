@@ -9,8 +9,6 @@ meta:
     baseline: scenario/36_plaintext_ordinal_vanish/baseline.log
     changed:  scenario/36_plaintext_ordinal_vanish/changed.log
   vehicle: raw_text
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:

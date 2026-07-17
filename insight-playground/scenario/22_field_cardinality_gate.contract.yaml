@@ -8,8 +8,6 @@ meta:
   inputs:
     baseline: scenario/22_field_cardinality_gate/baseline.jsonl
     changed:  scenario/22_field_cardinality_gate/changed.jsonl
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:

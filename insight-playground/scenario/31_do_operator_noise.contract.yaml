@@ -9,9 +9,6 @@ meta:
     factual:        scenario/31_do_operator_noise/factual.yaml
     counterfactual: scenario/31_do_operator_noise/ablated.yaml
   target_seconds: 10
-  criticite:
-    kind: invariant
-  seeds: [3131]
 
 do:
   causal:

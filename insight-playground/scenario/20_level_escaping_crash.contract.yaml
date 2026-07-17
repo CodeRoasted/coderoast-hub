@@ -9,8 +9,6 @@ meta:
     baseline: scenario/20_level_escaping_crash/baseline.log
     changed:  scenario/20_level_escaping_crash/changed.log
   vehicle: raw_text
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:

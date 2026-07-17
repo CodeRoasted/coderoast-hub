@@ -8,8 +8,6 @@ meta:
   inputs:
     baseline: scenario/33_where_attribution_stray_floor/baseline.log
     changed:  scenario/33_where_attribution_stray_floor/changed.log
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:

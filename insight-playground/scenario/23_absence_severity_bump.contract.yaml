@@ -8,8 +8,6 @@ meta:
   inputs:
     baseline: scenario/23_absence_severity_bump/baseline.jsonl
     changed:  scenario/23_absence_severity_bump/changed.jsonl
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:

@@ -20,9 +20,6 @@ meta:
   sequence:
     branching_delta_threshold_bits: 3.5
   explain_min_confidence: 0.75
-  criticite:
-    kind: invariant
-  seeds: [42]
 
 signal:
   must_fire: []

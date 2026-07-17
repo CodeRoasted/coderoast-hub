@@ -8,8 +8,6 @@ meta:
   inputs:
     baseline: scenario/32_where_attribution_covered/baseline.log
     changed:  scenario/32_where_attribution_covered/changed.log
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:

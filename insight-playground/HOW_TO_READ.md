@@ -36,8 +36,9 @@ The header comment says **what it asserts**. Below that, three blocks:
 - `axis:` — the ordering axis (`time` for a single run over time).
 - `pyramid_config:` / `metalog_config:` / `sequence:` — the engine configuration the assertions hold
   under (so a claim is pinned to a *specific*, reproducible setup, not a vague default).
-- `seeds:` — the deterministic seed(s). Same seed ⇒ same stream ⇒ same verdict.
-- `criticite:` / `explain_min_confidence:` — the severity model and the confidence floor for narration.
+- `explain_min_confidence:` — the confidence floor for narration. (The deterministic **seed** is
+  scenario-side — `deterministic_scenario.seed`, per-agent/instance — **not** a contract key; the
+  contract asserts the detection border, it does not drive the scenario's RNG.)
 
 ### `signal:` — what the detectors must (and must not) do
 - `must_fire:` — a list of detections that **must** occur. Each is a `coordinate:` (which detector

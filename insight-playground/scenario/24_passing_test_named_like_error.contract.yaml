@@ -9,8 +9,6 @@ meta:
     baseline: scenario/24_passing_test_named_like_error/baseline.log
     changed:  scenario/24_passing_test_named_like_error/changed_pass.log
   vehicle: raw_text
-  criticite:
-    kind: invariant
 
 interpretation:
   ranked_changes:
