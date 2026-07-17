@@ -229,6 +229,56 @@ Every output except `prometheus` and `statsd` requires a `format:` (or `formats:
 When `formats:` (sequence) is set it overrides `format:` (single string), allowing one
 sink to write multiple formats to the same path prefix.
 
+### Intent channel
+
+Some log formats have **more than one way to write the same thing**. A GitHub Actions step banner is
+the standing example — the runner writes it wrapped:
+
+```
+2026-05-01T10:00:00.1000000Z ##[group]Run yarn lint
+```
+
+while a log that has had its workflow commands removed carries the same step as:
+
+```
+2026-05-01T10:00:00.1000000Z Run yarn lint
+```
+
+Same step, same identity, two **materializations**. The channel is which one you render:
+
+```yaml
+outputs:
+  - type: file                      # the sink — where bytes go
+    format: github_actions          # the format — the line shape + its enrichment
+    intent_channel: annotated       # the channel — which materialization
+    path: build.log
+```
+
+Declare it, or the writer defaults to `annotated` — the form GitHub actually serves. `stripped` is a
+deliberately structure-poor lab form (a measurement control arm, not a channel GitHub serves): asking
+for it is the deliberate act, never the silent default.
+
+| Key | Axis | Question it answers |
+|-----|------|--------------------|
+| `type` | sink / transport | *Where do the bytes go?* |
+| `format` | intent format | *What shape are the lines?* |
+| `intent_channel` | intent channel | *Which materialization of that shape?* |
+
+**`github_actions` channels:**
+
+| Channel | Step banner | What it is |
+|---------|-------------|------------|
+| `annotated` (default) | `##[group]Run <cmd>` | **What GitHub actually serves.** The API, the Action, and a log download all give you this |
+| `stripped` | `Run <cmd>` | An intentionally structure-poor form. Used as a control arm when measuring how much the structure buys — **not** a form GitHub serves |
+
+Notes:
+
+- **The key is `intent_channel`, spelled in full** — `channel:` on an output already names the shared-memory
+  ring, and YAML would silently keep only one of two identical keys.
+- **An unrecognized channel name is a hard error at parse**, not a fallback. A typo would otherwise render
+  the Job banner and silently drop every Step — a hollow document that still looks plausible.
+- Formats with only one materialization (everything except `github_actions` today) ignore the key.
+
 ### Output Options
 
 All options are parsed per-sink and ignored when not applicable to the sink type.
@@ -239,6 +289,7 @@ All options are parsed per-sink and ignored when not applicable to the sink type
 | `type` | string | `"console"` | all | Sink type (see table above) |
 | `format` | string | `"json"` | all | Single format (see table above) |
 | `formats` | sequence | `[]` | all | Multi-format; overrides `format` when non-empty |
+| `intent_channel` | string | `""` (= writer default, `annotated`) | dialect formats | Which materialization to render (see [Intent channel](#intent-channel)). Only meaningful for a format that has more than one — today `github_actions` |
 | `path` | string | `""` | `file`, `recording`, `prometheus` | Output file path or metric prefix |
 | `max_size_bytes` | integer | `0` | `file` | Rotate when file exceeds this size (0 = no rotation) |
 | `max_files` | integer | `5` | `file` | Number of rotated files to keep |
