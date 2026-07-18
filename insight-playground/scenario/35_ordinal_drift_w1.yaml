@@ -1,0 +1,133 @@
+# 35 ordinal_drift_w1 — the W1 ordinal-drift gate (§4A.4 D-W1-1..7), on a DECLARED intervention.
+#
+# THE CUT GATE for the W1 ordinal channel. One declared-ordinal field (`latency_ms`) over one
+# generated stream, and two counterfactuals of it: a ~10-octave shift must read OrdinalDrift /
+# regression / HIGH (and its mirror, recovery / HIGH), while a sub-octave jitter must read neither
+# HIGH nor MED. `latency_ms` routes to W1, never the categorical FieldShift channel (D-W1-5 router
+# exclusivity).
+#
+# GENERATABLE ONLY SINCE LF4 SHIPPED (emission contract §4). The earlier attempt at this migration
+# is what produced LF4: `format: json` nested custom fields under a `"fields"` object and
+# string-quoted every value, and the W1 channel reads only a FLAT, natively-typed number. Measured
+# then by varying one cloud four ways — flat+number fired HIGH, while flat+string, nested+number and
+# nested+string each yielded ZERO rows. JSON now emits flat and natively typed, with the type DERIVED
+# from the generator (`integer: true` below), so the vehicle this claim needs finally exists.
+#
+# WHY IT IS GENERATED AND NOT A PAIR OF AUTHORED CLOUDS. The retired form was three byte-fixed
+# .jsonl files. Nothing checked them against anything: the author decided what changed and the engine
+# reported what changed, and nobody verified the two agreed. And the claim that matters most here —
+# that the shift moves the LATENCY CHANNEL AND NOTHING ELSE — was not expressible at all, because
+# "everything else is unmoved" needs an *else*, and only a declared edge defines one.
+#
+# THE AXIS IS CAUSAL, NOT BUILD: these are two counterfactuals of one world, not a succession, and
+# adjacency carries no meaning here (a build axis would claim it did). NOTE the fold — coordinate k
+# is base ∘ edges[1..k], so `sub-octave-jitter` (coordinate 2) is reached THROUGH `octave-shift`.
+# Both edges upsert the SAME node, and an upsert REPLACES, so coordinate 2 is exactly the jitter
+# world. That it works turns on replacement semantics, which is worth stating out loud.
+
+deterministic_scenario:
+  name: insight-ordinal-drift-w1
+  seed: 3535
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_ordinal_w1
+      format: json                       # the VEHICLE: newline-delimited JSON, flat + natively typed
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # ~10 octaves up. The W1 verdict is scale-RELATIVE, so what matters is the ratio (x1000), not
+      # the absolute band — the same reason the retired clouds were one distribution log-translated.
+      - name: octave-shift
+        upsert:
+          - path: agents.db.fields.latency_ms
+            value: { name: latency_ms, generator: range, min: 100000, max: 169000, integer: true }
+
+      # Sub-octave: +10 ms on a ~100 ms base is far under one octave, so W1 must stay quiet. This is
+      # the precision pole of the gate — the shift that must NOT fire.
+      - name: sub-octave-jitter
+        upsert:
+          - path: agents.db.fields.latency_ms
+            value: { name: latency_ms, generator: range, min: 110, max: 179, integer: true }
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        # The CARRIER of the ordinal claim. `integer: true` is what makes the emitted JSON value a
+        # native number rather than a quoted string — the type is derived from the generator and
+        # never re-declared on the output (emission contract §4.2).
+        - name: db
+          rate_per_second: 3.45          # -> 70 records, the retired clouds' count
+          message_template: "db query completed"
+          fields:
+            - { name: latency_ms, generator: range, min: 100, max: 169, integer: true }
+
+        # The FILLER — the population that must not move. It carries no latency, so the W1 channel
+        # cannot reach it; any row naming it is the diff inventing signal from an untouched stream.
+        - name: cache
+          rate_per_second: 3.45          # -> 70 records
+          message_template: "cache warm complete"
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-ordinal-drift-w1
+
+  positions:
+    - name: fast
+      coordinates: { causal_axis: null,              time_axis: 20s }
+    - name: slow
+      coordinates: { causal_axis: octave-shift,      time_axis: 20s }
+    - name: jittered
+      coordinates: { causal_axis: sub-octave-jitter, time_axis: 20s }
+
+  transitions:
+    # MAIN — the ~10-octave shift reads HIGH regression, and NOTHING else moves.
+    - from: fast
+      to: slow
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: OrdinalDrift, polarity: regression, shift: HIGH, template: "db query completed" }
+          must_not_emit:
+            - { kind: FieldShift, template: "db query completed" }   # D-W1-5 router exclusivity
+          attributable_to: ["latency_ms"]
+        untouched_projection:
+          exclude_rows:
+            - { kind: OrdinalDrift, template: "db query completed" }
+
+    # MIRROR — the same edge read backwards: recovery, same band.
+    - from: slow
+      to: fast
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: OrdinalDrift, polarity: recovery, shift: HIGH, template: "db query completed" }
+          must_not_emit:
+            - { kind: FieldShift, template: "db query completed" }
+          attributable_to: ["latency_ms"]
+        untouched_projection:
+          exclude_rows:
+            - { kind: OrdinalDrift, template: "db query completed" }
+
+    # WITHIN NOISE — the precision pole. A sub-octave jitter must produce no HIGH and no MED ordinal
+    # verdict, and no categorical reading either.
+    - from: fast
+      to: jittered
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_not_emit:
+            - { kind: OrdinalDrift, template: "db query completed", shift: HIGH }
+            - { kind: OrdinalDrift, template: "db query completed", shift: MED }
+            - { kind: FieldShift,   template: "db query completed" }
+        untouched_projection:
+          exclude_rows:
+            - { kind: OrdinalDrift, template: "db query completed" }

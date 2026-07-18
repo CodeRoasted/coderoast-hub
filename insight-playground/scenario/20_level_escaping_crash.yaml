@@ -1,0 +1,127 @@
+# 20 level_escaping_crash — the escaped-severity crash, caught by the pairwise diff.
+#
+# WHAT IT PINS, and the two poles are inseparable:
+#   • RECALL — a bare `Segmentation fault (core dumped)` carries NO level marker, and must still
+#     escalate to a HIGH / regression NewErrorPattern. The 2-token failure lexicon has to read the
+#     severity out of the WORDS, because nothing else in the line carries it.
+#   • PRECISION — two adjacency distractors that share one of those tokens
+#     (`image segmentation pipeline complete`, `page fault handler registered`) must NOT read as
+#     error patterns. A lexicon that fires on either has learned the token, not the failure.
+#
+# GENERATABLE ONLY SINCE LF3's `raw` HALF SHIPPED (emission contract §2.3). The claim is about the
+# ABSENCE of a head: while `raw` fabricated a level word, every line arrived pre-marked and the
+# escalation under test was handed to the marker instead of the lexicon — the claim would have
+# silently relocated to another detection path. `raw` now owns zero bytes of the head, so the line
+# is exactly the payload, which is what this fixture needs and what the retired .log carried.
+#
+# ON THE §2.4 GUARD (zero-prefix raw must not become a way to inline captured transcript text). The
+# three claim-bearing lines ARE literal, deliberately and necessarily: this fixture tests a LEXICON,
+# and a lexicon test must name the exact words it is about — `Segmentation fault` against
+# `segmentation pipeline` IS the experiment, and generating those tokens would destroy it. The
+# filler carries generators instead, so the stream's shape is declared rather than transcribed. The
+# guard is discipline about which literals earn their place, not a ban on literals.
+#
+# WHAT THE MIGRATION BUYS. The retired pair asserted which rows fire and which must not — a
+# blocklist naming the two distractors the author thought of. `exclude_rows` now bounds the WHOLE
+# report to the crash: any third row, on the filler or on a distractor nobody anticipated, fails.
+# Note the retired pair also dropped `Job completed` from 5 to 4 (the crash displaced it in the last
+# hand-typed cycle) — an artifact of transcribing, not a claim. Here `job` is a stable filler at 5
+# on both sides, so the edge ADDS exactly three lines and nothing else moves.
+
+deterministic_scenario:
+  name: insight-level-escaping-crash
+  seed: 2020
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_level_escaping
+      format: raw                        # the VEHICLE: the payload, and nothing but the payload
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # do(the build crashed): three lines appear that were not there before. Each carrier is silent
+      # in the base (rate 0 IS silence), so its template is genuinely NEW on the changed side rather
+      # than a frequency move — which is what a NewErrorPattern claim requires.
+      - name: crash-with-adjacent-distractors
+        upsert:
+          - path: agents.crash.rate_per_second
+            value: 0.01                  # -> 1 record
+          - path: agents.distractor-segmentation.rate_per_second
+            value: 0.01
+          - path: agents.distractor-fault.rate_per_second
+            value: 0.01
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        # ── The healthy CI bed. Present and unchanged on both sides; its shapes are declared
+        #    (generators), not transcribed. A rate r over D emits floor(D*r)+1 records, so 0.24/s
+        #    over 20 s is exactly 5 — the retired pair's per-line count.
+        - name: checkout
+          rate_per_second: 0.24
+          message_template: "Run actions/checkout@{ref}"
+          fields:
+            - { name: ref, generator: choice, values: [v4], emit: false }
+        - name: cache
+          rate_per_second: 0.24
+          message_template: "Cache restored from {key}"
+          fields:
+            - { name: key, generator: choice, values: [linux-node-modules], emit: false }
+        - name: compile
+          rate_per_second: 0.24
+          message_template: "Compiled {module} module ok"
+          fields:
+            - { name: module, generator: choice, values: [service], emit: false }
+        - name: job
+          rate_per_second: 0.24
+          message_template: "Job completed"
+
+        # ── The three lines the edge introduces. Silent in the base.
+        #
+        # THE CRASH — no level marker anywhere in the line. Everything the engine can use to reach
+        # HIGH has to come out of `Segmentation fault`.
+        - name: crash
+          rate_per_second: 0
+          message_template: "Segmentation fault (core dumped)"
+
+        # THE DISTRACTORS — each shares exactly ONE token with the crash and is entirely benign.
+        - name: distractor-segmentation
+          rate_per_second: 0
+          message_template: "image segmentation pipeline complete"
+        - name: distractor-fault
+          rate_per_second: 0
+          message_template: "page fault handler registered"
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-level-escaping-crash
+
+  positions:
+    - name: healthy
+      coordinates: { causal_axis: null,                        time_axis: 20s }
+    - name: crashed
+      coordinates: { causal_axis: crash-with-adjacent-distractors, time_axis: 20s }
+
+  transitions:
+    - from: healthy
+      to: crashed
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: NewErrorPattern, polarity: regression, severity: High, template: "Segmentation fault" }
+          must_not_emit:
+            - { kind: NewErrorPattern, template: "segmentation pipeline" }
+            - { kind: NewErrorPattern, template: "page fault" }
+        untouched_projection:
+          exclude_rows:
+            # The whole report is the crash. The distractors may not produce a row of ANY kind, and
+            # neither may the filler — which the retired blocklist could not say, because it had no
+            # declared intervention to define an "outside".
+            - { template: "Segmentation fault" }

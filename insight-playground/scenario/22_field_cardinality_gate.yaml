@@ -1,0 +1,110 @@
+# 22 field_cardinality_gate — the 4A.2 cardinality gate: a categorical shift SURVIVES, a
+# high-cardinality measurement reshuffle is SUPPRESSED.
+#
+# WHAT IT PINS, as one inseparable pair:
+#   • RECALL — `lb route tier` is a genuine categorical (3 values over 70 records, uniqueness ratio
+#     0.04). Its distribution really moves (60/6/4 -> 30/12/28), so a FieldShift MUST fire.
+#   • PRECISION — `db query latency N ms` is a measurement, not a category (~50 distinct values over
+#     70 records, ratio ~0.7+). Its values also really move, and a FieldShift must NOT fire. This is
+#     the F2 precision bug the 4A.2 gate closed.
+#
+# BOTH PARAMS GENUINELY MOVE, which is the point: the gate must separate them on WHAT THEY ARE, not
+# on whether anything changed. A gate that keyed on movement would fire on both.
+#
+# ON LF4, AND A CORRECTION. This fixture was listed as LF4-blocked (JSON fields nested and
+# string-quoted). That was WRONG, and re-measuring it is what showed why: 22's values live in the
+# MESSAGE (`db query latency 100 ms`), not in JSON fields, so the field-emission shape never reached
+# it. What actually blocked the migration was nothing — it was never tried. The generators below are
+# `emit: false` (LF5) precisely so they stay template inputs and no `k=v` tail appears, which is what
+# keeps the vehicle identical to the retired pair's.
+#
+# ITS RELATION TO FIXTURE 36, and why both must exist. Both carry a bare-integer measurement param.
+# Here the latency slot runs card ~50 >= the 4A.2 `max_card` gate, so the uniqueness-ratio test is
+# ASKED and correctly answers "not a categorical" -> suppressed. In 36 the per-endpoint latency slots
+# run card 12-14, UNDER that gate, so the ratio test is never asked and the same kind of value floods
+# (flaws.md F14). The two fixtures sit on opposite sides of one threshold; keeping them apart is what
+# makes the threshold visible.
+
+deterministic_scenario:
+  name: insight-field-cardinality-gate
+  seed: 2222
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_field_cardinality
+      format: json                       # the VEHICLE: newline-delimited JSON, level + message only
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # ONE compound edge moving BOTH params at once — deliberately, because the claim is a
+      # SEPARATION. Moving them in different transitions would let each be judged alone and would
+      # never test that the gate tells them apart in the same report.
+      - name: shift-both-params
+        upsert:
+          # The categorical really moves: tier 1 loses half its mass to tier 3.
+          - path: agents.lb.fields.tier
+            value:
+              name: tier
+              generator: weighted_choice
+              values: ["1", "2", "3"]
+              weights: [30, 12, 28]
+              emit: false
+          # The measurement really moves too: the whole latency band lifts by 9 ms.
+          - path: agents.db.fields.latency
+            value: { name: latency, generator: range, min: 109, max: 991, integer: true, emit: false }
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        # THE CATEGORICAL — 3 values, so the 4A.2 ratio test sees a real category.
+        - name: lb
+          rate_per_second: 3.45          # -> 70 records
+          message_template: "lb route tier {tier} ready"
+          fields:
+            - name: tier
+              generator: weighted_choice
+              values: ["1", "2", "3"]
+              weights: [60, 6, 4]
+              emit: false                # a TEMPLATE INPUT (LF5) — no `k=v` tail, as the retired pair
+
+        # THE MEASUREMENT — a wide band, so cardinality clears the 4A.2 gate and the ratio test is
+        # asked. `100 ms` is space-separated, so the token is a BARE INTEGER: the suppression here is
+        # 4A.2 cardinality, NOT the D-W1-9 lexical unit-suffix rule (flaws.md F14).
+        - name: db
+          rate_per_second: 3.45          # -> 70 records
+          message_template: "db query latency {latency} ms"
+          fields:
+            - { name: latency, generator: range, min: 100, max: 982, integer: true, emit: false }
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-field-cardinality-gate
+
+  positions:
+    - name: before
+      coordinates: { causal_axis: null,              time_axis: 20s }
+    - name: after
+      coordinates: { causal_axis: shift-both-params, time_axis: 20s }
+
+  transitions:
+    - from: before
+      to: after
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: FieldShift, template: "lb route tier" }
+          must_not_emit:
+            - { kind: FieldShift, template: "db query latency" }
+        untouched_projection:
+          exclude_rows:
+            # The categorical is the ONLY thing allowed to surface. The retired pair could forbid a
+            # latency FieldShift by name; this forbids everything else too — including any row on the
+            # latency template of a kind nobody thought to name.
+            - { template: "lb route tier" }
