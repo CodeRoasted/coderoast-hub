@@ -74,9 +74,10 @@ The header comment says **what it asserts**. Below that, three blocks:
 - `must_fire:` — a list of detections that **must** occur. Each is a `coordinate:` (which detector
   projection fired — read as `FAMILY.scale . channel . metric`) plus a `scope:` (on which template or
   field). `must_not_fire:` is the inverse — detections that must **not** occur.
-- `baseline_arm:` — a second, contrasting run (e.g. a shorter or unperturbed window) with its own
-  `must_fire` / `must_not_fire`. A two-arm contract is how a claim is made *non-vacuous*: the signal
-  must appear in the perturbed arm **and** stay absent in the matched control.
+  A second, contrasting anchor is how a claim is made *non-vacuous*: the signal must appear at the
+  perturbed coordinate **and** stay absent at the matched control. In the bundled form that second
+  anchor is simply another `position:` — an earlier time coordinate (silent before the trigger), or a
+  different world coordinate on the scenario's axis.
 
 ### `interpretation:` — what the final insight must say
 - `must_emit:` / `must_not_emit:` — assertions at the **insight** level (the operator-facing verdict),

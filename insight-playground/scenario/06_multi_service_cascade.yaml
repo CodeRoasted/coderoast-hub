@@ -107,3 +107,44 @@ deterministic_scenario:
         effects:
           - {target: order-api, error_rate: 0.32, latency_multiplier: 8.0}
           - {target: web-frontend, error_rate: 0.14, latency_multiplier: 3.0}
+
+# ── The bundled contract (unified grammar, axis-dsl §4.3) ─────────────────────────────────────
+# `positions:` are the claim ANCHORS — each a named coordinate vector plus the border read AT
+# it. The instrument below is what every one of those claims is pinned to.
+contract_scenario:
+  reference_scenario: insight-multi-service-cascade
+  pyramid_config:
+    raw_ring_capacity: 13
+    ladder:
+      levels: 3
+    raw_strides:
+    - lookback_windows: 2
+    - lookback_windows: 5
+  metalog_config:
+    top_k_size: 128
+    ngram_size: 3
+    max_ngram_keys: 16384
+    max_param_histograms: 4
+    max_histogram_values: 8
+  sequence:
+    branching_delta_threshold_bits: 3.5
+  explain_min_confidence: 0.75
+  positions:
+  - name: pre-cascade
+    coordinates:
+      time_axis: 250s
+    signal:
+      must_not_fire:
+      - RAW.acute . Nep . acute_new_templates
+
+  - name: cascaded
+    coordinates:
+      time_axis: 420s
+    signal:
+      must_fire:
+      - RAW.acute . Nep . acute_new_templates
+    interpretation:
+      composite:
+        severity: High
+      must_not_emit:
+      - severity: Critical

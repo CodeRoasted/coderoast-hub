@@ -32,3 +32,34 @@ deterministic_scenario:
         rate_per_second: 150.0
         start_delay_seconds: 28s
         message_template: "cache warmer populated entry"
+
+# ── The bundled contract (unified grammar, axis-dsl §4.3) ─────────────────────────────────────
+# `positions:` are the claim ANCHORS — each a named coordinate vector plus the border read AT
+# it. The instrument below is what every one of those claims is pinned to.
+contract_scenario:
+  reference_scenario: insight-late-emerging-benign
+  pyramid_config:
+    raw_ring_capacity: 13
+    ladder:
+      levels: 1
+    raw_strides: []
+  metalog_config:
+    top_k_size: 2
+    reservoir_size: 8
+  explain_min_confidence: 0.75
+  windows:
+    mode: single
+  positions:
+  - name: whole-run
+    coordinates:
+      time_axis: 30s
+    signal:
+      must_fire:
+      - coordinate: RAW.now . Rsv . salience
+        emits: NoveltyNGram
+        scope:
+          template: "cache warmer populated"
+
+    interpretation:
+      must_not_emit:
+      - any: true

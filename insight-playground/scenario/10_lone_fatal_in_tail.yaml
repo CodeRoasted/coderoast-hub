@@ -59,3 +59,37 @@ deterministic_scenario:
         message_template: "Process completed with exit code 2."
         rate_per_second: 0.02/s
         error_rate: 1.0
+
+# ── The bundled contract (unified grammar, axis-dsl §4.3) ─────────────────────────────────────
+# `positions:` are the claim ANCHORS — each a named coordinate vector plus the border read AT
+# it. The instrument below is what every one of those claims is pinned to.
+contract_scenario:
+  reference_scenario: insight-lone-fatal-in-tail
+  pyramid_config:
+    raw_ring_capacity: 13
+    ladder:
+      levels: 1
+    raw_strides: []
+  metalog_config:
+    top_k_size: 64
+    reservoir_size: 64
+
+  windows:
+    mode: single
+  positions:
+  - name: whole-run
+    coordinates:
+      time_axis: 240s
+    signal:
+      must_fire:
+      - coordinate: RAW.now . Rsv . salience
+        emits: NewErrorPattern
+        scope:
+          template: "exit code"
+    control_arms:
+    - name: reservoir_disabled
+      metalog_config:
+        top_k_size: 64
+        reservoir_size: 0
+      must_not_fire:
+      - RAW.now . Rsv . salience

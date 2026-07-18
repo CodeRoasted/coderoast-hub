@@ -65,3 +65,56 @@ deterministic_scenario:
           - name: recovered
             duration_seconds: 1m
             rate_per_second: 0/s
+
+# ── The bundled contract (unified grammar, axis-dsl §4.3) ─────────────────────────────────────
+# `positions:` are the claim ANCHORS — each a named coordinate vector plus the border read AT
+# it. The instrument below is what every one of those claims is pinned to.
+contract_scenario:
+  reference_scenario: insight-raw-app-stdout
+  pyramid_config:
+    raw_ring_capacity: 13
+    ladder:
+      levels: 1
+    raw_strides: []
+  explain_min_confidence: 0.75
+  windows:
+    mode: segmented
+  positions:
+  - name: baseline
+    coordinates:
+      time_axis: 60s
+    signal:
+      must_not_fire:
+      - "* . * . *"
+  - name: onset
+    coordinates:
+      time_axis: 120s
+    signal:
+      must_fire:
+      - coordinate: RAW.acute . Nep . acute_new_templates
+        scope:
+          template: "connection refused"
+        polarity: onset
+      must_not_fire:
+      - RAW.acute . Spk . template_count
+  - name: recovery
+    coordinates:
+      time_axis: 180s
+    signal:
+      must_fire:
+      - coordinate: RAW.acute . Seq . ngram_presence
+        emits: VanishedTemplate
+        scope:
+          template: "ERROR connection refused"
+        polarity: recovery
+      must_not_fire:
+      - RAW.acute . Nep . acute_new_templates
+
+    interpretation:
+      cube_a:
+        upper:
+        - level: ERROR
+      composite:
+        severity: High
+      must_not_emit:
+      - severity: Critical
