@@ -1,0 +1,139 @@
+# 23 absence_severity_bump — the presence-crossing severity reconciliation (D-VAN-1), on DECLARED
+# interventions.
+#
+# WHAT IT PINS. A template that VANISHES is reconciled against a recurrence floor: an ESTABLISHED
+# vanish (seen ≥ the floor) is bumped to HIGH regardless of its raw significance, a sub-noise vanish
+# is suppressed entirely, and a template whose share does not move must not churn at all.
+#
+# THE VOLUME ARITHMETIC IS THE FIXTURE. The retired pair conserved TOTAL volume across the arms
+# (200 → 200): the vanished mass was absorbed by `Request served` (74 + 30 + 16 + 6 = 126), which is
+# what leaves `Worker heartbeat` and the registry filler at IDENTICAL counts and IDENTICAL shares on
+# both sides. That is what makes their silence a claim about the engine: with the denominator fixed,
+# nothing about them moved arithmetically, so a row naming them could only be invention. So the
+# vanish edge is COMPOUND (a real `do(X=x, Y=y)`): it silences the three vanishing agents AND raises
+# the absorber to take exactly their mass.
+#
+# MEASURED, and it corrected a prediction that was written here first: dropping the absorber raise
+# (total 206 → 150) does NOT churn the fillers — no frequency row fires on them at all. What it
+# breaks instead is the absorber's own FrequencyShift. So conservation is not needed to keep the
+# fillers quiet; it is needed to make their quiet MEAN something, and to leave exactly one moving
+# share for the diff to name. The stronger claim was the wrong one and is not made.
+#
+# WHAT THE MIGRATION BUYS. The retired pair could only list which rows fire. Two of its guards were
+# blocklist entries — "no Telemetry vanish", "no Worker heartbeat row" — each forbidding one thing
+# the author happened to think of. `untouched_projection.exclude_rows` replaces both with the
+# allowlist: only Checkout, Cache and Request may produce ANY row. Telemetry and the heartbeat are
+# now covered not because they were named, but because they are not on the list — and so is every
+# row nobody anticipated.
+#
+# THE FLOOR BOUNDARY IS A SEPARATE WORLD, and that is a finding, not a convenience. The retired
+# pair carried it as a second `arms:` entry pointing at two smaller files (40 lines, not 200). The
+# reason it needs its own world is the noise floor: a vanish of 4 out of 207 is share 0.019 and is
+# suppressed as sub-noise BEFORE the recurrence floor is ever consulted — measured, the merged
+# version produced zero rows. Only in a ~40-line world do counts 4 and 3 clear 0.05 and reach the
+# floor that is under test. So it lives in `23_recurrence_floor_edge.yaml`. The general rule the
+# migration exposes: the pointing form's `arms:` could silently span unrelated worlds; an axis
+# contract addresses coordinates of ONE declared world, and an arm that changes the world's SCALE is
+# a different world, not a coordinate.
+#
+# NOT HERE: the F3b reword phantom (`Image pulled` → `Image fetched`). The retired pair carried it,
+# the contract never asserted it, and it is homed as a unit test (tests/unit/reword_phantom_pair_test).
+# Carrying it here would force its two phantom rows onto the allowlist and blunt the exact claim this
+# migration buys. `registry` stays as a plain stable filler so the volume arithmetic is unchanged.
+
+deterministic_scenario:
+  name: insight-absence-severity-bump
+  seed: 2323
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_absence_bump
+      format: json                       # the VEHICLE: newline-delimited JSON, as the retired pair.
+      shm_slot_count: 256                # No FIELD claim here (templates only), so flaws.md LF4 —
+      shm_backpressure_policy: block     # nested, string-quoted fields — does not reach this fixture.
+
+  causal_axis:
+    edges:
+      # ── EDGE 1: the established vanish, at CONSERVED volume ──────────────────────────────────
+      # RATES ARE SOLVED, NOT GUESSED: a rate r over duration D emits floor(D*r)+1 records — the
+      # first lands at t=0 — so 74 records over 20 s is 3.65/s, not 3.7/s. Every count here is exact.
+      # Three agents go silent (rate 0 IS silence, first-class) and the absorber takes their mass:
+      # 74 + 30 + 16 + 6 = 126 records. Total stays exactly 200, so every survivor's share is
+      # untouched and the filler's silence means something.
+      - name: vanish-established
+        upsert:
+          - path: agents.checkout.rate_per_second
+            value: 0
+          - path: agents.cache.rate_per_second
+            value: 0
+          - path: agents.telemetry.rate_per_second
+            value: 0
+          - path: agents.requests.rate_per_second
+            value: 6.25
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        # The ABSORBER — present throughout; its SHARE is what moves (74/200 → 126/200).
+        - name: requests
+          rate_per_second: 3.7           # -> 74 records
+          message_template: "Request served"
+
+        # The SHARE-STABLE FILLER — same count and same share on both sides of edge 1. Any row
+        # naming it is the diff inventing signal from a stream that did not move.
+        - name: heartbeat
+          rate_per_second: 2.4           # -> 48 records
+          message_template: "Worker heartbeat"
+
+        - name: registry
+          rate_per_second: 1.3           # -> 26 records
+          message_template: "Image pulled from registry"
+
+        # The two ESTABLISHED vanishes — well above the recurrence floor, so both bump to HIGH.
+        - name: checkout
+          rate_per_second: 1.5           # -> 30 records
+          message_template: "Checkout completed"
+
+        - name: cache
+          rate_per_second: 0.8           # -> 16 records
+          message_template: "Cache warmed"
+
+        # The SUB-NOISE vanish — share 6/200 = 0.03, under the 0.05 noise floor, so it is suppressed
+        # entirely. The precision pole: vanishing is not by itself news.
+        - name: telemetry
+          rate_per_second: 0.3           # -> 6 records
+          message_template: "Telemetry flushed"
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-absence-severity-bump
+
+  positions:
+    - name: established
+      coordinates: { causal_axis: null,               time_axis: 20s }
+    - name: vanished
+      coordinates: { causal_axis: vanish-established, time_axis: 20s }
+
+  transitions:
+    # MAIN — two established vanishes floor to HIGH, the absorber shifts, and the sub-noise vanish
+    # and the share-stable filler produce NOTHING. The two `must_not_emit` guards the retired pair
+    # carried (Telemetry, Worker heartbeat) are deliberately gone: exclude_rows subsumes them, and
+    # covers every row they did not think to forbid.
+    - from: established
+      to: vanished
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: VanishedTemplate, severity: High, template: "Checkout completed" }
+            - { kind: VanishedTemplate, severity: High, template: "Cache warmed" }
+            - { kind: FrequencyShift, template: "Request served" }
+        untouched_projection:
+          exclude_rows:
+            - { template: "Checkout completed" }
+            - { template: "Cache warmed" }
+            - { template: "Request served" }

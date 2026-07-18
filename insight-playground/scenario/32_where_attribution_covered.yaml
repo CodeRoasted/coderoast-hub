@@ -1,0 +1,90 @@
+# 32 where_attribution_covered — the WHERE coverage gate, PRESENT pole.
+#
+# WHAT IT PINS. A fully-structured window — every record carrying a functional location — EARNS an
+# attribution: at least one ranked row must come back stamped with `where.component ⊇ "myapp"`. This
+# is the present pole of the honesty floor whose absent pole is fixture 33 (a stray structured
+# MINORITY inside free text must NOT surface a location).
+#
+# THE VEHICLE IS UNIFORM SYSLOG, and that is exactly why this one is generatable where its twin is
+# not. One format for the whole stream means the head the emitter owns IS the correct head, so
+# flaws.md LF3 — the line head belongs to the format, not the author — never bites. Fixture 33 needs
+# a syslog-shaped line INSIDE a GHA stream, i.e. two head shapes in one stream, and stays
+# hand-authored until LF3 is retired.
+#
+# THE EDGE IS ONE KNOB. The retired pair moved from 100 healthy records to 60 healthy + 40 errors.
+# Here that is a single structural upsert replacing the message-body generator: a `static` value
+# becomes a `weighted_choice` over the same healthy phrase plus a failure one, at 60/40. Volume is
+# conserved (100 → 100) because the split is inside ONE agent's draw, not a second stream added
+# alongside — so the location claim cannot be an artifact of the window growing.
+#
+# WHAT THE MIGRATION BUYS. The retired contract asserted one thing: SOME row says "myapp". It could
+# not say that no row says anything ELSE — with a hand-authored pair there is no declared
+# intervention, so there is no "else" to quantify over. `exclude_rows` now bounds the whole report to
+# the failure phrase the edge introduced: a stray attribution to another component, a churn row on
+# the healthy template, or any finding the author never imagined now fails this contract.
+
+deterministic_scenario:
+  name: insight-where-attribution-covered
+  seed: 3232
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_where_covered
+      format: syslog                     # the VEHICLE: every record carries host + app, so the
+      shm_slot_count: 256                # window is component-admissible end to end
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # do(inject failures): the message body generator is REPLACED — a structural upsert at the
+      # field node, not a knob tweak — so 40% of the same agent's records become the failure phrase.
+      # The agent, its rate and its identity are untouched, which is what keeps the location claim
+      # about ATTRIBUTION rather than about a new stream appearing.
+      - name: inject-connection-failures
+        upsert:
+          - path: agents.myapp.fields.event
+            value:
+              name: event
+              generator: weighted_choice
+              values: ["request served ok", "ERROR connection refused after 3 retries"]
+              weights: [60, 40]
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1705314600000000000
+      timezone: UTC
+
+      agents:
+        # The single, fully-attributed producer. A rate r over duration D emits floor(D*r)+1 records
+        # (the first at t=0), so 4.95/s over 20 s is exactly 100 — the retired pair's count.
+        - name: myapp
+          rate_per_second: 4.95
+          message_template: "{event}"
+          fields:
+            - { name: event, generator: static, value: "request served ok" }
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-where-attribution-covered
+
+  positions:
+    - name: healthy
+      coordinates: { causal_axis: null,                      time_axis: 20s }
+    - name: failing
+      coordinates: { causal_axis: inject-connection-failures, time_axis: 20s }
+
+  transitions:
+    - from: healthy
+      to: failing
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { where: "myapp" }         # the gate: a covered window EARNS its location
+        untouched_projection:
+          exclude_rows:
+            # Everything the diff returns must be attributed to the one component that exists. The
+            # retired pair could not state this: it had no declared intervention, so it had no
+            # "else" to quantify over.
+            - { where: "myapp" }

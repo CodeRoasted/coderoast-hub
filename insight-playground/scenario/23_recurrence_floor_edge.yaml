@@ -1,0 +1,105 @@
+# 23 recurrence_floor_edge — the D-VAN-1 recurrence FLOOR, at its boundary.
+#
+# The twin of `23_absence_severity_bump.yaml`, and separate from it for a measured reason. Both test
+# how a VANISH is reconciled; this one isolates the floor itself, where only ONE count separates the
+# two verdicts: `Snapshot persisted` at 4 (== the floor) must still bump to HIGH, `Sidecar synced` at
+# 3 (< the floor) must stay LOW. Both are far under the MEDIUM band on raw significance, so the
+# recurrence floor is the ONLY thing that can separate them — which is what makes this a boundary
+# test rather than a second vanish test.
+#
+# WHY ITS OWN WORLD (the constraint the migration exposed). The claim needs counts of 4 and 3 to be
+# ABOVE the 0.05 noise floor, and a share is a count over a TOTAL. In this ~40-line world they are
+# 0.10 and 0.075 and reach the recurrence floor; folded into the 200-line world of its twin they are
+# 0.019 and 0.014 and are suppressed as sub-noise before the floor is ever consulted — measured, that
+# version produced ZERO rows. The retired pointing form hid this by letting one `arms:` list span two
+# unrelated file pairs. An axis contract addresses coordinates of ONE declared world, so an arm that
+# changes the world's SCALE is a different world, not a coordinate — and saying so out loud is worth
+# more than the file it costs.
+#
+# RATES ARE SOLVED, NOT GUESSED: a rate r over duration D emits floor(D*r)+1 records (the first at
+# t=0), so 4 records over 20 s is 0.15/s and 3 is 0.125/s. Guessing 0.2 and 0.15 gave 5 and 4 — and
+# 5-vs-4 puts BOTH straddlers on the established side of the floor, which reads as two HIGH rows and
+# silently destroys the boundary. Measured; the counts here are exact.
+#
+# NOTE the volume here is NOT conserved (40 → 33), unlike its twin, and deliberately: the survivors'
+# shares are meant to lift. That lift is what `exclude_rows` has to admit below, and the comment
+# there records what was measured rather than what was hoped.
+
+deterministic_scenario:
+  name: insight-recurrence-floor-edge
+  seed: 2324
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_floor_edge
+      format: json
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # ONE edge silencing BOTH straddlers at once. They must vanish in the same transition: judging
+      # them against each other is the entire claim, and two edges would compare two different
+      # denominators and stop being a boundary test.
+      - name: vanish-floor-straddlers
+        upsert:
+          - path: agents.snapshot.rate_per_second
+            value: 0
+          - path: agents.sidecar.rate_per_second
+            value: 0
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        - name: requests
+          rate_per_second: 1.05          # -> 22 records
+          message_template: "Request served"
+
+        - name: heartbeat
+          rate_per_second: 0.5           # -> 11 records
+          message_template: "Worker heartbeat"
+
+        # AT the floor — 4 occurrences, share 0.10. Established by exactly one count.
+        - name: snapshot
+          rate_per_second: 0.15          # -> 4 records (AT the floor)
+          message_template: "Snapshot persisted"
+
+        # UNDER the floor — 3 occurrences, share 0.075. Above the noise floor (so it is judged at
+        # all) and below the recurrence floor (so it is not bumped).
+        - name: sidecar
+          rate_per_second: 0.125         # -> 3 records (UNDER it)
+          message_template: "Sidecar synced"
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-recurrence-floor-edge
+
+  positions:
+    - name: both-present
+      coordinates: { causal_axis: null,                    time_axis: 20s }
+    - name: both-vanished
+      coordinates: { causal_axis: vanish-floor-straddlers, time_axis: 20s }
+
+  transitions:
+    - from: both-present
+      to: both-vanished
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: VanishedTemplate, severity: High, template: "Snapshot persisted" }
+            - { kind: VanishedTemplate, severity: Low,  template: "Sidecar synced" }
+        untouched_projection:
+          exclude_rows:
+            - { template: "Snapshot persisted" }
+            - { template: "Sidecar synced" }
+            # The survivors are admitted because the total DROPS here (40 → 33), so their shares
+            # genuinely lift — a frequency reading on them is correct, not invention. Narrowed to
+            # FrequencyShift so anything else on them (a vanish, a level flip, a new template) still
+            # fails: the projection admits the arithmetic consequence, not the templates wholesale.
+            - { kind: FrequencyShift, template: "Request served" }
+            - { kind: FrequencyShift, template: "Worker heartbeat" }
