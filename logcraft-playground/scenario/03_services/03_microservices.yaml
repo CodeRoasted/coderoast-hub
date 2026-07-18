@@ -94,9 +94,12 @@ scenario:
     - name: notification-service
       use_template: go_api
       rate_per_second: 20/s
-      message_template: "notification type={type} channel={channel} status={status}"
+      message_template: "notification type={notification_type} channel={channel} status={status}"
       fields:
-        - name: type
+        # Renamed from `type`: with LF4 the JSON envelope's own `type` key is reserved, and a flat
+        # custom field of that name would shadow it. The rendered message is unchanged — the
+        # literal `type=` lives in the template, only the placeholder moved.
+        - name: notification_type
           generator: weighted_choice
           values: [order_confirmed, shipped, delivered, payment_failed]
           weights: [40, 30, 20, 10]
