@@ -42,6 +42,7 @@ adding `seed:` selects **deterministic mode** — bit-identical logs on every ru
 - [Latency](#latency)
 - [Templates](#templates)
 - [Causal Flows](#causal-flows)
+- [Causal Axis](#causal-axis)
 - [Rules](#rules)
 - [Incidents](#incidents)
 - [Health State Machine](#health-state-machine)
@@ -70,12 +71,17 @@ adding `seed:` selects **deterministic mode** — bit-identical logs on every ru
 
 ## Scenario Root Keys
 
-A file starts with **one** root key: `scenario:` (the REAL, wall-clock world) or
+A file starts with **one** world root: `scenario:` (the REAL, wall-clock world) or
 `deterministic_scenario:` (the DETERMINISTIC, virtual-clock world — a `seed:` is required). See
-[Engine Modes](#engine-modes). Unrecognized keys warn but do not fail parsing.
+[Engine Modes](#engine-modes). The **document root is a closed vocabulary** — `scenario:`,
+`deterministic_scenario:`, and an optional bundled `contract_scenario:` (read by the InSight
+contract harness, ignored by LogCraft); any other document root is a **hard reject** (a typo'd root
+must fail loudly, never parse as an empty scenario). *Scenario-level* unrecognized keys warn but do
+not fail parsing.
 
 The worlds differ in **shape**: the real world is **flat**; the deterministic world nests the **clock
-+ the world it scopes** under a `time_axis:` block, keeping scenario **config** at the root.
++ the world it scopes** under a `time_axis:` block, keeping scenario **config** at the root. A
+[causal axis](#causal-axis) wraps `time_axis` one level deeper.
 
 ```yaml
 # REAL — flat, no axis
@@ -111,6 +117,7 @@ deterministic_scenario:
 | `registry` | map | absent | External agent file registry |
 | `includes` | sequence | absent | Merge other YAML files |
 | `builds` | sequence | absent | The BuildId axis (deterministic; the outer axis wrapping `time_axis`) |
+| `causal_axis` | map | absent | The outer causal axis — `{ edges, time_axis }`; when declared, `time_axis` nests under it. Deterministic only. See [Causal Axis](#causal-axis) |
 
 **World keys — under `time_axis:` in the deterministic world; flat at the root in the real world:**
 
@@ -1112,6 +1119,79 @@ flows:
 
 > **Determinism.** Integer-ns window quantum + contraction-off double interpolation + the existing per-instance
 > draw — LogCraft's certified strict-float regime, symmetric to the agent `field_weight_ramps`.
+
+---
+
+## Causal Axis
+
+The **outer causal axis** — the do-operator surface. The deterministic scenario declares its world
+**and** the interventions on it in one place: `causal_axis: { edges: [...], time_axis: {...} }`. An
+axis block is exactly its `edges:` plus its base world; when a `causal_axis` is declared, the
+`time_axis` block nests under it (never also at the root). Deterministic world only.
+
+```yaml
+deterministic_scenario:
+  name: my-causal-scenario
+  seed: 2828
+  outputs: [ ... ]                    # config stays at the root
+
+  causal_axis:
+    edges:
+      - name: ablate-outage           # the edge NAME is the public axis coordinate
+        remove: [ incidents.payments_outage ]
+      - name: heal-notify
+        upsert:
+          - path: flows.settle.states.notify.error_rate
+            value: 0.0
+    time_axis:                        # the axis BASE — the ordinary deterministic world
+      duration_seconds: 10
+      agents: [ ... ]
+      incidents: [ ... ]
+      flows: [ ... ]
+```
+
+**Coordinates.** Coordinate `0` is the **neutral base** — the `time_axis` world exactly as written.
+Edge *k* lands at coordinate *k*: the world after applying edges 1..k in order. The edge **name** is
+the coordinate a contract addresses (`causal_axis: null` = the base); names are unique, non-empty,
+and `null` is reserved. The engine never meets an axis: materializing a coordinate yields a plain
+scenario, and a derived coordinate is **byte-equivalent to hand-authoring** the transformed world
+(the fold edits the YAML world, then the ordinary parse runs).
+
+**Edge keys:**
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `name` | string | required — the public coordinate (unique; `null` reserved for the base) |
+| `upsert` | sequence of `{path, value}` | create-or-**replace the whole node** at `path` |
+| `remove` | sequence of paths | remove the element/key at `path` (must exist) |
+
+An edge declares at least one operation. Within an edge, upserts apply before removes, in
+declaration order. An edge may be compound (a real `do(X=x, Y=y)`); single-operation edges are the
+causal-battery norm.
+
+**Paths** are world-relative (resolved from the `time_axis` block), dot-separated, and **name-keyed**
+in named-object lists — `agents.gateway` is the agent *named* gateway, never an index (numeric
+segments are rejected). Every path is validated: an unknown segment is a **hard reject** with the
+live roster in the message, never a silent no-op edit.
+
+- **Replacement granularity = path depth.** There are no merge semantics: `upsert` at a node
+  (`agents.gateway`) replaces the whole object (the `name:` is injected from the path — a value
+  whose `name:` differs is rejected as a smuggled rename); `upsert` at a leaf
+  (`flows.settle.states.notify.error_rate`) is the one-knob tweak, sibling keys untouched.
+- **`upsert` creates.** A missing element in a named list is appended (that is how a removed
+  incident is *restored* by a later edge).
+- **`remove` keeps the key.** Removing the last element of a list leaves the (empty) list in place,
+  so a later edge can upsert back into it.
+
+Exactly-K holds across an edge by construction: an agent's RNG stream is keyed by its identity
+(never its index), so an edge that touches K moves exactly K — every unintervened agent's records
+are bit-identical across adjacent coordinates.
+
+**The bundled contract.** A causal scenario may carry its detection contract in the same file under
+the `contract_scenario:` root — transitions addressed by axis coordinates
+(`from: {causal_axis: null, time_axis: 10s}` → `to: {causal_axis: ablate-outage, time_axis: 10s}`).
+LogCraft ignores that root; the InSight contract harness reads it (see
+`insight-playground/HOW_TO_READ.md`).
 
 ---
 

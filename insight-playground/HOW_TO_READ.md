@@ -12,8 +12,28 @@ Each case is **two files** that share a number and name:
 | `NN_name.yaml` | The **scenario** — a LogCraft description of a fleet of services and how they behave (rates, latencies, phases, incidents). Running it deterministically produces a log stream. |
 | `NN_name.contract.yaml` | The **contract** — what InSight must assert about that stream. Declarative; the harness checks it against the engine's real output. |
 
-Some cases add a subfolder (`NN_name/`) with input fixtures (hand-authored `.jsonl` / `.log`) or paired
-**arms** (`factual` / `ablated` / `control`) used to contrast two runs.
+Some cases add a subfolder (`NN_name/`) with input fixtures (hand-authored `.jsonl` / `.log`), or a
+paired `control` scenario file used to contrast two authored runs.
+
+**Causal (do-operator) cases are ONE bundled file** (`NN_name.yaml` carrying both roots): the
+`deterministic_scenario` declares the world **and** the intervention — a `causal_axis` edge — and the
+`contract_scenario` root addresses **coordinates** of that axis. The counterfactual arm is *derived*
+by the engine from the declared edge, never hand-authored, so the intervention has exactly one source
+of truth. A transition reads:
+
+```yaml
+contract_scenario:
+  reference_scenario: <the scenario's name>     # a checked label
+  invariant:                                    # control cells — must be unmoved by EVERY transition
+    - cube_a: { level: ERROR, where: [notifier] }
+  transitions:                                  # one causal comparison each
+    - from: { causal_axis: null,           time_axis: 10s }   # null = the base world
+      to:   { causal_axis: <edge-name>,    time_axis: 10s }   # after the declared intervention
+      expect:
+        collapses:     [ ... ]                  # cells the intervention must REMOVE
+        reappears_as:  [ ... ]                  # what the collapsed location degrades to
+        untouched_projection: { exclude_where: [ ... ] }  # everything else byte-identical
+```
 
 ## Reading a scenario (`NN_name.yaml`)
 
