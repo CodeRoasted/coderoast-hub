@@ -3,8 +3,8 @@
 #
 # ONE bundled file (axis-dsl §4.2): `deterministic_scenario` declares the world AND the
 # intervention (the causal_axis edge — the SINGLE source of truth); `contract_scenario`
-# addresses coordinates. The counterfactual is DERIVED (coordinate 'ablate-payments-outage'),
-# never authored. See insight-playground/HOW_TO_READ.md.
+# declares POSITIONS (nodes) and TRANSITIONS (edges) over them. The counterfactual
+# position 'ablated' is DERIVED (coordinate 'ablate-payments-outage'), never authored. See insight-playground/HOW_TO_READ.md.
 
 deterministic_scenario:
   name: insight-do-operator-fanout
@@ -97,9 +97,16 @@ contract_scenario:
   invariant:
     - cube_a: { level: ERROR, where: [notifier] }
 
+  positions:
+    - name: factual
+      coordinates: { causal_axis: null, time_axis: 10s }
+    - name: ablated
+      coordinates: { causal_axis: ablate-payments-outage, time_axis: 10s }
+
   transitions:
-    - from: { causal_axis: null, time_axis: 10s }
-      to:   { causal_axis: ablate-payments-outage, time_axis: 10s }
+    - from: factual
+      to: ablated
+      compare: RAW.run
       expect:
         collapses:
           - cube_a: { level: ERROR, where: [card] }

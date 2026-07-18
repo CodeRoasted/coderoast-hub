@@ -1188,8 +1188,8 @@ Exactly-K holds across an edge by construction: an agent's RNG stream is keyed b
 are bit-identical across adjacent coordinates.
 
 **The bundled contract.** A causal scenario may carry its detection contract in the same file under
-the `contract_scenario:` root — transitions addressed by axis coordinates
-(`from: {causal_axis: null, time_axis: 10s}` → `to: {causal_axis: ablate-outage, time_axis: 10s}`).
+the `contract_scenario:` root — named `positions:` (coordinate vectors; `causal_axis: null` = the
+base) and `transitions:` referencing them by name, compared at a declared `compare:` locus.
 LogCraft ignores that root; the InSight contract harness reads it (see
 `insight-playground/HOW_TO_READ.md`).
 

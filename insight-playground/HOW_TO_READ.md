@@ -26,9 +26,15 @@ contract_scenario:
   reference_scenario: <the scenario's name>     # a checked label
   invariant:                                    # control cells — must be unmoved by EVERY transition
     - cube_a: { level: ERROR, where: [notifier] }
-  transitions:                                  # one causal comparison each
-    - from: { causal_axis: null,           time_axis: 10s }   # null = the base world
-      to:   { causal_axis: <edge-name>,    time_axis: 10s }   # after the declared intervention
+  positions:                                    # named coordinate vectors — the claim anchors
+    - name: factual
+      coordinates: { causal_axis: null,        time_axis: 10s }   # null = the base world
+    - name: ablated
+      coordinates: { causal_axis: <edge-name>, time_axis: 10s }   # after the intervention
+  transitions:                                  # one causal comparison each, between named positions
+    - from: factual
+      to: ablated
+      compare: RAW.run                          # which stratum of each run is compared
       expect:
         collapses:     [ ... ]                  # cells the intervention must REMOVE
         reappears_as:  [ ... ]                  # what the collapsed location degrades to
