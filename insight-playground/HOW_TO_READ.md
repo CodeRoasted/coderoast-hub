@@ -15,11 +15,15 @@ Each case is **two files** that share a number and name:
 Some cases add a subfolder (`NN_name/`) with input fixtures (hand-authored `.jsonl` / `.log`), or a
 paired `control` scenario file used to contrast two authored runs.
 
-**Causal (do-operator) cases are ONE bundled file** (`NN_name.yaml` carrying both roots): the
-`deterministic_scenario` declares the world **and** the intervention — a `causal_axis` edge — and the
-`contract_scenario` root addresses **coordinates** of that axis. The counterfactual arm is *derived*
-by the engine from the declared edge, never hand-authored, so the intervention has exactly one source
-of truth. A transition reads:
+**Transition cases are ONE bundled file** (`NN_name.yaml` carrying both roots): the
+`deterministic_scenario` declares the world **and** the intervention — an axis edge — and the
+`contract_scenario` root addresses **coordinates** of that axis. The second arm is *derived* by the
+engine from the declared edge, never hand-authored, so the intervention has exactly one source of
+truth. Two axes carry coordinates, and a position addresses the one its scenario declares:
+`causal_axis: <edge-name|null>` (a counterfactual family — the name is the coordinate) or
+`build_axis: <k>` (a CI build history — the ordinal is the coordinate, and there is no time
+coordinate to give, because CI steps compare per build increment rather than instant to instant).
+A transition reads:
 
 ```yaml
 contract_scenario:
@@ -31,7 +35,7 @@ contract_scenario:
       coordinates: { causal_axis: null,        time_axis: 10s }   # null = the base world
     - name: ablated
       coordinates: { causal_axis: <edge-name>, time_axis: 10s }   # after the intervention
-  transitions:                                  # one causal comparison each, between named positions
+  transitions:                                  # one comparison each, between named positions
     - from: factual
       to: ablated
       compare: RAW.run                          # which stratum of each run is compared

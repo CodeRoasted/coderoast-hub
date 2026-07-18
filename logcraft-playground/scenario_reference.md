@@ -42,7 +42,7 @@ adding `seed:` selects **deterministic mode** — bit-identical logs on every ru
 - [Latency](#latency)
 - [Templates](#templates)
 - [Causal Flows](#causal-flows)
-- [Causal Axis](#causal-axis)
+- [Interventional Axes](#interventional-axes)
 - [Rules](#rules)
 - [Incidents](#incidents)
 - [Health State Machine](#health-state-machine)
@@ -79,9 +79,12 @@ contract harness, ignored by LogCraft); any other document root is a **hard reje
 must fail loudly, never parse as an empty scenario). *Scenario-level* unrecognized keys warn but do
 not fail parsing.
 
-The worlds differ in **shape**: the real world is **flat**; the deterministic world nests the **clock
-+ the world it scopes** under a `time_axis:` block, keeping scenario **config** at the root. A
-[causal axis](#causal-axis) wraps `time_axis` one level deeper.
+The worlds differ in **shape**: the real world is **flat**; the deterministic world nests its world
+under an **axis block**, keeping scenario **config** at the root. Which axis you declare says what the
+world is compared along: `time_axis:` (the stream world — the clock plus the world it scopes),
+`build_axis:` (the CI world — the world inline, no clock, because CI steps compare per build
+increment), or `causal_axis:` wrapping a `time_axis` one level deeper. See
+[Interventional Axes](#interventional-axes).
 
 ```yaml
 # REAL — flat, no axis
@@ -116,8 +119,8 @@ deterministic_scenario:
 | `templates` | map | absent | Named reusable agent presets |
 | `registry` | map | absent | External agent file registry |
 | `includes` | sequence | absent | Merge other YAML files |
-| `builds` | sequence | absent | The BuildId axis (deterministic; the outer axis wrapping `time_axis`) |
-| `causal_axis` | map | absent | The outer causal axis — `{ edges, time_axis }`; when declared, `time_axis` nests under it. Deterministic only. See [Causal Axis](#causal-axis) |
+| `causal_axis` | map | absent | The counterfactual axis — `{ edges, time_axis }`; NAMED coordinates. When declared, `time_axis` nests under it. Deterministic only. See [Interventional Axes](#interventional-axes) |
+| `build_axis` | map | absent | The CI history — `{ edges, <the CI world inline> }`; ORDINAL coordinates, no `time_axis`. Deterministic only. See [Interventional Axes](#interventional-axes) |
 
 **World keys — under `time_axis:` in the deterministic world; flat at the root in the real world:**
 
@@ -383,6 +386,7 @@ agents:
 | `message_template` | string | `""` | Message string with `{field_name}` placeholders |
 | `use_template` | string | `""` | Template name to inherit from |
 | `instances` | integer | `1` | Number of parallel copies |
+| `after` | string | absent | *(`build_axis` world only)* the agent this step follows — the declared step chain. Rejected elsewhere: a stream world's agents are a population with no order |
 | `start_delay_seconds` | string/number | `0.0` | Startup delay (duration format or seconds) |
 | `fields` | sequence | `[]` | Field definitions (see [Fields & Generators](#fields--generators)) |
 | `phases` | sequence | `[]` | Time-based behavior phases (see [Phases](#phases)) |
@@ -1122,12 +1126,22 @@ flows:
 
 ---
 
-## Causal Axis
+## Interventional Axes
 
-The **outer causal axis** — the do-operator surface. The deterministic scenario declares its world
-**and** the interventions on it in one place: `causal_axis: { edges: [...], time_axis: {...} }`. An
-axis block is exactly its `edges:` plus its base world; when a `causal_axis` is declared, the
-`time_axis` block nests under it (never also at the root). Deterministic world only.
+An **axis block is its own declaration plus its base** — and the base is either another axis or the
+world itself, inline. Two interventional axes exist; both use the same edges, the same verbs and the
+same fold, and differ only in what a coordinate MEANS:
+
+| | `causal_axis` | `build_axis` |
+|---|---|---|
+| what it models | a family of counterfactuals — *what if X had not happened* | a CI history — build 1, build 2, … |
+| its base | a nested `time_axis:` (the stream world) | the **CI world, inline** (no time axis) |
+| coordinates | **NAMED** — the label is the meaning; `null` = the base | **ORDINAL** — the succession is the meaning; an edge `name:` is rejected |
+| edges may be empty | no (with no edge it is the axis-less scenario — drop the block) | yes (the one-build history; the block still types the world) |
+
+Deterministic world only — an axis under `scenario:` is a hard reject. Exactly one interventional
+axis per file: nesting two (`causal_axis ⊃ build_axis` — do(…) on a declared history) is recognized
+and refused.
 
 ```yaml
 deterministic_scenario:
@@ -1150,18 +1164,43 @@ deterministic_scenario:
       flows: [ ... ]
 ```
 
-**Coordinates.** Coordinate `0` is the **neutral base** — the `time_axis` world exactly as written.
-Edge *k* lands at coordinate *k*: the world after applying edges 1..k in order. The edge **name** is
-the coordinate a contract addresses (`causal_axis: null` = the base); names are unique, non-empty,
-and `null` is reserved. The engine never meets an axis: materializing a coordinate yields a plain
-scenario, and a derived coordinate is **byte-equivalent to hand-authoring** the transformed world
-(the fold edits the YAML world, then the ordinary parse runs).
+```yaml
+deterministic_scenario:
+  name: my-build-history
+  seed: 4040
+  outputs: [ ... ]
+
+  build_axis:
+    edges:                            # no names: coordinate 1 is "build 1"
+      - upsert:                       # build 1 — do(inject failure into a step)
+          - path: agents.step-lint.error_rate
+            value: 0.9
+    duration_seconds: 20              # the BUILD'S LENGTH — see "time in the CI world" below
+    agents:                           # the CI world, inline — ordered by `after:`
+      - name: job
+        intent: { kind: job, payload: "build (ubuntu-latest)", name: github }
+      - name: step-install
+        intent: { kind: step, payload: "yarn install", name: github }
+        after: job
+      - name: step-lint
+        intent: { kind: step, payload: "yarn lint", name: github }
+        after: step-install
+```
+
+**Coordinates.** Coordinate `0` is the **base** — the world exactly as written. Edge *k* lands at
+coordinate *k*: the world after applying edges 1..k **in order** (a fold — edge 2 operates on the
+world edge 1 produced, not on the base). The engine never meets an axis: materializing a coordinate
+yields a plain scenario, and a derived coordinate is **byte-equivalent to hand-authoring** the
+transformed world (the fold edits the YAML world, then the ordinary parse runs). Loading a scenario
+validates the WHOLE axis — every coordinate is parsed, not merely folded, so an edge that applies
+cleanly but produces an illegal world fails on the declaration rather than on whoever asks for that
+coordinate first.
 
 **Edge keys:**
 
 | Key | Type | Description |
 |-----|------|-------------|
-| `name` | string | required — the public coordinate (unique; `null` reserved for the base) |
+| `name` | string | `causal_axis`: required — the public coordinate (unique; `null` reserved for the base). `build_axis`: **rejected** — the coordinate is the position |
 | `upsert` | sequence of `{path, value}` | create-or-**replace the whole node** at `path` |
 | `remove` | sequence of paths | remove the element/key at `path` (must exist) |
 
@@ -1169,10 +1208,10 @@ An edge declares at least one operation. Within an edge, upserts apply before re
 declaration order. An edge may be compound (a real `do(X=x, Y=y)`); single-operation edges are the
 causal-battery norm.
 
-**Paths** are world-relative (resolved from the `time_axis` block), dot-separated, and **name-keyed**
-in named-object lists — `agents.gateway` is the agent *named* gateway, never an index (numeric
-segments are rejected). Every path is validated: an unknown segment is a **hard reject** with the
-live roster in the message, never a silent no-op edit.
+**Paths** are world-relative (resolved from the axis's base), dot-separated, and **name-keyed** in
+named-object lists — `agents.gateway` is the agent *named* gateway, never an index (numeric segments
+are rejected). Every path is validated: an unknown segment is a **hard reject** with the live roster
+in the message, never a silent no-op edit.
 
 - **Replacement granularity = path depth.** There are no merge semantics: `upsert` at a node
   (`agents.gateway`) replaces the whole object (the `name:` is injected from the path — a value
@@ -1187,10 +1226,39 @@ Exactly-K holds across an edge by construction: an agent's RNG stream is keyed b
 (never its index), so an edge that touches K moves exactly K — every unintervened agent's records
 are bit-identical across adjacent coordinates.
 
-**The bundled contract.** A causal scenario may carry its detection contract in the same file under
-the `contract_scenario:` root — named `positions:` (coordinate vectors; `causal_axis: null` = the
-base) and `transitions:` referencing them by name, compared at a declared `compare:` locus.
-LogCraft ignores that root; the InSight contract harness reads it (see
+### The CI world (`build_axis`)
+
+The world under `build_axis:` is the CI world, and the agents **inherit** it — which is what makes
+the keys below legal here and rejected elsewhere, and vice versa.
+
+**The step chain (`after:`).** A CI document is ORDERED (the step sequence is semantics), so each
+agent names its predecessor. The chain is strict — exactly one head (an agent following nothing), at
+most one successor per agent, no cycle — i.e. a **total order**, and the agents are materialized *in*
+it: the order they happen to be listed in carries nothing. A fork, a cycle, two heads, a self-loop or
+an `after:` naming no live agent are all hard rejects.
+
+The order is declared in the WORLD rather than performed by an edge for one reason: a world property
+can be restated by hand, so a derived build is a world you could have written yourself. It has two
+visible consequences, both matching what a real CI YAML diff shows:
+
+- **adding a step re-parents its successor** — two upserts, the new step and the successor's `after:`;
+- **removing a step must re-parent too** — leaving a dangling `after:` is a reject, not an automatic
+  splice. An edge does exactly and only what it says.
+
+**Time in the CI world.** There is no `time_axis` here (nesting one is a hard reject): CI steps do
+not compare instant to instant, they compare per build increment. Time survives as a shared monotone
+**sequence** — it keeps an origin (`start_time_unix_ns`), a format (`timezone`, rendered by the
+[`timestamp`](#timestamp) generator) and a length (`duration_seconds`, the build's own duration), but
+nothing compares along it. `incidents:` is therefore rejected as well: its `trigger: "time > …"`
+addresses a coordinate that does not exist. A failing step is the agent's `error_rate` — which is
+also exactly what an edge upserts to inject one.
+
+### The bundled contract
+
+A scenario carrying an axis may carry its detection contract in the same file under the
+`contract_scenario:` root — named `positions:` (coordinate vectors: `causal_axis: <name|null>`, or
+`build_axis: <k>`) and `transitions:` referencing them by name, compared at a declared `compare:`
+locus. LogCraft ignores that root; the InSight contract harness reads it (see
 `insight-playground/HOW_TO_READ.md`).
 
 ---

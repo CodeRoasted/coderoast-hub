@@ -1,0 +1,123 @@
+# 40 build_axis_history — a declared CI BUILD HISTORY, and the axis property at cube grain.
+#
+# The generator derives build 1 from build 0 under ONE declared edge — do(inject failure into
+# `step-lint`). Nothing here is hand-authored twice: the intervention is declared exactly once, on
+# the axis, and the contract only addresses COORDINATES of it.
+#
+# THE CI WORLD (axis-dsl §4.2). The agents nest under `build_axis:` directly — there is no
+# `time_axis`, because CI steps do not compare instant to instant; they compare per BUILD increment.
+# Time is a shared monotone sequence with an origin, a format and a length, and nothing compares
+# along it. The step SEQUENCE is a declared chain (`after:`), so this world can be restated by hand
+# exactly as the fold produces it.
+#
+# WHAT THIS PINS: `untouched_projection` IS the axis property — an edge intervening on quantum K
+# moves EXACTLY K, every other cell of the cube byte-identical across the two builds. It is
+# INHERITED from identity-keyed RNG (adr/0020), never enforced, which is precisely why it is worth
+# asserting at cube grain: a fold that keyed on position, or that rewrote a name, would break it
+# here and nowhere else. (The Sift-v1 INTENT-GRAIN diff across this axis is a different claim and a
+# different beat — not this fixture.)
+
+deterministic_scenario:
+  name: insight-build-axis-history
+  seed: 4040
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_build_axis
+      format: kv                       # as the do-battery bundles: `service=<agent>` is the cube's
+      shm_slot_count: 256              # `where` dimension, which is what exclude_where addresses
+      shm_backpressure_policy: block
+
+  build_axis:
+    edges:
+      # build 1 — the build that BROKE lint: do(inject failure into step-lint). One knob, one step;
+      # an upsert at a LEAF, so every sibling key (the chain included) is untouched.
+      - upsert:
+          - path: agents.step-lint.error_rate
+            value: 0.9
+
+      # build 2 — the build that FIXED it. The history is a fold, so build 2 = build 1 ∘ this edge:
+      # the failure it heals is the one build 1 introduced, not anything in the base world.
+      - upsert:
+          - path: agents.step-lint.error_rate
+            value: 0.0
+
+    duration_seconds: 20                 # the build's LENGTH — the sequence's end, not an axis
+    start_time_unix_ns: 1700000000000000000
+    timezone: UTC
+
+    agents:
+      - name: job                        # the chain head — exactly one agent follows nothing
+        intent: { kind: job, payload: "build (ubuntu-latest)", name: github }
+      - name: step-install
+        intent: { kind: step, payload: "yarn install", name: github }
+        after: job
+        rate_per_second: 4
+        message_template: "installing {pkg}"
+        fields:
+          # `service` IS the cube's WHERE dimension (canon's kv strategy reads component/service/…),
+          # and `exclude_where` addresses it — so each step names itself.
+          - { name: service, generator: static, value: step-install }
+          - { name: pkg, generator: choice, values: [react, lodash, typescript] }
+      - name: step-lint
+        intent: { kind: step, payload: "yarn lint", name: github }
+        after: step-install
+        rate_per_second: 4
+        message_template: "linting {file}"
+        fields:
+          # `service` IS the cube's WHERE dimension (canon's kv strategy reads component/service/…),
+          # and `exclude_where` addresses it — so each step names itself.
+          - { name: service, generator: static, value: step-lint }
+          - { name: file, generator: choice, values: [a.ts, b.ts, c.ts] }
+      - name: step-build
+        intent: { kind: step, payload: "yarn build", name: github }
+        after: step-lint
+        rate_per_second: 4
+        message_template: "compiling {unit}"
+        fields:
+          # `service` IS the cube's WHERE dimension (canon's kv strategy reads component/service/…),
+          # and `exclude_where` addresses it — so each step names itself.
+          - { name: service, generator: static, value: step-build }
+          - { name: unit, generator: choice, values: [core, api, cli] }
+
+# ── The bundled contract (read by the InSight contract harness) ──────────────────────────────────
+# Positions on an ORDINAL axis carry an integer coordinate and NO time coordinate: this world has no
+# time axis to address. The horizon of both arms is the build's own declared length.
+contract_scenario:
+  reference_scenario: insight-build-axis-history
+
+  invariant:                             # the control: a step the edge never names must not move
+    - cube_a: { level: INFO, where: [step-install] }
+
+  positions:
+    - name: build-0                      # green
+      coordinates: { build_axis: 0 }
+    - name: build-1                      # lint broke
+      coordinates: { build_axis: 1 }
+    - name: build-2                      # lint fixed
+      coordinates: { build_axis: 2 }
+
+  transitions:
+    # The break. EXACTLY K, with nothing else claimed — on its own this would be a blind gate (a
+    # fold that silently did nothing would pass it), which is what the second transition answers.
+    - from: build-0
+      to: build-1
+      compare: RAW.run
+      expect:
+        untouched_projection:
+          exclude_where: [step-lint]     # EXACTLY K: everything else byte-identical
+
+    # The fix — and the POSITIVE claim that makes the pair non-vacuous: the Error cell must carry
+    # real mass at build 1 (a floor the harness enforces) and collapse to zero at build 2, with the
+    # location degrading back to INFO rather than vanishing. If the edges never bit, this fails.
+    - from: build-1
+      to: build-2
+      compare: RAW.run
+      expect:
+        collapses:
+          - cube_a: { level: ERROR, where: [step-lint] }
+        reappears_as:
+          - cube_a: { level: INFO, where: [step-lint] }
+        untouched_projection:
+          exclude_where: [step-lint]
