@@ -1,0 +1,154 @@
+# 41 build_axis_intent_grain — the Sift-v1 INTENT-GRAIN diff across a declared CI build history,
+# and the axis property at QUANTUM grain.
+#
+# The generator derives build 1 from build 0 under ONE declared edge — do(inject failure into
+# `step-lint`). Nothing is hand-authored twice: the intervention is declared exactly once, on the
+# axis, and the contract only addresses COORDINATES of it. What rides on top is the product's own
+# CLI-default comparison (`diff_logs_aligned` — segment each build log into behavioural quanta,
+# align homologous quanta across the two runs, diff each matched pair).
+#
+# HOW THIS DIFFERS FROM 40 (they are not two takes on one claim — they are two VEHICLES):
+#   • 40 emits `kv` and asserts at CUBE grain. There `service=<agent>` is the cube's WHERE
+#     dimension, so its claim is carried by `exclude_where` over components.
+#   • THIS emits `github_actions` + an `intent_channel`, so the stream is a real GHA DOCUMENT
+#     (`Complete job name: …` + ordered `Run …` banners) and its claim is carried by `exclude_phase`
+#     over QUANTA. Measured: on the GHA vehicle the diff's rows carry no `where` at all (the window
+#     is not component-admissible) and carry `phase` instead — the two vehicles route the
+#     attribution through different channels, which is exactly why moving 40 here would silently
+#     relocate its claim rather than extend it.
+#
+# WHAT THIS PINS — the AXIS PROPERTY at intent grain: an edge intervening on quantum K moves
+# EXACTLY K. `exclude_phase` is the half a hand-authored baseline/changed pair can never assert:
+# "and NOTHING BEYOND the intervention moved" needs an *else*, and only a DECLARED edge defines it.
+# The non-vacuity is real and not free — `yarn install` and `yarn build` draw their own RNG streams
+# in both builds, and stay bit-identical across the fold only because the RNG is identity-keyed
+# (adr/0020). A fold that keyed on position, or that rewrote an agent name, would light those two
+# quanta up here and nowhere else.
+#
+# (That a step delta surfaces AT ALL is already proven, on hand-authored scenarios, by
+# gha_document_g2_seam_test.cpp. Re-asserting it on an axis would be a SUT==ORACLE re-run; the claim
+# here is the one only an axis can make.)
+#
+# TIME IN THE CI WORLD — why every step carries `start_delay_seconds` + a two-phase block. `after:`
+# declares the step ORDER (the roster is materialized in it), but it does not sequence TIME: an
+# agent emits from its start until the scenario ends. A CI document whose steps overlap in time has
+# degenerate quanta — every banner fires at t=0 and every later line falls in the last one — so the
+# intent grain would have nothing to address. Each step therefore declares its own slot: base rate 0
+# (silent), a `start_delay_seconds` opening the slot, a `run` phase carrying the rate, and a
+# terminal `idle` phase (past the last phase an agent STAYS on it — it does not revert to base).
+# Measured spans: install [20s,30s) · lint [30s,40s) · build [40s,50s), one banner at each boundary.
+
+deterministic_scenario:
+  name: insight-build-axis-intent-grain
+  seed: 4141
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_intent_grain
+      format: github_actions           # the DOCUMENT vehicle: banners open the quanta the diff aligns
+      intent_channel: stripped         # ADR 0029 D3/D4 — declared once here, read back by the harness
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  build_axis:
+    edges:
+      # build 1 — the build that BROKE lint: do(inject failure into step-lint). The edge upserts the
+      # `run` PHASE's error_rate, not the agent's: the phase overrides the agent for its slot, so an
+      # agent-level upsert would be shadowed by the phase and the edge would silently not bite.
+      - upsert:
+          - path: agents.step-lint.phases.run.error_rate
+            value: 0.9
+
+      # build 2 — the build that FIXED it. The history is a fold, so build 2 = build 1 ∘ this edge:
+      # the failure it heals is the one build 1 introduced, not anything in the base world.
+      - upsert:
+          - path: agents.step-lint.phases.run.error_rate
+            value: 0.0
+
+    duration_seconds: 30                 # the build's LENGTH — the sequence's end, not an axis
+    start_time_unix_ns: 1700000000000000000
+    timezone: UTC
+
+    agents:
+      - name: job                        # the chain head — exactly one agent follows nothing
+        intent: { kind: job, payload: "build (ubuntu-latest)", name: github }
+
+      - name: step-install
+        intent: { kind: step, payload: "yarn install", name: github }
+        after: job
+        rate_per_second: 0               # base = the behaviour BEFORE the first phase
+        phases:
+          - { name: run,  duration_seconds: 10, rate_per_second: 4 }
+          - { name: idle, duration_seconds: 20, rate_per_second: 0 }
+        message_template: "installing {pkg}"
+        fields:
+          - { name: pkg, generator: choice, values: [react, lodash, typescript] }
+
+      - name: step-lint
+        intent: { kind: step, payload: "yarn lint", name: github }
+        after: step-install
+        rate_per_second: 0
+        start_delay_seconds: 10          # its slot opens where step-install's closes
+        phases:
+          - { name: run,  duration_seconds: 10, rate_per_second: 4 }
+          - { name: idle, duration_seconds: 20, rate_per_second: 0 }
+        message_template: "linting {file}"
+        fields:
+          - { name: file, generator: choice, values: [a.ts, b.ts, c.ts] }
+
+      - name: step-build
+        intent: { kind: step, payload: "yarn build", name: github }
+        after: step-lint
+        rate_per_second: 0
+        start_delay_seconds: 20
+        phases:
+          - { name: run,  duration_seconds: 10, rate_per_second: 4 }
+          - { name: idle, duration_seconds: 20, rate_per_second: 0 }
+        message_template: "compiling {unit}"
+        fields:
+          - { name: unit, generator: choice, values: [core, api, cli] }
+
+# ── The bundled contract (read by the InSight contract harness) ──────────────────────────────────
+# Positions on an ORDINAL axis carry an integer coordinate and NO time coordinate: this world has no
+# time axis to address. The horizon of both arms is the build's own declared length.
+contract_scenario:
+  reference_scenario: insight-build-axis-intent-grain
+
+  positions:
+    - name: build-0                      # green
+      coordinates: { build_axis: 0 }
+    - name: build-1                      # lint broke
+      coordinates: { build_axis: 1 }
+    - name: build-2                      # lint fixed
+      coordinates: { build_axis: 2 }
+
+  transitions:
+    # The BREAK, read at intent grain. `must_fire` is the reachability half (the lint failures
+    # surface as new error patterns under their own quantum); `exclude_phase` is the axis property
+    # itself — no finding anywhere else in the document, though `yarn install` and `yarn build` are
+    # each 40 independently-drawn lines in both builds.
+    - from: build-0
+      to: build-1
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: NewErrorPattern, polarity: regression, template: "linting" }
+          must_not_emit:
+            - { kind: NewErrorPattern, template: "installing" }
+            - { kind: NewErrorPattern, template: "compiling" }
+        untouched_projection:
+          exclude_phase: ["yarn lint"]   # EXACTLY K: every finding sits in the quantum the edge names
+
+    # The FIX — the same edge run backwards through the fold. The recovery polarity is what makes
+    # the pair non-vacuous in the other direction: if the edges never bit, nothing resolves here.
+    - from: build-1
+      to: build-2
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: ResolvedPattern, polarity: recovery, template: "linting" }
+        untouched_projection:
+          exclude_phase: ["yarn lint"]

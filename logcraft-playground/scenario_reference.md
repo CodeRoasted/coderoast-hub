@@ -720,8 +720,21 @@ agents:
 | `field_weight_ramps` | sequence | `[]` | Gradually drift a `weighted_choice` field's value distribution over the phase (see [Distribution drift](#distribution-drift-ramps)) |
 | `level_weight_ramp` | map | absent | Gradually drift the agent's `level_weights` (severity mix) over the phase (see [Distribution drift](#distribution-drift-ramps)) |
 
-Phases run sequentially in order. When all phases complete, the agent continues at its
-base configuration (or the scenario ends if `duration_seconds` has elapsed).
+Phases run sequentially in order. **Past the last phase the agent STAYS on that last phase** — it
+does *not* revert to its base configuration. The base config is the agent's behaviour *before* the
+first phase, never after the last; a phase list is a one-way timeline whose final entry is the
+terminal state. So an agent that must go quiet at the end declares that explicitly, as a trailing
+zero-rate phase:
+
+```yaml
+    rate_per_second: 0                 # base — the behaviour BEFORE the first phase
+    start_delay_seconds: 10s
+    phases:
+      - { name: run,  duration_seconds: 10s, rate_per_second: 4 }
+      - { name: idle, duration_seconds: 40s, rate_per_second: 0 }   # terminal: silent to the end
+```
+
+Without the trailing `idle`, the agent keeps emitting at `run`'s rate for the rest of the scenario.
 
 ### Distribution drift (ramps)
 
@@ -1249,7 +1262,29 @@ visible consequences, both matching what a real CI YAML diff shows:
 not compare instant to instant, they compare per build increment. Time survives as a shared monotone
 **sequence** — it keeps an origin (`start_time_unix_ns`), a format (`timezone`, rendered by the
 [`timestamp`](#timestamp) generator) and a length (`duration_seconds`, the build's own duration), but
-nothing compares along it. `incidents:` is therefore rejected as well: its `trigger: "time > …"`
+nothing compares along it.
+
+> **`after:` orders the ROSTER, it does not sequence TIME — and a document consumer can tell.** An
+> agent emits from its start until the scenario ends, so steps declared in a chain still *overlap*:
+> every banner fires at t=0 and every later line falls inside the last quantum opened. That is
+> invisible at cube grain (mass is summed, not segmented) and fatal at **intent grain** — the
+> quantum-aligned diff (`diff_logs_aligned`) would compare one giant last-step quantum against
+> another. A step that must own a *slot* declares it, with the terminal-phase rule above:
+>
+> ```yaml
+>   - name: step-lint
+>     after: step-install
+>     rate_per_second: 0                 # silent before its slot
+>     start_delay_seconds: 10            # the slot opens where step-install's closes
+>     phases:
+>       - { name: run,  duration_seconds: 10, rate_per_second: 4 }
+>       - { name: idle, duration_seconds: 20, rate_per_second: 0 }   # …and closes here
+> ```
+>
+> An edge intervening on such a step upserts the **phase's** knob
+> (`agents.step-lint.phases.run.error_rate`), not the agent's: the phase overrides the agent for the
+> slot's duration, so an agent-level upsert is shadowed and the edge silently does not bite.
+> Worked example: `insight-playground/scenario/41_build_axis_intent_grain.yaml`. `incidents:` is therefore rejected as well: its `trigger: "time > …"`
 addresses a coordinate that does not exist. A failing step is the agent's `error_rate` — which is
 also exactly what an edge upserts to inject one.
 
