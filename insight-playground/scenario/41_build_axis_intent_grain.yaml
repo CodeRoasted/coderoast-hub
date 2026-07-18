@@ -11,14 +11,14 @@
 #   • 40 emits `kv` and asserts at CUBE grain. There `service=<agent>` is the cube's WHERE
 #     dimension, so its claim is carried by `exclude_where` over components.
 #   • THIS emits `github_actions` + an `intent_channel`, so the stream is a real GHA DOCUMENT
-#     (`Complete job name: …` + ordered `Run …` banners) and its claim is carried by `exclude_phase`
-#     over QUANTA. Measured: on the GHA vehicle the diff's rows carry no `where` at all (the window
+#     (`Complete job name: …` + ordered `Run …` banners) and its claim is carried by `exclude_rows`
+#     guards on `phase` (QUANTA). Measured: on the GHA vehicle the diff's rows carry no `where` at all (the window
 #     is not component-admissible) and carry `phase` instead — the two vehicles route the
 #     attribution through different channels, which is exactly why moving 40 here would silently
 #     relocate its claim rather than extend it.
 #
 # WHAT THIS PINS — the AXIS PROPERTY at intent grain: an edge intervening on quantum K moves
-# EXACTLY K. `exclude_phase` is the half a hand-authored baseline/changed pair can never assert:
+# EXACTLY K. `exclude_rows` is the half a hand-authored baseline/changed pair can never assert:
 # "and NOTHING BEYOND the intervention moved" needs an *else*, and only a DECLARED edge defines it.
 # The non-vacuity is real and not free — `yarn install` and `yarn build` draw their own RNG streams
 # in both builds, and stay bit-identical across the fold only because the RNG is identity-keyed
@@ -125,7 +125,7 @@ contract_scenario:
 
   transitions:
     # The BREAK, read at intent grain. `must_fire` is the reachability half (the lint failures
-    # surface as new error patterns under their own quantum); `exclude_phase` is the axis property
+    # surface as new error patterns under their own quantum); `exclude_rows` is the axis property
     # itself — no finding anywhere else in the document, though `yarn install` and `yarn build` are
     # each 40 independently-drawn lines in both builds.
     - from: build-0
@@ -139,7 +139,8 @@ contract_scenario:
             - { kind: NewErrorPattern, template: "installing" }
             - { kind: NewErrorPattern, template: "compiling" }
         untouched_projection:
-          exclude_phase: ["yarn lint"]   # EXACTLY K: every finding sits in the quantum the edge names
+          exclude_rows:                  # EXACTLY K: every finding sits in the quantum the edge names
+            - { phase: "yarn lint" }
 
     # The FIX — the same edge run backwards through the fold. The recovery polarity is what makes
     # the pair non-vacuous in the other direction: if the edges never bit, nothing resolves here.
@@ -151,4 +152,5 @@ contract_scenario:
           must_fire:
             - { kind: ResolvedPattern, polarity: recovery, template: "linting" }
         untouched_projection:
-          exclude_phase: ["yarn lint"]
+          exclude_rows:
+            - { phase: "yarn lint" }

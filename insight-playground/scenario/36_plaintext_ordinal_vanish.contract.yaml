@@ -2,13 +2,15 @@
 # Contract — what it asserts: The vanished recurrence is surfaced.
 #
 # A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+#
+# VEHICLE: raw_text — a plain-text CI stream carrying its measurements as template PARAMS
+# (`Nms`, `$N`), not as declared fields, so flaws.md LF4 does not apply here.
 
 meta:
   axis: diff
   inputs:
     baseline: scenario/36_plaintext_ordinal_vanish/baseline.log
     changed:  scenario/36_plaintext_ordinal_vanish/changed.log
-  vehicle: raw_text
 
 interpretation:
   ranked_changes:

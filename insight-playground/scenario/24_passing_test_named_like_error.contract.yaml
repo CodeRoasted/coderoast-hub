@@ -2,13 +2,15 @@
 # Contract — what it asserts: True-negative: a passing outcome is not misread as a failure because of its name.
 #
 # A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+#
+# VEHICLE: raw_text — raw conan/cmake stdout interleaved inside a GHA stream, i.e. TWO head
+# shapes in one stream. Not generatable while the emitter owns the head (flaws.md LF3).
 
 meta:
   axis: diff
   inputs:
     baseline: scenario/24_passing_test_named_like_error/baseline.log
     changed:  scenario/24_passing_test_named_like_error/changed_pass.log
-  vehicle: raw_text
 
 interpretation:
   ranked_changes:
