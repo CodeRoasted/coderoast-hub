@@ -7,24 +7,26 @@
 deterministic_scenario:
   name: span-duration-red
   seed: 4242
-  duration_seconds: 0.5
 
   outputs:
     - { name: spans, type: console, format: otel_span }
 
-  agents:
-    - { name: svc, intent: service, rate_per_second: 0, log_level: info }
+  time_axis:                     # the clock + the world it scopes (axis-dsl §3)
+    duration_seconds: 0.5
 
-  flows:
-    - name: checkout
-      instance_rate_per_second: 1/s
-      max_concurrent: 1
-      correlation_field: trace_id
-      start: auth
-      states:
-        auth:    { agent: svc, message_template: "auth",    span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
-        charge:  { agent: svc, message_template: "charge",  span_duration_ms: { distribution: normal, mean: 200, stddev: 2 } }   # ← blown-up regime
-        confirm: { agent: svc, message_template: "confirm", span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
-      transitions:
-        - { from: auth,   to: charge }
-        - { from: charge, to: confirm }
+    agents:
+      - { name: svc, intent: service, rate_per_second: 0, log_level: info }
+
+    flows:
+      - name: checkout
+        instance_rate_per_second: 1/s
+        max_concurrent: 1
+        correlation_field: trace_id
+        start: auth
+        states:
+          auth:    { agent: svc, message_template: "auth",    span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
+          charge:  { agent: svc, message_template: "charge",  span_duration_ms: { distribution: normal, mean: 200, stddev: 2 } }   # ← blown-up regime
+          confirm: { agent: svc, message_template: "confirm", span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
+        transitions:
+          - { from: auth,   to: charge }
+          - { from: charge, to: confirm }

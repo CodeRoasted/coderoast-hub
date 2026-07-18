@@ -6,35 +6,37 @@
 deterministic_scenario:
   name: span-added-green
   seed: 4242
-  duration_seconds: 0.5
 
   outputs:
     - { name: spans, type: console, format: otel_span }
 
-  agents:
-    - { name: svc, intent: service, rate_per_second: 0, log_level: info }
+  time_axis:                     # the clock + the world it scopes (axis-dsl §3)
+    duration_seconds: 0.5
 
-  flows:
-    - name: heartbeat            # control — identical in green and red
-      instance_rate_per_second: 1/s
-      max_concurrent: 1
-      correlation_field: trace_id
-      start: hb_open
-      states:
-        hb_open:  { agent: svc, message_template: "hb open" }
-        hb_close: { agent: svc, message_template: "hb close" }
-      transitions:
-        - { from: hb_open, to: hb_close }
+    agents:
+      - { name: svc, intent: service, rate_per_second: 0, log_level: info }
 
-    - name: order                # target — the arm the change lands on
-      instance_rate_per_second: 1/s
-      max_concurrent: 1
-      correlation_field: trace_id
-      start: receive
-      states:
-        receive: { agent: svc, message_template: "receive" }
-        process: { agent: svc, message_template: "process" }
-        commit:  { agent: svc, message_template: "commit" }
-      transitions:
-        - { from: receive, to: process }
-        - { from: process, to: commit }
+    flows:
+      - name: heartbeat            # control — identical in green and red
+        instance_rate_per_second: 1/s
+        max_concurrent: 1
+        correlation_field: trace_id
+        start: hb_open
+        states:
+          hb_open:  { agent: svc, message_template: "hb open" }
+          hb_close: { agent: svc, message_template: "hb close" }
+        transitions:
+          - { from: hb_open, to: hb_close }
+
+      - name: order                # target — the arm the change lands on
+        instance_rate_per_second: 1/s
+        max_concurrent: 1
+        correlation_field: trace_id
+        start: receive
+        states:
+          receive: { agent: svc, message_template: "receive" }
+          process: { agent: svc, message_template: "process" }
+          commit:  { agent: svc, message_template: "commit" }
+        transitions:
+          - { from: receive, to: process }
+          - { from: process, to: commit }
