@@ -1,0 +1,121 @@
+# 29_do_operator_depth
+# Contract — what it asserts: Causal attribution holds through depth.
+#
+# ONE bundled file (axis-dsl §4.2): `deterministic_scenario` declares the world AND the
+# intervention (the causal_axis edge — the SINGLE source of truth); `contract_scenario`
+# addresses coordinates. The counterfactual is DERIVED (coordinate 'ablate-settle-cascade'),
+# never authored. See insight-playground/HOW_TO_READ.md.
+
+deterministic_scenario:
+  name: insight-do-operator-depth
+  seed: 2929
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_do_op_depth
+      format: kv
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      - name: ablate-settle-cascade
+        remove: [ incidents.settle_cascade ]
+    time_axis:
+      duration_seconds: 10s
+      agents:
+        - name: gateway
+          intent: web_server
+          rate_per_second: 0
+        - name: payments
+          intent: service
+          rate_per_second: 0
+        - name: ledger
+          intent: service
+          rate_per_second: 0
+        - name: fulfillment
+          intent: service
+          rate_per_second: 0
+        - name: notifier
+          intent: service
+          rate_per_second: 0
+
+      incidents:
+        - name: settle_cascade
+          trigger: "time > 0.5s"
+          duration_seconds: 60s
+          effects:
+            - target: payments
+              error_rate: 1.0
+            - target: ledger
+              error_rate: 1.0
+            - target: fulfillment
+              error_rate: 1.0
+
+      flows:
+        - name: settle
+          instance_rate_per_second: 5/s
+          start_delay_seconds: 1s
+          max_concurrent: 1
+          correlation_field: trace_id
+          start: ingress
+          states:
+            ingress:
+              agent: gateway
+              message_template: "accept settle request"
+              fields:
+                - {name: component, generator: static, value: gateway}
+            charge:
+              agent: payments
+              message_template: "charge order total"
+              fields:
+                - {name: component, generator: static, value: payments}
+            record:
+              agent: ledger
+              message_template: "post ledger entry"
+              fields:
+                - {name: component, generator: static, value: ledger}
+            ship:
+              agent: fulfillment
+              message_template: "enqueue shipment"
+              fields:
+                - {name: component, generator: static, value: fulfillment}
+            notify:
+              agent: notifier
+              error_rate: 1.0
+              message_template: "publish settlement event"
+              fields:
+                - {name: component, generator: static, value: notifier}
+            egress:
+              agent: gateway
+              message_template: "settle response ok"
+              fields:
+                - {name: component, generator: static, value: gateway}
+          transitions:
+            - {from: ingress, to: charge, network_latency_ms: 2}
+            - {from: charge, to: record, network_latency_ms: 3}
+            - {from: record, to: ship, network_latency_ms: 3}
+            - {from: ship, to: notify, network_latency_ms: 3}
+            - {from: notify, to: egress, network_latency_ms: 2}
+
+contract_scenario:
+  reference_scenario: insight-do-operator-depth
+
+  invariant:
+    - cube_a: { level: ERROR, where: [notifier] }
+
+  transitions:
+    - from: { causal_axis: null, time_axis: 10s }
+      to:   { causal_axis: ablate-settle-cascade, time_axis: 10s }
+      expect:
+        collapses:
+          - cube_a: { level: ERROR, where: [payments] }
+          - cube_a: { level: ERROR, where: [ledger] }
+          - cube_a: { level: ERROR, where: [fulfillment] }
+        reappears_as:
+          - cube_a: { level: INFO, where: [payments] }
+          - cube_a: { level: INFO, where: [ledger] }
+          - cube_a: { level: INFO, where: [fulfillment] }
+        untouched_projection:
+          exclude_where: [payments, ledger, fulfillment]

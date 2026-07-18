@@ -1,0 +1,103 @@
+# 31_do_operator_noise
+# Contract — what it asserts: Causal attribution survives the noise.
+#
+# ONE bundled file (axis-dsl §4.2): `deterministic_scenario` declares the world AND the
+# intervention (the causal_axis edge — the SINGLE source of truth); `contract_scenario`
+# addresses coordinates. The counterfactual is DERIVED (coordinate 'ablate-payments-outage'),
+# never authored. See insight-playground/HOW_TO_READ.md.
+
+deterministic_scenario:
+  name: insight-do-operator-noise
+  seed: 3131
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_do_op_noise
+      format: kv
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      - name: ablate-payments-outage
+        remove: [ incidents.payments_outage ]
+    time_axis:
+      duration_seconds: 10s
+      agents:
+        - name: gateway
+          intent: web_server
+          rate_per_second: 0
+        - name: payments
+          intent: service
+          rate_per_second: 0
+        - name: notifier
+          intent: service
+          rate_per_second: 0
+        - name: monitor
+          intent: service
+          rate_per_second: 8/s
+          log_level: info
+          error_rate: 0.0
+          message_template: "heartbeat ok"
+          fields:
+            - {name: component, generator: static, value: monitor}
+
+      incidents:
+        - name: payments_outage
+          trigger: "time > 0.5s"
+          duration_seconds: 60s
+          effects:
+            - target: payments
+              error_rate: 1.0
+
+      flows:
+        - name: settle
+          instance_rate_per_second: 5/s
+          start_delay_seconds: 1s
+          max_concurrent: 1
+          correlation_field: trace_id
+          start: ingress
+          states:
+            ingress:
+              agent: gateway
+              message_template: "accept settle request"
+              fields:
+                - {name: component, generator: static, value: gateway}
+            process:
+              agent: payments
+              message_template: "settle order total"
+              fields:
+                - {name: component, generator: static, value: payments}
+            notify:
+              agent: notifier
+              error_rate: 1.0
+              message_template: "publish settlement event"
+              fields:
+                - {name: component, generator: static, value: notifier}
+            egress:
+              agent: gateway
+              message_template: "settle response ok"
+              fields:
+                - {name: component, generator: static, value: gateway}
+          transitions:
+            - {from: ingress, to: process, network_latency_ms: 2}
+            - {from: process, to: notify, network_latency_ms: 3}
+            - {from: notify, to: egress, network_latency_ms: 2}
+
+contract_scenario:
+  reference_scenario: insight-do-operator-noise
+
+  invariant:
+    - cube_a: { level: ERROR, where: [notifier] }
+
+  transitions:
+    - from: { causal_axis: null, time_axis: 10s }
+      to:   { causal_axis: ablate-payments-outage, time_axis: 10s }
+      expect:
+        collapses:
+          - cube_a: { level: ERROR, where: [payments] }
+        reappears_as:
+          - cube_a: { level: INFO, where: [payments] }
+        untouched_projection:
+          exclude_where: [payments]
