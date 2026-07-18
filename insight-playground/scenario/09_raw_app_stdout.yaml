@@ -105,7 +105,7 @@ contract_scenario:
       - coordinate: RAW.acute . Seq . ngram_presence
         emits: VanishedTemplate
         scope:
-          template: "ERROR connection refused"
+          template: "connection refused"
         polarity: recovery
       must_not_fire:
       - RAW.acute . Nep . acute_new_templates
