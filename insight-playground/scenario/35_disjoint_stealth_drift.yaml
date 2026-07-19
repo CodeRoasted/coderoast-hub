@@ -1,7 +1,35 @@
-# 35_disjoint_stealth_drift
-# Scenario — what it does: A slow, stealthy shift in the log distribution over the window.
+# 35 disjoint_stealth_drift — the DISJOINT slow-drift MECH gate: a shift too slow for any
+# contiguous comparator is caught by the disjoint one, and its matched no-drift control is silent
+# across every family.
 #
-# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+# WHAT IT PINS, and the asymmetry IS the proof:
+#   • RECALL, on ONE comparator only — over 1500 s the `bucket` distribution walks from 100/0 to
+#     0/100. Every window looks like its neighbour, so RAW.acute, the h2/h5 lookbacks and all three
+#     ANCHORED scales must stay silent; only `DISJOINT.L2.s3` — which compares blocks 3 apart —
+#     spans enough of the ramp to see it. A gate that fired everywhere would prove nothing about
+#     disjointness.
+#   • PRECISION — the same world with the ramp neutralized must be silent on EVERY family, DISJOINT
+#     included. Without it, "s3 fires" is just "s3 is noisy".
+#   • CHANNEL EXCLUSIVITY — the drift is a FIELD-distribution move, so it speaks `Fld.dist`; the
+#     within-template `Dft` channel must not answer for it at any scale.
+#
+# ── THE CONTROL IS A do(), NOT A SECOND FILE (migrated 2026-07-19) ──────────────────────────────
+# This was `control_arms: { scenario: 35_disjoint_stealth_control.yaml }` — a whole second scenario
+# whose ONLY difference from this one was `target_weights: [1.0, 0.0]` instead of `[0.0, 1.0]`. Two
+# files that must be kept identical by hand in every other respect is exactly the hand-authored-pair
+# problem one level up: nothing checked that the control was matched, so a stray edit to either file
+# would have silently unmatched the arms and nobody would have known.
+#
+# It is now ONE declared edge on the causal axis. `no-drift` replaces the ramp with one whose target
+# weights are the weights the field ALREADY has — a ramp to where you already are, which is exactly
+# "no drift" and is visibly so. Everything else is shared by construction: same agent, same rate,
+# same seed, same phases, same 2050 s. The match is structural instead of clerical.
+#
+# WHY IT WAS EXPRESSIBLE ALL ALONG. The `scenario:` facet of `control_arms` (axis-dsl Facet A) is an
+# offline do()-by-file counterfactual — the causal axis is the same operation with the intervention
+# DECLARED rather than diffed out of two files. Note what does NOT migrate: fixtures 10 and 34 use
+# `control_arms` with a `metalog_config:` override, which ablates the INSTRUMENT, not the world. The
+# axis moves the world; an instrument ablation is a different kind and keeps its own grammar.
 
 deterministic_scenario:
   name: "disjoint-stealth-drift"
@@ -13,26 +41,93 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  time_axis:
-    duration_seconds: 2050s
-    agents:
-      - name: api-svc
-        intent: api_service
-        rate_per_second: 50/s
-        message_template: "request processed bucket {bucket} done"
-        fields:
-          - name: bucket
-            generator: weighted_choice
-            values: ["10", "90"]
-            weights: [1.0, 0.0]
-        phases:
-          - name: warm
-            duration_seconds: 550s
-            rate_per_second: 50/s
-          - name: drift
-            duration_seconds: 1500s
-            rate_per_second: 50/s
-            field_weight_ramps:
+  causal_axis:
+    edges:
+      # do(the drift never happens). The upsert lands on the ramps LIST, so it is a structural
+      # replacement of the whole ramp declaration rather than a knob tweak — the honest granularity,
+      # since "no drift" is the absence of that declaration's effect, not a smaller version of it.
+      - name: no-drift
+        upsert:
+          - path: agents.api-svc.phases.drift.field_weight_ramps
+            value:
               - field: bucket
-                target_weights: [0.0, 1.0]
+                target_weights: [1.0, 0.0]   # the weights it already has ⇒ the ramp is a no-op
                 window_seconds: 25
+
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: api-svc
+          intent: api_service
+          rate_per_second: 50/s
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [1.0, 0.0]
+          phases:
+            - name: warm
+              duration_seconds: 550s
+              rate_per_second: 50/s
+            - name: drift
+              duration_seconds: 1500s
+              rate_per_second: 50/s
+              field_weight_ramps:
+                - field: bucket
+                  target_weights: [0.0, 1.0]
+                  window_seconds: 25
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: disjoint-stealth-drift
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # THE DRIFT — exactly one comparator sees it.
+    - name: drifting
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+        must_not_fire:
+          # Same locus, wrong channel: a field-distribution move must not read as within-template drift.
+          - DISJOINT.L2.s3 . Dft . js_divergence
+          # Every contiguous comparator: the stealth floor.
+          - RAW.acute . Fld.dist . field_jsd
+          - RAW.h2 . Fld.dist . field_jsd
+          - RAW.h5 . Fld.dist . field_jsd
+          - ANCHORED.w3 . Fld.dist . field_jsd
+          - ANCHORED.w6 . Fld.dist . field_jsd
+          - ANCHORED.w12 . Fld.dist . field_jsd
+          - RAW.acute . Dft . js_divergence
+          - ANCHORED.w3 . Dft . js_divergence
+          - ANCHORED.w6 . Dft . js_divergence
+          - ANCHORED.w12 . Dft . js_divergence
+
+    # THE MATCHED CONTROL — the same world with the ramp neutralized. Silent everywhere, DISJOINT
+    # included; the `drifting` position above is its §3.4 reachability witness.
+    - name: no-drift
+      coordinates: { causal_axis: no-drift, time_axis: 2050s }
+      signal:
+        must_not_fire:
+          - DISJOINT.L2.s1 . Fld.dist . field_jsd
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - DISJOINT.L2.s1 . Dft . js_divergence
+          - DISJOINT.L2.s3 . Dft . js_divergence
+          - RAW.acute . Fld.dist . field_jsd
+          - RAW.h2 . Fld.dist . field_jsd
+          - RAW.h5 . Fld.dist . field_jsd
+          - ANCHORED.w3 . Fld.dist . field_jsd
+          - ANCHORED.w6 . Fld.dist . field_jsd
+          - ANCHORED.w12 . Fld.dist . field_jsd
+          - RAW.acute . Dft . js_divergence
+          - ANCHORED.w3 . Dft . js_divergence
+          - ANCHORED.w6 . Dft . js_divergence
+          - ANCHORED.w12 . Dft . js_divergence
