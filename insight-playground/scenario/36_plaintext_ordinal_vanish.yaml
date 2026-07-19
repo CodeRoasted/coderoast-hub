@@ -1,0 +1,294 @@
+# 36 plaintext_ordinal_vanish — the PLAIN-TEXT demo path (§4A.5 D-W1-9 + D-VAN-1): a vanished
+# recurrence LEADS, a real categorical move SURVIVES, and a bare re-run stays under the page band.
+#
+# WHAT IT PINS, across four arms sharing one vehicle:
+#   • THE RE-RUN BOUNDARY (precision) — do(nothing changed; the job simply ran again): every route's
+#     latency stream is re-based onto a fresh seed, so the draws are uncorrelated but the generator,
+#     the band and the per-endpoint n are identical. Nothing may vanish, nothing may read as a new
+#     error, and nothing may reach Medium or High. This is the F14 surface, PINNED.
+#   • THE VANISH (recall) — `order completed total=<*>` stops. VanishedTemplate / High, and it must
+#     TOP-RANK the report.
+#   • THE DOLLAR VANISH — the same claim on a currency-prefixed ordinal (`total=$<*>`), which masks
+#     down a different path than the bare one.
+#   • THE SURVIVOR (recall, second pole) — a genuine categorical move (search status 200 → 200/500)
+#     must fire and must be attributed to the STATUS param, not to the latency param sitting beside
+#     it on the same template. Without this arm the precision claims are a blind spot: "no FieldShift
+#     off latency" reads green just as well if the channel were dead.
+#
+# ── WHAT WAS MEASURED, AND WHAT IT COST TO GET RIGHT (2026-07-19) ────────────────────────────────
+# The Founder's read was that the earlier generated attempt had simply lost the `ms` unit suffix —
+# D-W1-9's suppression being lexical, a bare integer is exactly the token that floods — and that
+# restoring `{latency}ms` would dissolve the blocker. The first half is confirmed: `format_message`
+# substring-replaces `{name}` with no delimiter requirement, so `{latency}ms` renders `23ms` and the
+# generated payload is byte-identical to the retired `.log`.
+#
+# **The suffix is not what governs this, and the flood is real.** Two measurements, one variable each:
+#   ① Suffix, under IDENTICAL value movement: `{latency}ms` and `{latency} ms` produce the SAME four
+#     rows. The token masks wholesale to `<*>` either way, so the FieldShift channel never sees the
+#     suffix and D-W1-9 is not what is deciding here.
+#   ② A genuine RE-RUN — same generator, same band 4..80, same n≈14/endpoint, fresh seed — floods
+#     ALL SEVEN routes (JSD 0.07–0.11, every one Low). The vanish still leads at High.
+# The authored pair's single row is therefore a property of its particular hand-typed multisets, not
+# a guarantee the engine offers. Two independent samples of ~14 from a 77-value uniform genuinely do
+# differ by that much; what is missing is a null model for sampling noise at small n, which is
+# precisely F14's "uncalibrated significance" — now with a DECLARED intervention behind it, so the
+# ground truth ("nothing moved distributionally") is known rather than assumed.
+#
+# So this fixture does NOT assert "a re-run emits nothing". It asserts what is true and what actually
+# protects a user: a re-run never vanishes anything, never reads as a new error, and never reaches
+# the page band. That is a stronger contract than the retired pair's, because the retired pair's
+# stronger-looking claim held only for its own bytes. When F14's significance is recalibrated, the
+# re-run arm tightens to zero rows and this comment is the record of why it was ever wider.
+#
+# ── THE RE-RUN ARM'S STATED LIMIT — it is NOT a latency-regression gate (measured) ───────────────
+# Mutating the re-run edge to carry a REAL 5x regression on one route (`/api/orders` 4..80ms ->
+# 200..400ms, disjoint supports) does NOT trip this arm: that route reads JSD 0.09 / Low and ranks
+# BELOW `/api/user/profile` at 0.11, which changed nothing but its seed. At n≈14 per endpoint the
+# JS divergence is already saturated by sampling sparsity — 14 draws from 77 values barely overlap
+# whatever you do — so a genuine regression cannot push it higher than noise already does.
+#
+# This is the same uncalibrated statistic F14 names (③: raw JS, no null normalization by support
+# size or sample count), showing its RECALL face rather than its precision one, and it is the more
+# serious of the two: F14's ruling ⑤ fenced the suppression arm precisely to avoid converting a
+# false-positive flood into "a silent false negative on the wedge's headline signal class". The
+# measurement above says that false negative is ALREADY PRESENT in the un-suppressed detector. Routed
+# to Daidalos as evidence, not ruled on here. Recorded in-fixture so nobody reads this arm's green as
+# "a latency regression would have been caught" — it would not have been.
+
+# ── WHY THE ARMS ARE ORDERED THE WAY THEY ARE ───────────────────────────────────────────────────
+# The RNG is position-stable, so an untouched agent emits bit-identical values at every coordinate —
+# the axis property, and what makes `exclude_rows` a real assertion (measured: perturbing a route
+# band produces rows the projection catches). The churn is therefore isolated in the re-run arm,
+# and every later arm reads FROM the re-run coordinate so its latencies are fixed across the edge
+# and its claims are about the intervention alone.
+
+deterministic_scenario:
+  name: insight-plaintext-ordinal-vanish
+  seed: 3636
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_plaintext_vanish
+      format: raw                        # the VEHICLE: the payload, and nothing but the payload —
+      shm_slot_count: 512                # the `INFO`/`ERROR` head is author-written, as the .log had
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # ── THE RE-RUN. do(nothing changed — the job simply ran again): every route's latency stream
+      #    is RE-BASED onto a fresh seed (adr/0020: a declared `seed:` re-bases the identity-derived
+      #    stream while the name still keys it). Same generator, same band, same n per endpoint —
+      #    an uncorrelated draw from the identical distribution, which is what a re-run IS.
+      - name: job-rerun
+        upsert:
+          - { path: agents.route-orders.seed, value: 900001 }
+          - { path: agents.route-checkout.seed, value: 907920 }
+          - { path: agents.route-cart.seed, value: 915839 }
+          - { path: agents.route-products.seed, value: 923758 }
+          - { path: agents.route-payments.seed, value: 931677 }
+          - { path: agents.route-healthz.seed, value: 939596 }
+          - { path: agents.route-profile.seed, value: 947515 }
+
+      # ── MAIN. do(the order pipeline stops): the recurrence vanishes and NOTHING else does. Read
+      #    from `job-rerun`, so both sides carry the re-based streams and the latencies are
+      #    bit-identical across THIS edge — the churn is isolated in the arm above, where it belongs.
+      - name: orders-stopped
+        upsert:
+          - path: agents.order-completed.rate_per_second
+            value: 0
+
+      # ── Sets up the DOLLAR arm: the same recurrence carrying a currency-prefixed ordinal
+      #    (`total=$<*>`), which masks down a different path than the bare one.
+      - name: dollar-billing
+        upsert:
+          - path: agents.order-completed.rate_per_second
+            value: 1.16                  # -> 24 records
+          - path: agents.order-completed.message_template
+            value: "INFO order completed total=${total}"
+
+      # ── DOLLAR. The same vanish, on the currency form, with another re-run around it.
+      - name: dollar-orders-stopped
+        upsert:
+          - path: agents.order-completed.rate_per_second
+            value: 0
+
+      # ── Sets up the SURVIVOR arm: the search route comes online, all-healthy. The order agent is
+      #    restored so it is present and IDENTICAL on both sides of that arm and cancels out.
+      - name: search-online
+        upsert:
+          - path: agents.order-completed.rate_per_second
+            value: 1.16
+          - path: agents.route-search.rate_per_second
+            value: 1.16                  # -> 24 records
+
+      # ── SURVIVOR. do(search starts failing) — a genuine CATEGORICAL move on the status param,
+      #    with the latency churn continuing around it. One must fire; the other must not.
+      - name: search-degraded
+        upsert:
+          - path: agents.route-search.fields.status
+            value:
+              name: status
+              generator: weighted_choice
+              values: ["200", "500"]
+              weights: [10, 14]
+              emit: false
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        # ── The route bed: 5 routes at 14 records, 2 at 13 — the retired pair's exact per-endpoint
+        #    counts (a rate r over D emits floor(D*r)+1 records). The `200` is literal because it is
+        #    literal in every one of those lines; only `/api/search` needs it as a param.
+        #
+        #    NOTE `{latency}ms` — ADJACENT, no space. That single character is what keeps the token
+        #    a unit-suffixed measurement instead of a bare integer, and it is the whole content of
+        #    the correction in the header.
+        - name: route-orders
+          rate_per_second: 0.66          # -> 14 records
+          message_template: "INFO request GET /api/orders 200 {latency}ms"
+          fields:
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+        - name: route-checkout
+          rate_per_second: 0.66
+          message_template: "INFO request POST /api/checkout 200 {latency}ms"
+          fields:
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+        - name: route-cart
+          rate_per_second: 0.66
+          message_template: "INFO request GET /api/cart 200 {latency}ms"
+          fields:
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+        - name: route-products
+          rate_per_second: 0.66
+          message_template: "INFO request GET /api/products 200 {latency}ms"
+          fields:
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+        - name: route-payments
+          rate_per_second: 0.66
+          message_template: "INFO request POST /api/payments 200 {latency}ms"
+          fields:
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+        - name: route-healthz
+          rate_per_second: 0.61          # -> 13 records
+          message_template: "INFO request GET /healthz 200 {latency}ms"
+          fields:
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+        - name: route-profile
+          rate_per_second: 0.61
+          message_template: "INFO request GET /api/user/profile 200 {latency}ms"
+          fields:
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+
+        # The steady error background. Present and unchanged at every coordinate, so a NewErrorPattern
+        # can never be what leads the report — the vanish has to earn the top rank on its own.
+        - name: gateway-timeout
+          rate_per_second: 0.36          # -> 8 records
+          message_template: "ERROR payment gateway timeout after 3000ms (txn {txn})"
+          fields:
+            - { name: txn, generator: range, min: 48390, max: 99899, integer: true, emit: false }
+
+        # THE VANISHING RECURRENCE. Its ordinal is a bare `total=<*>` here and a currency
+        # `total=$<*>` after the `dollar-billing` edge.
+        - name: order-completed
+          rate_per_second: 0.46          # -> 10 records
+          message_template: "INFO order completed total={total}"
+          fields:
+            - { name: total, generator: range, min: 12, max: 475, integer: true, emit: false }
+
+        # THE SURVIVOR's carrier. Silent in the base (rate 0 IS silence); its status is a param
+        # precisely because the SURVIVOR arm moves it.
+        - name: route-search
+          rate_per_second: 0
+          message_template: "INFO request GET /api/search {status} {latency}ms"
+          fields:
+            - { name: status, generator: choice, values: ["200"], emit: false }
+            - { name: latency, generator: range, min: 4, max: 80, integer: true, emit: false }
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-plaintext-ordinal-vanish
+
+  positions:
+    - name: orders-flowing
+      coordinates: { causal_axis: null,                           time_axis: 20s }
+    - name: reran
+      coordinates: { causal_axis: job-rerun,                      time_axis: 20s }
+    - name: orders-gone
+      coordinates: { causal_axis: orders-stopped,        time_axis: 20s }
+    - name: dollar-flowing
+      coordinates: { causal_axis: dollar-billing,                 time_axis: 20s }
+    - name: dollar-gone
+      coordinates: { causal_axis: dollar-orders-stopped, time_axis: 20s }
+    - name: search-healthy
+      coordinates: { causal_axis: search-online,                  time_axis: 20s }
+    - name: search-failing
+      coordinates: { causal_axis: search-degraded,       time_axis: 20s }
+
+  transitions:
+    # THE RE-RUN BOUNDARY — see the header. A pure re-run is not an incident: nothing may vanish,
+    # nothing may reach the page band, and the ONLY thing allowed to rank at all is weak churn on the
+    # latency param. This arm PINS F14's blast radius instead of pretending it is absent.
+    - from: orders-flowing
+      to: reran
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_not_emit:
+            - { kind: VanishedTemplate }
+            - { kind: NewErrorPattern }
+            - { severity: High }
+            - { severity: Medium }
+        untouched_projection:
+          exclude_rows:
+            - { kind: FieldShift, template: "param[1]" }
+
+    # MAIN — the vanish leads, and nothing else moves at all.
+    - from: reran
+      to: orders-gone
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: VanishedTemplate, template: "order completed", severity: High }
+          must_not_emit:
+            - { kind: FieldShift }
+          top_rank: { kind: VanishedTemplate }
+          attributable_to: ["order completed"]
+        untouched_projection:
+          # The vanish is the WHOLE report. The retired pair could forbid FieldShift by name; this
+          # forbids every row on every route, of any kind nobody thought to name — which is the only
+          # form in which "the churn is silent" is actually a claim.
+          exclude_rows:
+            - { template: "order completed" }
+
+    # DOLLAR — the same vanish on a currency-prefixed ordinal, and another re-run around it.
+    - from: dollar-flowing
+      to: dollar-gone
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: VanishedTemplate, template: "order completed", severity: High }
+          must_not_emit:
+            - { kind: FieldShift }
+        untouched_projection:
+          exclude_rows:
+            - { template: "order completed" }
+
+    # SURVIVOR — the categorical move fires; the latency param on the same template does not.
+    - from: search-healthy
+      to: search-failing
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: FieldShift, template: "search" }
+          must_not_emit:
+            - { kind: FieldShift, template: "param[1]" }
+        untouched_projection:
+          exclude_rows:
+            - { template: "search" }
