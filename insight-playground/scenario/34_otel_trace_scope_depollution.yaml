@@ -96,10 +96,17 @@ contract_scenario:
         emits: NoveltyNGram
         scope:
           template: "alpha process alpha commit"
-    control_arms:
-    - name: trace_scoping_disabled
-      metalog_config:
-        trace_scoping_enabled: false
+
+  # THE ABLATION, as a POSITION — the same concurrent OTLP stream read with trace-scoping off. The
+  # within-trace n-gram is then lost to the global-order interleave, which is the de-pollution's
+  # whole point: the contrast between two observers over ONE world. `metalog_config:` cascades onto
+  # the contract instrument, so only the ablated knob is stated and both positions share one replay.
+  - name: global-order
+    coordinates:
+      time_axis: 300s
+    metalog_config:
+      trace_scoping_enabled: false
+    signal:
       must_not_fire:
       - coordinate: RAW.acute . Seq . ngram_presence
         emits: NoveltyNGram

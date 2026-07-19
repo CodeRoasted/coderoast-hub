@@ -1,7 +1,31 @@
-# 39_branch_a_composite
-# Scenario — what it does: Two structural shifts — a branching change and a slow drift — that together form a composite.
+# 39 branch_a_composite — the §5.3 branch-A RECALL gate: two structural shifts of different kinds
+# compose into a classified branch-A Composite.
 #
-# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+# WHAT IT PINS:
+#   • THE COMPOSITE — a branching change (`RAW.acute . Dps . dominant_path`: the flow fans from one
+#     step to sixteen) AND a field drift (`DISJOINT.L2.s3 . Fld.dist`) occur in the same world, and
+#     the envelope must CLASSIFY their conjunction as branch A.
+#   • CLASSIFICATION, NOT PAGING — confidence sits ~0.20, well under the explain floor, so the
+#     contract deliberately asserts NO `band=surfacing`. A weak stealth-drift voice cannot lift the
+#     full product, and pretending otherwise would be the fixture over-claiming.
+#   • NO BRANCHING, NO BRANCH-A — with the fan-out removed, the drift still fires on its own and no
+#     branch-A Composite forms. The drift's `must_fire` is what makes that silence mean something.
+#
+# ── THE CONTROL IS A do(), NOT A SECOND FILE (migrated 2026-07-19) ──────────────────────────────
+# This was `control_arms: { scenario: 39_branch_a_control.yaml }` — a second scenario differing only
+# in the sixteen transition weights and the absence of `branch_weight_ramps`, with ~60 lines of flow
+# declaration kept identical by hand and nothing checking that it stayed so.
+#
+# The edge below spells the intervention out: the transitions list is REPLACED (its elements carry
+# no `name:`, so the honest granularity is the whole list — the axis addresses named elements, and
+# these are positional), and the ramp is REMOVED. Note that both operations are needed: dropping the
+# ramp alone would leave all sixteen branches live from t=0, which is a different world (constant
+# high branching) rather than the declared control (only ever step_01).
+#
+# The third arm, `agent_drift_diag`, is NOT here — see 39_diag_agent_drift.yaml. It was never a
+# control of this world: it is a different experiment (a drift with NO flow at all, proving the
+# localizer fires without flow structure) that happened to be filed as an arm. It is now its own
+# bundled fixture, which is what it always was.
 
 deterministic_scenario:
   name: "branch-a-composite"
@@ -13,67 +37,124 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  time_axis:
-    duration_seconds: 2050s
-    agents:
-      - name: svc
-        intent: service
-        rate_per_second: 0/s
-      - name: hb
-        intent: service
-        rate_per_second: 50/s
-        message_template: "heartbeat ok"
+  causal_axis:
+    edges:
+      # do(the fan-out never happens): only step_01 is ever reachable, and no schedule widens it.
+      - name: no-branch-shift
+        upsert:
+          - path: flows.walk.transitions
+            value:
+                - {from: process, to: step_01, weight: 1.0}
+                - {from: process, to: step_02, weight: 0.0}
+                - {from: process, to: step_03, weight: 0.0}
+                - {from: process, to: step_04, weight: 0.0}
+                - {from: process, to: step_05, weight: 0.0}
+                - {from: process, to: step_06, weight: 0.0}
+                - {from: process, to: step_07, weight: 0.0}
+                - {from: process, to: step_08, weight: 0.0}
+                - {from: process, to: step_09, weight: 0.0}
+                - {from: process, to: step_10, weight: 0.0}
+                - {from: process, to: step_11, weight: 0.0}
+                - {from: process, to: step_12, weight: 0.0}
+                - {from: process, to: step_13, weight: 0.0}
+                - {from: process, to: step_14, weight: 0.0}
+                - {from: process, to: step_15, weight: 0.0}
+                - {from: process, to: step_16, weight: 0.0}
+        remove:
+          - flows.walk.branch_weight_ramps
 
-    flows:
-      - name: walk
-        instance_rate_per_second: 50/s
-        start: process
-        states:
-          process: {agent: svc, message_template: "request bucket {bucket} processed", fields: [{name: bucket, generator: weighted_choice, values: ["10", "90"], weights: [1.0, 0.0]}]}
-          step_01: {agent: svc, message_template: "step_01"}
-          step_02: {agent: svc, message_template: "step_02"}
-          step_03: {agent: svc, message_template: "step_03"}
-          step_04: {agent: svc, message_template: "step_04"}
-          step_05: {agent: svc, message_template: "step_05"}
-          step_06: {agent: svc, message_template: "step_06"}
-          step_07: {agent: svc, message_template: "step_07"}
-          step_08: {agent: svc, message_template: "step_08"}
-          step_09: {agent: svc, message_template: "step_09"}
-          step_10: {agent: svc, message_template: "step_10"}
-          step_11: {agent: svc, message_template: "step_11"}
-          step_12: {agent: svc, message_template: "step_12"}
-          step_13: {agent: svc, message_template: "step_13"}
-          step_14: {agent: svc, message_template: "step_14"}
-          step_15: {agent: svc, message_template: "step_15"}
-          step_16: {agent: svc, message_template: "step_16"}
-        transitions:
-          - {from: process, to: step_01, weight: 1.0}
-          - {from: process, to: step_02, weight: 1.0}
-          - {from: process, to: step_03, weight: 1.0}
-          - {from: process, to: step_04, weight: 1.0}
-          - {from: process, to: step_05, weight: 1.0}
-          - {from: process, to: step_06, weight: 1.0}
-          - {from: process, to: step_07, weight: 1.0}
-          - {from: process, to: step_08, weight: 1.0}
-          - {from: process, to: step_09, weight: 1.0}
-          - {from: process, to: step_10, weight: 1.0}
-          - {from: process, to: step_11, weight: 1.0}
-          - {from: process, to: step_12, weight: 1.0}
-          - {from: process, to: step_13, weight: 1.0}
-          - {from: process, to: step_14, weight: 1.0}
-          - {from: process, to: step_15, weight: 1.0}
-          - {from: process, to: step_16, weight: 1.0}
-        field_weight_ramps:
-          - state: process
-            field: bucket
-            target_weights: [0.0, 1.0]
-            start_seconds: 550s
-            duration_seconds: 1500s
-            window_seconds: 25
-        branch_weight_ramps:
-          - from: process
-            schedule:
-              - at_seconds: 0
-                weights: {step_01: 1}
-              - at_seconds: 1700s
-                weights: {step_01: 1, step_02: 1, step_03: 1, step_04: 1, step_05: 1, step_06: 1, step_07: 1, step_08: 1, step_09: 1, step_10: 1, step_11: 1, step_12: 1, step_13: 1, step_14: 1, step_15: 1, step_16: 1}
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: svc
+          intent: service
+          rate_per_second: 0/s
+        - name: hb
+          intent: service
+          rate_per_second: 50/s
+          message_template: "heartbeat ok"
+
+      flows:
+        - name: walk
+          instance_rate_per_second: 50/s
+          start: process
+          states:
+            process: {agent: svc, message_template: "request bucket {bucket} processed", fields: [{name: bucket, generator: weighted_choice, values: ["10", "90"], weights: [1.0, 0.0]}]}
+            step_01: {agent: svc, message_template: "step_01"}
+            step_02: {agent: svc, message_template: "step_02"}
+            step_03: {agent: svc, message_template: "step_03"}
+            step_04: {agent: svc, message_template: "step_04"}
+            step_05: {agent: svc, message_template: "step_05"}
+            step_06: {agent: svc, message_template: "step_06"}
+            step_07: {agent: svc, message_template: "step_07"}
+            step_08: {agent: svc, message_template: "step_08"}
+            step_09: {agent: svc, message_template: "step_09"}
+            step_10: {agent: svc, message_template: "step_10"}
+            step_11: {agent: svc, message_template: "step_11"}
+            step_12: {agent: svc, message_template: "step_12"}
+            step_13: {agent: svc, message_template: "step_13"}
+            step_14: {agent: svc, message_template: "step_14"}
+            step_15: {agent: svc, message_template: "step_15"}
+            step_16: {agent: svc, message_template: "step_16"}
+          transitions:
+            - {from: process, to: step_01, weight: 1.0}
+            - {from: process, to: step_02, weight: 1.0}
+            - {from: process, to: step_03, weight: 1.0}
+            - {from: process, to: step_04, weight: 1.0}
+            - {from: process, to: step_05, weight: 1.0}
+            - {from: process, to: step_06, weight: 1.0}
+            - {from: process, to: step_07, weight: 1.0}
+            - {from: process, to: step_08, weight: 1.0}
+            - {from: process, to: step_09, weight: 1.0}
+            - {from: process, to: step_10, weight: 1.0}
+            - {from: process, to: step_11, weight: 1.0}
+            - {from: process, to: step_12, weight: 1.0}
+            - {from: process, to: step_13, weight: 1.0}
+            - {from: process, to: step_14, weight: 1.0}
+            - {from: process, to: step_15, weight: 1.0}
+            - {from: process, to: step_16, weight: 1.0}
+          field_weight_ramps:
+            - state: process
+              field: bucket
+              target_weights: [0.0, 1.0]
+              start_seconds: 550s
+              duration_seconds: 1500s
+              window_seconds: 25
+          branch_weight_ramps:
+            - from: process
+              schedule:
+                - at_seconds: 0
+                  weights: {step_01: 1}
+                - at_seconds: 1700s
+                  weights: {step_01: 1, step_02: 1, step_03: 1, step_04: 1, step_05: 1, step_06: 1, step_07: 1, step_08: 1, step_09: 1, step_10: 1, step_11: 1, step_12: 1, step_13: 1, step_14: 1, step_15: 1, step_16: 1}
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: branch-a-composite
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  sequence: { branching_delta_threshold_bits: 3.5 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # THE COMPOSITE — branching shift + drift, classified branch A.
+    - name: composite
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - RAW.acute . Dps . dominant_path
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - envelope . Cmp(branch=A) . fired_set
+
+    # NO BRANCHING — the drift alone forms no branch-A Composite. Its must_fire is the §3.4 witness.
+    - name: no-branch-shift
+      coordinates: { causal_axis: no-branch-shift, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+        must_not_fire:
+          - envelope . Cmp(branch=A) . fired_set

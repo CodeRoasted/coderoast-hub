@@ -86,10 +86,17 @@ contract_scenario:
         emits: NewErrorPattern
         scope:
           template: "exit code"
-    control_arms:
-    - name: reservoir_disabled
-      metalog_config:
-        top_k_size: 64
-        reservoir_size: 0
+
+  # THE ABLATION, as a POSITION — the same coordinate read through a crippled instrument. With the
+  # reservoir off, the lone fatal is no longer retained and the salience coordinate goes silent,
+  # which is what proves the arm above is the RESERVOIR's doing and not Top-K's or arrival order's.
+  # `metalog_config:` here cascades onto the contract instrument: only the ablated knob is stated,
+  # and the two positions share one replay (same world, different observer).
+  - name: reservoir-off
+    coordinates:
+      time_axis: 240s
+    metalog_config:
+      reservoir_size: 0
+    signal:
       must_not_fire:
       - RAW.now . Rsv . salience

@@ -1,7 +1,23 @@
-# 39_diag_agent_drift
-# Scenario — what it does: A diagnostic agent exhibiting a slow drift, used within the branch-A composite scenario.
+# 39-diag agent_drift — the LOCALIZER without a flow: a DISJOINT field drift is detected on a bare
+# agent stream, with no flow structure anywhere in the world.
 #
-# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+# WHAT IT PINS. `DISJOINT.L2.s3 . Fld.dist . field_jsd` fires on an agent-level drift alone. That
+# matters because its sibling fixture (39_branch_a_composite) reads the same coordinate inside a
+# world full of flow structure, where a fan-out is shifting at the same time — so without this one,
+# nothing rules out the localizer needing the flow to speak.
+#
+# ── WHY IT IS ITS OWN FIXTURE (2026-07-19) ──────────────────────────────────────────────────────
+# It was filed as a third `control_arms` entry on 39 (`agent_drift_diag`, a `scenario:` override).
+# It was never a control of that world: a control is the SAME world minus one declared thing, and
+# this is a different construction — no flow, no `svc` agent, a drift declared on an agent instead
+# of on a flow state. Filing it as an arm made it look like a counterfactual of the composite, which
+# it is not; it is an independent claim that happened to be stored next door.
+#
+# So it splits into its own contract rather than being forced onto 39's causal axis. That is the
+# discriminator worth keeping: an arm belongs on the axis when it is the same world with a declared
+# intervention, and belongs in its own fixture when it is a different experiment. Forcing the second
+# case onto an axis would have produced a huge edge that rewrites the world — technically legal, and
+# a lie about what is being compared.
 
 deterministic_scenario:
   name: "diag-agent-drift"
@@ -39,3 +55,22 @@ deterministic_scenario:
         intent: service
         rate_per_second: 50/s
         message_template: "heartbeat ok"
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: diag-agent-drift
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  sequence: { branching_delta_threshold_bits: 3.5 }
+  explain_min_confidence: 0.75
+
+  positions:
+    - name: drifting
+      coordinates: { time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd

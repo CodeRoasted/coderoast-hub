@@ -1,7 +1,22 @@
-# 38_spike_corroborant_admission
-# Scenario — what it does: A count spike accompanied by a corroborating distributional signal.
+# 38 spike_corroborant_admission — the §5.6 SPIKE-ADMISSION SAFETY gate: a spike is admitted only
+# with a corroborant, and even then it is buffered rather than paged.
 #
-# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+# WHAT IT PINS, and the three claims are one safety property:
+#   • ADMISSION — a 900/s burst lands on top of an already-drifting stream. `RAW.acute . Spk` fires
+#     and `DISJOINT.L2.s3 . Fld.dist` corroborates it, so the two compose into a branch-C Composite.
+#   • THE CAP — that Composite must form SUB-FLOOR (`Cmp(branch=C, band=sub_floor)`) and must NOT
+#     reach `band=surfacing`. A corroborated spike is worth buffering; it is not worth waking anyone.
+#     This is the pole that matters: the gate exists to keep a loud-but-thin signal off the page.
+#   • NO SPIKE, NO COMPOSITE — with the burst absent, the drift alone forms no Composite at all.
+#     Its `Fld.dist` must still fire, which is what proves the silence is about the SPIKE and not
+#     about the stream having gone quiet.
+#
+# ── THE CONTROL IS A do(), NOT A SECOND FILE (migrated 2026-07-19) ──────────────────────────────
+# This was `control_arms: { scenario: 38_spike_corroborant_control.yaml }` — a second scenario whose
+# only difference was the ABSENCE of the `api-burst` agent, with ~40 lines of drift declaration that
+# had to be kept identical by hand. Nothing checked they stayed matched. It is now one `remove:` on
+# the causal axis, which says exactly what the control means — this world, minus the burst — and
+# keeps everything else shared by construction.
 
 deterministic_scenario:
   name: "spike-corroborant-admission"
@@ -13,44 +28,86 @@ deterministic_scenario:
       shm_slot_count: 256
       shm_backpressure_policy: block
 
-  time_axis:
-    duration_seconds: 2050s
-    agents:
-      - name: api-svc
-        intent: api_service
-        rate_per_second: 30/s
-        message_template: "request processed bucket {bucket} done"
-        fields:
-          - name: bucket
-            generator: weighted_choice
-            values: ["10", "90"]
-            weights: [1.0, 0.0]
-        phases:
-          - name: warm
-            duration_seconds: 550s
-            rate_per_second: 30/s
-          - name: drift
-            duration_seconds: 1500s
-            rate_per_second: 30/s
-            field_weight_ramps:
-              - field: bucket
-                target_weights: [0.0, 1.0]
-                window_seconds: 25
+  causal_axis:
+    edges:
+      # do(the burst never happens). A `remove:` rather than a rate-0 upsert: the control's claim is
+      # that the corroborant has NOTHING to corroborate, and an agent that exists at rate 0 still
+      # declares a template. Removing it is the honest spelling of absent.
+      - name: no-spike
+        remove:
+          - agents.api-burst
 
-      - name: api-burst
-        intent: api_service
-        rate_per_second: 900/s
-        start_delay_seconds: 1700
-        message_template: "request processed bucket {bucket} done"
-        fields:
-          - name: bucket
-            generator: weighted_choice
-            values: ["10", "90"]
-            weights: [0.0, 1.0]
-        phases:
-          - name: burst
-            duration_seconds: 50s
-            rate_per_second: 900/s
-          - name: silent
-            duration_seconds: 300s
-            rate_per_second: 0/s
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: api-svc
+          intent: api_service
+          rate_per_second: 30/s
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [1.0, 0.0]
+          phases:
+            - name: warm
+              duration_seconds: 550s
+              rate_per_second: 30/s
+            - name: drift
+              duration_seconds: 1500s
+              rate_per_second: 30/s
+              field_weight_ramps:
+                - field: bucket
+                  target_weights: [0.0, 1.0]
+                  window_seconds: 25
+
+        - name: api-burst
+          intent: api_service
+          rate_per_second: 900/s
+          start_delay_seconds: 1700
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [0.0, 1.0]
+          phases:
+            - name: burst
+              duration_seconds: 50s
+              rate_per_second: 900/s
+            - name: silent
+              duration_seconds: 300s
+              rate_per_second: 0/s
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: spike-corroborant-admission
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # ADMITTED, AND CAPPED — the spike corroborates into a branch-C Composite that stays sub-floor.
+    - name: spiking
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - RAW.acute . Spk . template_count
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - envelope . Cmp(branch=C, band=sub_floor) . fired_set
+        must_not_fire:
+          - envelope . Cmp(band=surfacing) . fired_set   # the safety cap: never pages
+
+    # NO SPIKE — the drift still speaks, and no Composite forms. Its `Fld.dist` must_fire is the
+    # §3.4 witness that this silence is about the missing spike, not a dead stream.
+    - name: no-spike
+      coordinates: { causal_axis: no-spike, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+        must_not_fire:
+          - envelope . Cmp . fired_set
