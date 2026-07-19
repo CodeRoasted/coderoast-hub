@@ -101,7 +101,7 @@ deterministic_scenario:
   outputs: [ ... ]            # config
   time_axis:                  # the clock + the world it scopes
     duration_seconds: 5m
-    tick_duration_ns: 1s      # the epoch grid (optional; default 1s)
+    epoch_duration_ns: 1s      # the epoch grid (optional; default 1s)
     agents:
       - { name: api-server, rate_per_second: 100 }
     incidents: [ ... ]
@@ -127,7 +127,7 @@ deterministic_scenario:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `duration_seconds` | string/number | `0` | Auto-stop duration (`0` = run forever). Duration string (`"5m"`) or seconds. See [Duration Format](#duration-format) |
-| `tick_duration_ns` | int/duration | `1s` | *(deterministic)* the epoch grid → `epoch_duration_ns`. Int ns or `1s`/`250ms`/`1us` |
+| `epoch_duration_ns` | int/duration | `1s` | *(deterministic)* the epoch grid. Int ns or `1s`/`250ms`/`1us` |
 | `start_time_unix_ns` | int | `0` | *(deterministic)* the virtual-clock start |
 | `timezone` / `offset_minutes` | string/int | `UTC` / `0` | Calendar context; `local` is real-only |
 | `agents` | sequence | required | One or more agent definitions |
@@ -200,7 +200,7 @@ phase that **omits** the key keeps the current rate. The per-field default (agen
 | Mode | Selected by | Clock | Notes |
 |------|-------------|-------|-------|
 | **Real** | `scenario:` root (no `seed:`) | real wall-clock (structural) | Default. Randomized each run. Flat — no axis. |
-| **Deterministic** | `deterministic_scenario:` root (`seed:` required) | virtual (structural; no `clock:`/`mode:`) | Same logs every run. The clock + world nest under `time_axis`; `tick_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
+| **Deterministic** | `deterministic_scenario:` root (`seed:` required) | virtual (structural; no `clock:`/`mode:`) | Same logs every run. The clock + world nest under `time_axis`; `epoch_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
 
 In deterministic mode the clock is **virtual by construction** (the `deterministic_scenario:` root
 types the world — there is no `clock:`/`mode:`); the loader forces `pipeline.policy: block` when the
@@ -1825,7 +1825,7 @@ real world is always wall-clock). The `time_axis` clock keys:
 |-----|------|---------|-------------|
 | `duration_seconds` | string/number | `0` | The run horizon (`0` = run forever) |
 | `start_time_unix_ns` | int64 | `0` | Unix epoch nanoseconds start; `0` = seed-derived |
-| `tick_duration_ns` | int/duration | `1s` | The epoch grid → `TimelineConfig::epoch_duration_ns` (the materialization/parallelism grain + window-seal cadence). Int ns or a duration (`1s`/`250ms`/`1us`); sub-second is supported (a de-risked pure materialization grain) |
+| `epoch_duration_ns` | int/duration | `1s` | The epoch grid → `TimelineConfig::epoch_duration_ns` (the materialization/parallelism grain + window-seal cadence). Int ns or a duration (`1s`/`250ms`/`1us`); sub-second is supported (a de-risked pure materialization grain) |
 
 The whole world (agents, incidents, flows, environment, noise, personas, users, entity_pool,
 field_variations, timezone) nests under `time_axis` alongside these clock keys — see
