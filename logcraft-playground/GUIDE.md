@@ -396,7 +396,7 @@ flows:
     instance_rate_per_second: 50/s   # new trace instances per second
     max_concurrent: 200              # cap in-flight instances
     correlation_field: trace_id      # stamped on every step of an instance
-    start: receive
+    start_state: receive
     states:                          # state name -> one logged step, through `agent`
       receive: { agent: nginx,    message_template: "GET /checkout" }
       auth:    { agent: auth,     message_template: "verify {user}" }
