@@ -10,7 +10,7 @@ scenario:
   users:
     count: 500
     sessions:
-      duration: [60, 600]           # sessions last 1–10 minutes
+      duration_seconds: [60, 600]           # sessions last 1–10 minutes
       requests_per_session: [3, 50] # 3–50 requests per session
 
   personas:

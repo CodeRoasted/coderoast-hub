@@ -49,7 +49,7 @@ deterministic_scenario:
             weights: [40, 35, 15, 10]
           - name: order_id
             generator: sequence
-            start: 50000
+            start_value: 50000
           - name: status
             generator: weighted_choice
             values: [ok, validation_failed, db_timeout, internal_error]

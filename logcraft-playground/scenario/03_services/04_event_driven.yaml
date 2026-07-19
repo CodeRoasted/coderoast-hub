@@ -67,7 +67,7 @@ scenario:
           integer: true
         - name: offset
           generator: sequence
-          start: 0
+          start_value: 0
 
     - name: event-consumer
       intent: worker

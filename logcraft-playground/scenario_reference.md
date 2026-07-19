@@ -330,7 +330,8 @@ All options are parsed per-sink and ignored when not applicable to the sink type
 | `type` | string | `"console"` | all | Sink type (see table above) |
 | `format` | string | `"json"` | all | Single format (see table above) |
 | `formats` | sequence | `[]` | all | Multi-format; overrides `format` when non-empty |
-| `fields` | sequence | `[]` (= all fields) | all | Field allowlist/projection — when set, only these fields are emitted, in this order (the *which-fields* half, orthogonal to `format`) |
+| `recording_format` | string | `"jsonl"` | `recording` | Recording sub-format (`smf` \| `jsonl`). NOT a log formatter — `format:` is **refused** on a `type: recording` output |
+| `project_fields` | sequence | absent (= all fields) | all | Field projection — when **present**, only these fields are emitted, in this order (the *which-fields* half, orthogonal to `format`). Presence is load-bearing: **absent** = emit every field, `project_fields: []` = emit **none** |
 | `intent_channel` | string | `""` (= writer default, `annotated`) | dialect formats | Which materialization to render (see [Intent channel](#intent-channel)). Only meaningful for a format that has more than one — today `github_actions` |
 | `path` | string | `""` | `file`, `recording`, `prometheus` | Output file path or metric prefix |
 | `max_size_bytes` | integer | `0` | `file` | Rotate when file exceeds this size (0 = no rotation) |
@@ -544,13 +545,13 @@ Auto-incrementing counter with optional prefix.
 - name: request_id
   generator: sequence
   prefix: "req-"
-  start: 1000
+  start_value: 1000
 ```
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `prefix` | string | `""` | String prepended to the counter |
-| `start` | uint64 | `1` | Starting counter value |
+| `start_value` | uint64 | `1` | Starting counter value |
 
 Generates: `"req-1000"`, `"req-1001"`, …
 
@@ -579,12 +580,12 @@ Formatted date/time from simulation clock.
 ```yaml
 - name: access_time
   generator: timestamp
-  format: "%d/%b/%Y:%H:%M:%S %z"   # CLF timestamp
+  strftime: "%d/%b/%Y:%H:%M:%S %z"   # CLF timestamp
 ```
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `format` | string | `"%Y-%m-%dT%H:%M:%S"` | `strftime()` format string |
+| `strftime` | string | `"%Y-%m-%dT%H:%M:%S"` | `strftime()` format string |
 
 Timestamp uses simulation-clock time, not system time. In real mode the timezone
 follows `time.timezone`; in deterministic mode it uses the configured offset.
@@ -896,7 +897,7 @@ agents:
 
 Causal flows model distributed traces/workflows as deterministic, **instanced** state
 machines. Each flow spawns new trace *instances* at `instance_rate_per_second`; an instance
-walks the state graph from `start`, emitting one record per visited state **through the bound
+walks the state graph from `start_state`, emitting one record per visited state **through the bound
 agent (service)**, carrying a shared correlation id, until it reaches a state with no
 outgoing transition. This is the only construct that imposes a declared *order* on the event
 stream (rate-driven agents are unordered) — it is what gives a consumer a crisp causal /
@@ -943,7 +944,7 @@ flows:
     start_delay_seconds: 0           # when the flow begins spawning (duration format)
     max_concurrent: 200              # cap in-flight instances (0 = unbounded; drop new on full)
     correlation_field: trace_id      # field stamped on every step record of an instance
-    start: receive                   # initial state
+    start_state: receive              # initial state
     states:                          # map: state-name -> step (emits 1 record via `agent`)
       receive: { agent: nginx,    message_template: "GET /checkout" }
       auth:    { agent: auth,     message_template: "verify {user}" }
@@ -966,7 +967,7 @@ flows:
 | `max_concurrent` | integer | `0` | Max in-flight instances; `0` = unbounded. On full, the new arrival is dropped |
 | `max_steps` | integer | `10000` | Per-instance termination guard: an instance emits at most this many step records, then terminates. Must be ≥ 1 — it bounds a walk over a cyclic state graph so a flow always terminates |
 | `correlation_field` | string | `"trace_id"` | Field stamped on every step record of an instance |
-| `start` | string | required | Initial state name (must be a declared state) |
+| `start_state` | string | required | Initial state name (must be a declared state) |
 | `states` | map | required | State name → step spec |
 | `transitions` | sequence | absent | Weighted directed edges between states |
 | `branch_weight_ramps` | sequence | `[]` | Per-state step-function schedules of outgoing edge weights — author a branching-entropy shift / `BranchingShift` (see [Branch weight ramps](#branch-weight-ramps--authoring-a-branching-entropy-shift)) |
@@ -977,7 +978,7 @@ flows:
 |-----|------|---------|-------------|
 | `agent` | string | required | Service the step logs through. Its **deterministic envelope (`error_rate` / `latency` from phases + deterministic incidents) is inherited** (A1); its `message_template` / `fields` and stochastic dynamics (`health_state`, bursts, `trigger_probability`, `effects`) are **not**. Must be a declared agent |
 | `message_template` | string | `""` | Message with `{field}` placeholders (always the step's own — never inherited) |
-| `level` | string | the agent's `log_level` | Per-step base log level; an explicit value **overrides** any inherited escalation |
+| `log_level` | string | the agent's `log_level` | Per-step base log level; an explicit value **overrides** any inherited escalation. An unrecognized token is a **load failure**, never a silent demotion to `info` |
 | `error_rate` | number | inherit | Per-step probability the record is escalated to `error`. Absent → **inherited** from the agent's effective envelope (A1); an explicit value (incl. `0`) **overrides** — the isolation escape hatch |
 | `fields` | sequence | absent | Step-local field generators (same shape as agent `fields`) |
 | `span_duration_ms` | distribution | absent | **Span-native (`otel_span` only).** The span's declared wall-duration, in **milliseconds**, as a [distribution](#latency) (`uniform` `[min,max]` / `normal` / `percentile`). Sampled once per span from the instance's position-stable RNG, rounded to integer ns → `endTimeUnixNano = start + duration`. Arrival-independent iid; **drawn LAST**, so it never perturbs any id/schedule draw — shifting a state's regime changes only that span's duration. Absent ⇒ a 0-ns span (`start == end`). Inert for every non-span format |
@@ -1024,7 +1025,7 @@ flows:
   - name: pipeline
     instance_rate_per_second: 8
     max_concurrent: 4                # >1 ⇒ concurrent traces interleave in the stream
-    start: ingest
+    start_state: ingest
     states:
       ingest:      { agent: svc, message_template: "ingest", fan_out: true }   # → both children
       transform_a: { agent: svc, message_template: "transform_a",
@@ -1057,7 +1058,7 @@ shifts the metalog **branching entropy** of that state → an acute **`Branching
 instant voice, InSight §5.2). It is what lets a scenario co-fire a structural regression with a drift on
 one template → a **branch-A Composite**.
 
-At each declared `at_seconds` boundary the `from` state's outgoing edges take the step's `weights`
+At each declared `at_seconds` boundary the `from` state's outgoing edges take the step's `branch_weights`
 (a `to`-state → weight map; an edge **absent** from the map takes weight `0`). Before the first
 boundary the declared transition `weight`s apply. A sharp spread change — e.g. all-mass-on-one edge
 (entropy 0) → uniform over *K* edges (entropy `log2 K`) — yields a per-window entropy jump ≈ `log2 K`;
@@ -1066,7 +1067,7 @@ to clear the sequence bank's default `branching_delta_threshold_bits` (~3.5) fan
 ```yaml
 flows:
   - name: worker
-    start: process
+    start_state: process
     states:
       process:  { agent: api-svc, message_template: "request bucket {bucket} processed" }
       step_01:  { agent: api-svc, message_template: "worker step_01" }
@@ -1079,9 +1080,9 @@ flows:
       - from: process                    # the state whose successor spread shifts
         schedule:                        # step-function of sim-time (ascending at_seconds)
           - at_seconds: 0                 # entropy 0 — all mass on step_01
-            weights: { step_01: 1.0 }
+            branch_weights: { step_01: 1.0 }
           - at_seconds: 1700s             # sharp jump to uniform over 16 → ~4 bits → BranchingShift
-            weights: { step_01: 1, step_02: 1, step_03: 1, step_04: 1, step_05: 1, step_06: 1,
+            branch_weights: { step_01: 1, step_02: 1, step_03: 1, step_04: 1, step_05: 1, step_06: 1,
                        step_07: 1, step_08: 1, step_09: 1, step_10: 1, step_11: 1, step_12: 1,
                        step_13: 1, step_14: 1, step_15: 1, step_16: 1 }
 ```
@@ -1089,9 +1090,9 @@ flows:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `branch_weight_ramps[].from` | string | required | The state whose outgoing edges the schedule reshapes (must be a declared state) |
-| `branch_weight_ramps[].schedule` | sequence | required | Ascending step-function; each entry `{ at_seconds, weights }` |
+| `branch_weight_ramps[].schedule` | sequence | required | Ascending step-function; each entry `{ at_seconds, branch_weights }` |
 | `branch_weight_ramps[].schedule[].at_seconds` | number/string | `0` | Sim-time boundary (duration format or seconds); active for `T ≥ at_seconds` |
-| `branch_weight_ramps[].schedule[].weights` | map | required | `to`-state → relative weight over `from`'s edges; an omitted edge takes weight `0` |
+| `branch_weight_ramps[].schedule[].branch_weights` | map | required | `to`-state → relative weight over `from`'s edges; an omitted edge takes weight `0`. Named `branch_weights`, not `weights`: a weighted_choice field's `weights:` is a **positional vector** parallel to `values:`, this is a **name→weight map** |
 
 > **Determinism.** Boundaries are compared in **integer ns** (a pure step-function of `T` — `PlayToTarget(T)`
 > freezes them, no wall-clock). The selection **draw is unchanged** — the existing per-instance `CounterRng`
@@ -1112,7 +1113,7 @@ weights stand. FIXED support (reweights declared values only).
 ```yaml
 flows:
   - name: walk
-    start: process
+    start_state: process
     states:
       process: { agent: svc, message_template: "request bucket {bucket} processed",
                  fields: [ { name: bucket, generator: weighted_choice, values: ["10","90"], weights: [1.0, 0.0] } ] }
@@ -1566,14 +1567,14 @@ Simulate session-based user traffic with behavioral profiles.
 users:
   count: 50000
   sessions:
-    duration: [30s, 10m]           # Session length range
+    duration_seconds: [30s, 10m]   # a duration expression OR bare seconds
     requests_per_session: [3, 80]  # Requests per session range
 ```
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `count` | integer | `0` | Number of simulated users |
-| `sessions.duration` | [min, max] | `[10.0, 300.0]` | Session length range (duration format) |
+| `sessions.duration_seconds` | [min, max] | `[10.0, 300.0]` | Session length range. The value is **a duration expression (`30s`, `10m`) or a bare number of seconds** — the `_seconds` suffix names the bare-number unit, it does not forbid the expression form |
 | `sessions.requests_per_session` | [min, max] | `[1, 50]` | Requests per session range |
 
 ### Personas
@@ -1649,7 +1650,7 @@ outputs:
     type: insight_shm
     channel: calibration
     format: json
-    fields:                # projection — only these fields reach this sink, in order
+    project_fields:        # projection — only these fields reach this sink, in order
       - timestamp
       - level
       - service

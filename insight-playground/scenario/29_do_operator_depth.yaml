@@ -59,7 +59,7 @@ deterministic_scenario:
           start_delay_seconds: 1s
           max_concurrent: 1
           correlation_field: trace_id
-          start: ingress
+          start_state: ingress
           states:
             ingress:
               agent: gateway

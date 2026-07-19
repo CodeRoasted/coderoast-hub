@@ -79,7 +79,7 @@ scenario:
         - name: order_id
           generator: sequence
           prefix: "ORD-"
-          start: 1000
+          start_value: 1000
         - name: action
           generator: weighted_choice
           values: [create, update, cancel, complete]

@@ -29,7 +29,7 @@ agent:
       integer: true
     - name: offset
       generator: sequence
-      start: 1000000
+      start_value: 1000000
       prefix: ""
     - name: consumer_group
       generator: choice

@@ -89,7 +89,7 @@ deterministic_scenario:
             weights: [85, 8, 4, 2, 1]
           - name: order_id
             generator: sequence
-            start: 100000
+            start_value: 100000
           - name: error_code
             generator: weighted_choice
             values: ["NONE", "TIMEOUT", "DB_LOCK", "OOM_RETRY", "UNKNOWN"]

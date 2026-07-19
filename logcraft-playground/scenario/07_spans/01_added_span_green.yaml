@@ -21,7 +21,7 @@ deterministic_scenario:
         instance_rate_per_second: 1/s
         max_concurrent: 1
         correlation_field: trace_id
-        start: hb_open
+        start_state: hb_open
         states:
           hb_open:  { agent: svc, message_template: "hb open" }
           hb_close: { agent: svc, message_template: "hb close" }
@@ -32,7 +32,7 @@ deterministic_scenario:
         instance_rate_per_second: 1/s
         max_concurrent: 1
         correlation_field: trace_id
-        start: receive
+        start_state: receive
         states:
           receive: { agent: svc, message_template: "receive" }
           process: { agent: svc, message_template: "process" }

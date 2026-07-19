@@ -25,7 +25,7 @@ deterministic_scenario:
           - name: order_id
             generator: sequence
             prefix: "ORD-"
-            start: 100000
+            start_value: 100000
           - name: amount
             generator: range
             min: 5

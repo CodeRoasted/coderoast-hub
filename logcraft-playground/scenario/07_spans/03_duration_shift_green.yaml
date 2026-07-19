@@ -23,7 +23,7 @@ deterministic_scenario:
         instance_rate_per_second: 1/s
         max_concurrent: 1
         correlation_field: trace_id
-        start: auth
+        start_state: auth
         states:
           auth:    { agent: svc, message_template: "auth",    span_duration_ms: { distribution: normal, mean: 10,  stddev: 1 } }
           charge:  { agent: svc, message_template: "charge",  span_duration_ms: { distribution: normal, mean: 20,  stddev: 2 } }   # fast regime

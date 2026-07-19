@@ -32,7 +32,7 @@ deterministic_scenario:
             integer: true
           - name: ref
             generator: sequence
-            start: 1000
+            start_value: 1000
         phases:
           - name: active
             duration_seconds: 3m
@@ -50,7 +50,7 @@ deterministic_scenario:
         fields:
           - name: txn_id
             generator: sequence
-            start: 900000
+            start_value: 900000
           - name: amount
             generator: range
             min: 1

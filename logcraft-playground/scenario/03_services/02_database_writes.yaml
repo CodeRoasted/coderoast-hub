@@ -63,7 +63,7 @@ scenario:
           weights: [20, 30, 35, 10, 5]
         - name: seq_id
           generator: sequence
-          start: 1
+          start_value: 1
         - name: rows
           generator: range
           min: 0

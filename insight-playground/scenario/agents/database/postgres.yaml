@@ -38,4 +38,4 @@ agent:
     - name: connection_id
       generator: sequence
       prefix: "conn-"
-      start: 1
+      start_value: 1

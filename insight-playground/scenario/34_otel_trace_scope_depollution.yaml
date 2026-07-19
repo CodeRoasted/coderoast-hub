@@ -42,7 +42,7 @@ deterministic_scenario:
         start_delay_seconds: 180s
         max_concurrent: 64
         correlation_field: trace_id
-        start: a_receive
+        start_state: a_receive
         states:
           a_receive: {agent: alpha-svc, message_template: "alpha receive"}
           a_process: {agent: alpha-svc, message_template: "alpha process"}
@@ -56,7 +56,7 @@ deterministic_scenario:
         start_delay_seconds: 180s
         max_concurrent: 64
         correlation_field: trace_id
-        start: b_open
+        start_state: b_open
         states:
           b_open: {agent: beta-svc, message_template: "beta open"}
           b_query: {agent: beta-svc, message_template: "beta query"}

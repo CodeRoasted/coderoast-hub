@@ -44,7 +44,7 @@ scenario:
         - name: request_id
           generator: sequence
           prefix: "req-"
-          start: 1000
+          start_value: 1000
 
         # range — random integer in a range
         - name: bytes_sent

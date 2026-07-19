@@ -56,7 +56,7 @@ scenario:
         - name: order_id
           generator: sequence
           prefix: "ord-"
-          start: 10000
+          start_value: 10000
         - name: action
           generator: weighted_choice
           values: [create, read, update, cancel]
@@ -81,7 +81,7 @@ scenario:
         - name: txn_id
           generator: sequence
           prefix: "txn-"
-          start: 1
+          start_value: 1
         - name: provider
           generator: weighted_choice
           values: [stripe, paypal, adyen]

@@ -16,7 +16,7 @@ agent:
     - name: user_id
       generator: sequence
       prefix: "user-"
-      start: 1000
+      start_value: 1000
     - name: result
       generator: weighted_choice
       values: ["success", "failure", "rate_limited", "expired"]

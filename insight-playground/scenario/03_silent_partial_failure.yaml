@@ -33,7 +33,7 @@ deterministic_scenario:
             weights: [35, 30, 25, 10]
           - name: job_id
             generator: sequence
-            start: 10000
+            start_value: 10000
           - name: duration_ms
             generator: range
             min: 50
@@ -56,7 +56,7 @@ deterministic_scenario:
             weights: [35, 30, 25, 10]
           - name: job_id
             generator: sequence
-            start: 20000
+            start_value: 20000
           - name: duration_ms
             generator: range
             min: 50
@@ -79,7 +79,7 @@ deterministic_scenario:
             weights: [35, 30, 25, 10]
           - name: job_id
             generator: sequence
-            start: 30000
+            start_value: 30000
           - name: duration_ms
             generator: range
             min: 50
@@ -101,7 +101,7 @@ deterministic_scenario:
             weights: [35, 30, 25, 10]
           - name: job_id
             generator: sequence
-            start: 40000
+            start_value: 40000
           - name: duration_ms
             generator: range
             min: 50

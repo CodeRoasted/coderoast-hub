@@ -25,7 +25,7 @@ deterministic_scenario:
         max_concurrent: 4            # >1 ⇒ concurrent traces interleave in emission order
         max_steps: 16
         correlation_field: trace_id
-        start: ingest
+        start_state: ingest
         states:
           ingest:      { agent: svc, message_template: "ingest", fan_out: true }
           transform_a: { agent: svc, message_template: "transform_a" }

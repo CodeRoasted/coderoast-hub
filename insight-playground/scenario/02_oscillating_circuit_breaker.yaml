@@ -45,7 +45,7 @@ deterministic_scenario:
           - name: payment_id
             generator: sequence
             prefix: "PAY-"
-            start: 880000
+            start_value: 880000
           - name: cb_state
             generator: weighted_choice
             values: ["CLOSED", "OPEN", "HALF-OPEN"]
