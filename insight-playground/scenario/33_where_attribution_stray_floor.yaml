@@ -1,0 +1,162 @@
+# 33 where_attribution_stray_floor — the WHERE-attribution HONESTY FLOOR (D-WHERE-8): a component
+# that is a stray minority of the window does not earn a location.
+#
+# WHAT IT PINS, and the two poles are inseparable:
+#   • THE FLOOR (precision) — 8 syslog-shaped lines in a 102-line unlocated window carry a parseable
+#     `myapp` component, and a finding off them must come back with NO location. The parser CAN read
+#     `myapp`; the gate is that reading it is not the same as being entitled to claim it.
+#   • THE WITNESS (recall) — the SAME two agents at 80/102 cross the majority and `myapp` MUST
+#     surface. Without this pole the floor is green-but-blind: "no row says myapp" holds just as well
+#     if the heterogeneous stream had defeated syslog detection outright and nothing could ever have
+#     said it. The retired pair had exactly that hole and no way to close it — one authored pair is
+#     one point, and a floor needs both sides of itself.
+#
+# Volume is CONSERVED at every coordinate (102 lines): the free-text population absorbs exactly the
+# mass the syslog agent takes, so the SHARE is the only thing that moves and a frequency row on the
+# absorber cannot be mistaken for the claim.
+#
+# ── THE BED IS DELIBERATELY UNLOCATED, AND THAT IS A MEASURED CORRECTION ─────────────────────────
+# The retired pair's free-text majority was 100 lines of `tests/test_api.py::test_case_N PASSED`.
+# That is NOT free text at this grain: `diff_logs_aligned` — the CLI default, and the grain this
+# contract runs on — sets `recognize_test_where` (intent_identity_model §5.3), so every one of those
+# lines yields an IDENTITY-DERIVED test-file WHERE. Measured by holding the whole scenario fixed and
+# swapping only that one template: with the pytest bed the window is component-COVERED (the majority
+# of records carry a location, just not `myapp`), D-WHERE-8 admits it, and the syslog finding is
+# correctly stamped `myapp`; with an unlocated bed the same 8/102 minority yields `where=absent`.
+#
+# So the retired fixture's claim held only at the AGGREGATE grain its harness happened to use, and
+# would have been asserted here as a falsehood. The bed is now genuinely location-free, which is what
+# the fixture always said it was. Two things worth carrying out of this: the floor is a property of
+# the WINDOW's coverage, not of the stray component's own mass; and "free text" in a real CI corpus
+# routinely is not — test-runner output names files, and naming a file is a location.
+#
+# ── ON §2.3, AND A CORRECTION TO IT (measured 2026-07-19) ────────────────────────────────────────
+# The emission contract listed this fixture as STILL BLOCKED — "a syslog-shaped line inside a GHA
+# stream ... author-owned payload under a transport envelope = two head levels at once -> K/T4".
+# That was read off the vehicle label, not the bytes. The retired .log carries ONE `##[group]`
+# marker, 8 syslog-shaped lines and 93 bare stdout lines: no line bears a GHA transport prefix
+# (`2026-07-18T10:30:00.1234567Z `), so there is no envelope and no second head level. The syslog
+# head is ordinary author-owned payload of the STRIPPED channel — precisely LF3's shipped dividend:
+# `raw` owns zero head bytes, so one stream carries as many head shapes as it declares agents. That
+# is the capability the register asked for, obtained without any transport vocabulary. K/T4 is still
+# owed, for the TIMESTAMPED GHA form neither this fixture nor 24 ever used.
+#
+# The syslog head and the `##[group]` marker are literal because they ARE the head shapes under test
+# (§2.4: a test about a line's shape must name that shape); the populations carrying them are
+# generated, so the stream's structure is declared rather than transcribed.
+
+deterministic_scenario:
+  name: insight-where-attribution-stray-floor
+  seed: 3333
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_where_stray_floor
+      format: raw                        # the VEHICLE: the payload, and nothing but the payload
+      shm_slot_count: 512
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # do(a stray service starts complaining): 8 syslog lines appear and the free-text population
+      # gives up exactly 8, so the window stays 102 lines. A rate r over D emits floor(D*r)+1
+      # records: 4.56/s -> 92, 0.36/s -> 8.
+      - name: stray-minority
+        upsert:
+          - path: agents.suite.rate_per_second
+            value: 4.56                  # 100 -> 92
+          - path: agents.myapp-syslog.rate_per_second
+            value: 0.36                  # 0 -> 8
+
+      # do(the same service dominates the window): the REACHABILITY WITNESS. Same two agents, same
+      # two templates, same conserved 102 lines — only the SHARE moves, from 8/102 to 80/102.
+      # NOTE THE FOLD: coordinate 2 is base o edges[1..2], so this is reached THROUGH
+      # `stray-minority`; both edges upsert the SAME two nodes and an upsert replaces outright, so
+      # coordinate 2 is exactly the majority world. 3.96/s -> 80, 0.96/s -> 20.
+      - name: covered-majority
+        upsert:
+          - path: agents.suite.rate_per_second
+            value: 0.96                  # -> 20
+          - path: agents.myapp-syslog.rate_per_second
+            value: 3.96                  # -> 80
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        # ── The GHA-marked bed. Two head shapes already live here (a workflow-command marker and
+        #    bare tool stdout), which is the LF3 capability the correction above records.
+        - name: group-open
+          rate_per_second: 0.01
+          message_template: "##[group]Run the acceptance suite"
+        - name: collected
+          rate_per_second: 0.01
+          message_template: "collected {total} items"
+          fields:
+            - { name: total, generator: choice, values: ["100"], emit: false }
+
+        # THE UNLOCATED MAJORITY, and the absorber. Bare tool stdout: no host, no app, and NO FILE
+        # PATH — see the correction above; a path would be a location and would silently cover the
+        # window, moving this fixture's claim onto a channel it is not about.
+        - name: suite
+          rate_per_second: 4.96          # -> 100 records
+          message_template: "checked case {case_index} ok"
+          fields:
+            - { name: case_index, generator: range, min: 0, max: 99, integer: true, emit: false }
+
+        # THE COMPONENT CARRIER. A THIRD head shape in the same `raw` stream — an RFC3339 syslog
+        # head from which `myapp` is parseable. Silent in the base (rate 0 IS silence), so its
+        # arrival is a genuine appearance at each coordinate rather than a frequency move.
+        - name: myapp-syslog
+          rate_per_second: 0
+          message_template: "2024-01-15T10:30:00Z host1 myapp[123]: ERROR connection refused after {retries} retries"
+          fields:
+            - { name: retries, generator: range, min: 3, max: 3, integer: true, emit: false }
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-where-attribution-stray-floor
+
+  positions:
+    - name: free-text
+      coordinates: { causal_axis: null,             time_axis: 20s }
+    - name: stray
+      coordinates: { causal_axis: stray-minority,   time_axis: 20s }
+    - name: covered
+      coordinates: { causal_axis: covered-majority, time_axis: 20s }
+
+  transitions:
+    # THE FLOOR — a finding fires, and it declines to name a location.
+    - from: free-text
+      to: stray
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { where: absent }
+          must_not_emit:
+            - { where: "myapp" }
+        untouched_projection:
+          # Only the two agents the edge touches may rank. The GHA bed is unmoved at every
+          # coordinate and must produce no row — which the retired single-arm blocklist, having no
+          # declared edge, had no "outside" to quantify over.
+          exclude_rows:
+            - { template: "connection refused" }
+            - { template: "checked case" }
+
+    # THE WITNESS — the same component, over the majority, DOES earn its location. This is what
+    # makes the arm above a floor rather than a blind spot.
+    - from: free-text
+      to: covered
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { where: "myapp" }
+        untouched_projection:
+          exclude_rows:
+            - { template: "connection refused" }
+            - { template: "checked case" }

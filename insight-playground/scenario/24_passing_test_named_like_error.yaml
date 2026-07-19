@@ -1,0 +1,232 @@
+# 24 passing_test_named_like_error — the TRUE NEGATIVE: an outcome named like a failure is read by
+# its OUTCOME, not by its NAME.
+#
+# WHAT IT PINS, and the two poles are inseparable:
+#   • PRECISION — `InsightCanon.SalienceRaisesValueError` PASSES. The line carries `ValueError`,
+#     `RuntimeException` and `NotError` in the identifiers under test, and the lexicon must read the
+#     verdict token (`OK` / `Passed`) instead. A lexicon that fires here has learned the substring.
+#   • RECALL, on the same names — the positive control flips only the VERDICT token
+#     (`OK`->`FAILED`, `Passed`->`***Failed`) and leaves every identifier byte-identical. A
+#     NewErrorPattern must fire, and must rank first.
+#
+# The two arms share every error-shaped noun. What separates them is exactly one token per line, so
+# a detector cannot pass both by keying on anything except the verdict.
+#
+# ── ON §2.3, AND A CORRECTION TO IT (measured 2026-07-19) ────────────────────────────────────────
+# The emission contract listed this fixture as STILL BLOCKED: "author-owned payload *under* a
+# transport envelope = two head levels at once -> K/T4". That classification was read off the
+# fixture's VEHICLE LABEL (`raw_text` inside "a GHA stream"), not off its bytes. The retired .log
+# files carry ZERO timestamp-prefixed lines: they are one `##[group]` marker, eleven bare
+# conan/cmake stdout lines, one `##[endgroup]`, and the test output. `##[group]` is a GHA
+# WORKFLOW-COMMAND MARKER — payload bytes a tool writes to stdout — not the runner's transport
+# envelope, which is the `2026-07-18T10:30:00.1234567Z ` prefix that appears on no line here.
+#
+# So there is no second head level, and nothing to model. This is the STRIPPED channel, which is
+# precisely LF3's shipped dividend: with `raw` owning zero head bytes, the head is declared payload
+# and one stream carries as many line shapes as it declares agents. K/T4 is still owed — for the
+# TIMESTAMPED GHA form, which neither this fixture nor 33 ever used.
+#
+# ── ON THE §2.4 GUARD (zero-prefix raw must not become inlined transcript) ───────────────────────
+# The verdict brackets and the four identifiers are literal, deliberately: this fixture tests a
+# LEXICON, and `SalienceRaisesValueError` PASSING against the same name FAILING *is* the experiment
+# — generating those tokens would destroy it (same reading as fixture 20). The build bed carries
+# generators instead, so the stream's shape is declared rather than transcribed.
+#
+# ── WHAT THE MIGRATION BUYS ─────────────────────────────────────────────────────────────────────
+# The retired pair asserted a blocklist: no NewErrorPattern, no regression. It could not say that
+# the BUILD BED is unmoved, because "everything else is unmoved" needs an *else* and only a declared
+# edge defines one. Here the bed is a single untouched subtree across all three coordinates, so
+# `exclude_rows` bounds the whole report — any row on the compile or cmake templates fails, and on
+# the true-negative arms the allowed set is EMPTY.
+
+deterministic_scenario:
+  name: insight-passing-test-named-like-error
+  seed: 2424
+
+  outputs:
+    - name: insight
+      type: insight_shm
+      channel: ipl_passing_named_error
+      format: raw                        # the VEHICLE: the payload, and nothing but the payload
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # do(the suite ran, and passed): the three result agents wake up. Each is silent in the base
+      # (rate 0 IS silence), so its template is genuinely NEW rather than a frequency move.
+      - name: suite-ran-passing
+        upsert:
+          - path: agents.gtest-start.rate_per_second
+            value: 0.07                  # -> 2 records
+          - path: agents.gtest-verdict.rate_per_second
+            value: 0.07
+          - path: agents.ctest-verdict.rate_per_second
+            value: 0.07
+
+      # do(the same suite failed): NOTE THE FOLD — coordinate 2 is base o edges[1..2], so this world
+      # is reached THROUGH `suite-ran-passing`, which already woke the agents. This edge therefore
+      # only has to REPLACE the two verdict templates; an upsert replaces the node outright, so
+      # coordinate 2 is exactly the failing world. Every identifier is carried over unchanged — the
+      # ONLY bytes that differ from coordinate 1 are the verdict tokens.
+      - name: suite-ran-failing
+        upsert:
+          - path: agents.gtest-verdict.message_template
+            value: "[  FAILED  ] InsightCanon.{case_name} ({elapsed_ms} ms)"
+          - path: agents.ctest-verdict.message_template
+            value: "{index}/2 Test #{index}: InsightCanon.{suite_name} ...............***Failed    0.01 sec"
+
+    time_axis:
+      duration_seconds: 20
+      start_time_unix_ns: 1700000000000000000
+      timezone: UTC
+
+      agents:
+        # ── The build bed: benign conan/cmake stdout, present and identical at every coordinate.
+        #    A rate r over D emits floor(D*r)+1 records, so 0.01/s is 1 and 0.17/s is 4.
+        #
+        #    The two GHA markers are ordinary payload here, which is the point of the correction
+        #    above — a `raw` stream carries them because they are bytes, not an envelope.
+        - name: group-open
+          rate_per_second: 0.01
+          message_template: "##[group]Run conan build . --profile clang-21"
+        - name: conan-build
+          rate_per_second: 0.01
+          message_template: "conanfile.py (insight_canon/{version}): Calling build()"
+          fields:
+            - { name: version, generator: choice, values: ["1.4.2"], emit: false }
+        - name: cmake-probe
+          rate_per_second: 0.17          # -> 4 records
+          message_template: "-- {probe_step}"
+          fields:
+            - name: probe_step
+              generator: choice
+              values:
+                - "The CXX compiler identification is Clang 21.1.0"
+                - "Detecting CXX compile features - done"
+                - "Configuring done"
+                - "Generating done"
+              emit: false
+        - name: compile
+          rate_per_second: 0.17          # -> 4 records
+          message_template: "[ {percent}%] Building CXX object CMakeFiles/insight_canon.dir/src/{area}/{unit}.cpp.o"
+          fields:
+            - { name: percent, generator: range, min: 10, max: 90, integer: true, emit: false }
+            - { name: area, generator: choice, values: [tokenization, utils], emit: false }
+            - name: unit
+              generator: choice
+              values: [drain, tokenizer_engine, failure_lexicon, time_utils]
+              emit: false
+        - name: link
+          rate_per_second: 0.01
+          message_template: "[100%] Linking CXX static library libinsight_canon.a"
+        - name: built
+          rate_per_second: 0.01
+          message_template: "[100%] Built target insight_canon"
+        - name: group-close
+          rate_per_second: 0.01
+          message_template: "##[endgroup]"
+
+        # ── The suite. Silent in the base; woken by the first edge; re-verdicted by the second.
+        #
+        #    `gtest-start` is verdict-free and therefore IDENTICAL in both suite worlds — it is the
+        #    control that proves the two arms differ only where they are meant to.
+        - name: gtest-start
+          rate_per_second: 0
+          message_template: "[ RUN      ] InsightCanon.{case_name}"
+          fields:
+            - name: case_name
+              generator: choice
+              values:
+                - BenignNoveltyEntryIsCappedEvidenceNotError
+                - BenignStructuralBranchIsCappedEvidenceNotError
+              emit: false
+
+        # THE CLAIM CARRIERS. Each name embeds an error noun and each line's verdict token is the
+        # only thing that says what actually happened.
+        - name: gtest-verdict
+          rate_per_second: 0
+          message_template: "[       OK ] InsightCanon.{case_name} ({elapsed_ms} ms)"
+          fields:
+            - name: case_name
+              generator: choice
+              values:
+                - BenignNoveltyEntryIsCappedEvidenceNotError
+                - BenignStructuralBranchIsCappedEvidenceNotError
+              emit: false
+            - { name: elapsed_ms, generator: range, min: 0, max: 3, integer: true, emit: false }
+        - name: ctest-verdict
+          rate_per_second: 0
+          message_template: "{index}/2 Test #{index}: InsightCanon.{suite_name} ...............   Passed    0.01 sec"
+          fields:
+            - { name: index, generator: range, min: 1, max: 2, integer: true, emit: false }
+            - name: suite_name
+              generator: choice
+              values: [SalienceRaisesValueError, DetectorThrowsRuntimeException]
+              emit: false
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: insight-passing-test-named-like-error
+
+  positions:
+    - name: build-only
+      coordinates: { causal_axis: null,               time_axis: 20s }
+    - name: suite-passed
+      coordinates: { causal_axis: suite-ran-passing,  time_axis: 20s }
+    - name: suite-failed
+      coordinates: { causal_axis: suite-ran-failing,  time_axis: 20s }
+
+  transitions:
+    # MAIN — the true negative. A suite full of error-shaped names appears and PASSES: no error
+    # pattern, no regression, nothing.
+    - from: build-only
+      to: suite-passed
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_not_emit:
+            - { kind: NewErrorPattern }
+            - { polarity: regression }
+        untouched_projection:
+          # The suite arriving IS a change — the honest claim is not that nothing moved, but that
+          # everything that moved is ON THE SUITE. The build bed must produce no row of any kind,
+          # which the retired blocklist could not say.
+          exclude_rows:
+            - { template: "RUN" }
+            - { template: "OK" }
+            - { template: "Test #" }
+
+    # MIRROR — the same edge read backwards. A passing suite DISAPPEARING is not a recovery: there
+    # was nothing to recover from.
+    - from: suite-passed
+      to: build-only
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_not_emit:
+            - { polarity: recovery }
+            - { kind: ResolvedPattern }
+        untouched_projection:
+          exclude_rows:
+            - { template: "RUN" }
+            - { template: "OK" }
+            - { template: "Test #" }
+
+    # POSITIVE CONTROL — the reachability witness. Same names, same bed, same everything; only the
+    # verdict tokens move. If this did not fire, the two arms above would be vacuously green.
+    - from: build-only
+      to: suite-failed
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_fire:
+            - { kind: NewErrorPattern, polarity: regression }
+          top_rank: { kind: NewErrorPattern }
+          attributable_to: ["ValueError", "RuntimeException", "NotError", "Failed", "FAILED"]
+        untouched_projection:
+          exclude_rows:
+            # The suite is the whole story: the build bed may not produce a row of any kind.
+            - { template: "FAILED" }
+            - { template: "Failed" }
+            - { template: "RUN" }
