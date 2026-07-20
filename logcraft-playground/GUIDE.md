@@ -69,7 +69,9 @@ scenario:
       format: json           # Print JSON to stdout
 ```
 
-Every scenario starts with `scenario:`. Everything else is nested under it. Every key here
+Every scenario starts with a root key, and that key picks the world: `scenario:` is the real,
+wall-clock one shown here; `deterministic_scenario:` is the reproducible one (see
+[Deterministic mode](#deterministic-mode)). Everything else is nested under it. Every key here
 is the authoritative one — LogCraft uses one name per concept, with no aliases, so the keys
 you read in a scenario are exactly the keys in the [reference](scenario_reference.md).
 
@@ -555,18 +557,27 @@ block pointing at the file.
 
 ## Deterministic mode
 
-Add `seed:` to a scenario and it produces **bit-for-bit identical output on every run** —
-same log records, same field values, same timestamps, same sequence, same count. Run it
-today or in six months, on one machine or another, and you get the exact same stream. Not
-"statistically similar". Byte-identical. Every weighted choice, every range sample, every
-distribution draw, every incident trigger, every phase transition — all locked.
+Write your scenario under a `deterministic_scenario:` root, give it a `seed:`, and it produces
+**bit-for-bit identical output on every run** — same log records, same field values, same
+timestamps, same sequence, same count. Run it today or in six months, on one machine or
+another, and you get the exact same stream. Not "statistically similar". Byte-identical. Every
+weighted choice, every range sample, every distribution draw, every incident trigger, every
+phase transition — all locked.
 
 ```yaml
-scenario:
+deterministic_scenario:
   seed: 42
+  time_axis:
+    duration_seconds: 60
+    agents:
+      - name: api
+        intent: service
 ```
 
-Without a seed, each run randomizes — the right default for open-ended exploration. The
+The root key is what picks the world: `deterministic_scenario:` is the reproducible one, and its
+clock-bearing knobs (`duration_seconds`, `agents`, …) sit under `time_axis:`. A plain `scenario:`
+root is the real, wall-clock world — it randomizes every run, the right default for open-ended
+exploration, and it takes no `seed:` (writing one there is refused, not silently ignored). The
 scenarios published here are seeded, so they reproduce exactly.
 
 ### Why does this matter?
