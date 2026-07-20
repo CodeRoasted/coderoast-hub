@@ -18,7 +18,6 @@ deterministic_scenario:
     environment:
       region: us-west-2
       cluster: prod-batch
-      queue: job-processing-queue
       version: v1.8.4
 
     agents:

@@ -29,7 +29,6 @@ deterministic_scenario:
     environment:
       region: us-east-1
       cluster: prod-ecommerce
-      service: order-service
       version: v4.1.2-SNAPSHOT
 
     agents:
