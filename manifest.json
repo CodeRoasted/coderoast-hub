@@ -1,5 +1,5 @@
 {
-  "release_tag": "v1.8.1",
+  "release_tag": "v1.8.2",
   "sift_version": null,
   "license": "CC-BY-4.0",
   "determinism": {
@@ -19,11 +19,5 @@
       "coderoast-ipc-core"
     ]
   },
-  "note": "Public evidence mirrored from the gated private release cut. The Hub holds no secrets.",
-  "showcase": {
-    "canon": {
-      "version": "v1.8.2",
-      "path": "showcase/canon/"
-    }
-  }
+  "note": "Public evidence mirrored from the gated private release cut. The Hub holds no secrets."
 }
