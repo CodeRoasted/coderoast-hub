@@ -1,6 +1,6 @@
 # canon public determinism proof -- v2
-# semantic_identity 0deba976a154e7101c47150f82cd2425
-# semantic_packages github@1.2.0 jenkins@1.0.0 test_frameworks@1.0.0
+# semantic_identity 66921ac980d8ea02a5cbefd961b9b251
+# semantic_packages github@1.3.0 jenkins@1.0.0 test_frameworks@1.0.0
 ## file acme__widget__PR-7__build11.log
 ### templates (14)
 1	+ ctest --output-on-failure
