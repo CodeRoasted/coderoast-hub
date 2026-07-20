@@ -7,12 +7,14 @@ and capability modules (`core.api-agent.cppm`, `core.api-scenario.cppm`), and
 `field_generator.cpp`. This is the single source of truth;
 `logcraft/technical_docs/reference/scenario_reference.md` redirects here.
 
-All scenarios are defined in YAML under a top-level `scenario:` key. These scenarios are
-openly published (CC-BY-4.0); the LogCraft **engine** that runs them is part of
-[CodeRoast](https://coderoast.fr), where you run a scenario in the hosted **Lab**. A run
-without `seed:` randomizes every time (the right default for open-ended exploration);
-adding `seed:` selects **deterministic mode** — bit-identical logs on every run (see
-[Engine Modes](#engine-modes)).
+A scenario is a YAML file under **exactly one world root**: `scenario:` — the real,
+wall-clock world, randomized on every run — or `deterministic_scenario:` — the virtual-clock
+world that replays bit-identically. The root **selects the engine**: a `seed:` is required
+under `deterministic_scenario:` and rejected under `scenario:`, so the root key alone tells
+you which world a file describes (see [Scenario Root Keys](#scenario-root-keys) and
+[Engine Modes](#engine-modes)). These scenarios are openly published (CC-BY-4.0); the
+LogCraft **engine** that runs them is part of [CodeRoast](https://coderoast.fr), where you
+run a scenario in the hosted **Lab**.
 
 ---
 
@@ -387,6 +389,8 @@ agents:
 | `message_template` | string | `""` | Message string with `{field_name}` placeholders |
 | `use_template` | string | `""` | Template name to inherit from |
 | `instances` | integer | `1` | Number of parallel copies |
+| `seed` | uint64 | absent | *(deterministic only)* Re-bases this agent's RNG stream — **one** seed shared by all its instances. Overrides the root `seed:` for this agent |
+| `instances_seed` | sequence | absent | *(deterministic only)* One RNG seed **per instance** — the population primitive. Requires `instances:` > 1 and exactly one entry per instance; mutually exclusive with `seed:`. Each expanded copy (`name-1`, `-2`, …) takes its own entry as its seed base, and the instance name still keys the stream, so the copies are independent draws of the *same* agent rather than one stream split N ways |
 | `after` | string | absent | *(`build_axis` world only)* the agent this step follows — the declared step chain. Rejected elsewhere: a stream world's agents are a population with no order |
 | `start_delay_seconds` | string/number | `0.0` | Startup delay (duration format or seconds) |
 | `fields` | sequence | `[]` | Field definitions (see [Fields & Generators](#fields--generators)) |
