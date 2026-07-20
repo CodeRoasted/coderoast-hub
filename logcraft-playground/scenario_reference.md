@@ -140,7 +140,6 @@ deterministic_scenario:
 | `entity_pool` | sequence | absent | Shared entity IDs for cross-agent correlation |
 | `field_variations` | sequence | absent | Numeric field jitter config |
 | `incidents` | sequence | absent | Time- or probability-triggered events |
-| `flows` | sequence | absent | Causal flows — deterministic instanced traces (see [Causal Flows](#causal-flows)) |
 
 **Real-world-only keys — at the root under `scenario:`; rejected under `deterministic_scenario:`:**
 
@@ -149,6 +148,14 @@ deterministic_scenario:
 | `rules` | sequence | Propagation rules |
 | `auto_cascade` | map | Automatic error cascading |
 | `replay` | map | Replay a recorded session |
+
+**Deterministic-world-only keys — rejected under `scenario:`:**
+
+| Key | Type | Description |
+|-----|------|-------------|
+| `flows` | sequence | Causal flows — instanced traces (see [Causal Flows](#causal-flows)). A world key: under `time_axis:`, or under `build_axis:` in the CI world |
+| `seed` | uint64 | The RNG root — required here, and the reason the real world has no deterministic replay |
+| agent `seed` / `instances_seed` | uint64 / sequence | Per-agent and per-instance RNG seed bases (see [Agent Keys](#agent-keys)) |
 
 ---
 
@@ -907,9 +914,12 @@ outgoing transition. This is the only construct that imposes a declared *order* 
 stream (rate-driven agents are unordered) — it is what gives a consumer a crisp causal /
 transition graph (e.g. InSight's `dominant_path`).
 
-Flows require **deterministic mode** (a scenario `seed`) and are ignored in real mode. Branch
-selection and step content are seeded per-instance, so the same scenario+seed replays
-bit-identically — adding a flow never shifts an agent's own content.
+Flows are **deterministic-world only** and are **rejected** under a real `scenario:` root — a flow is
+unfolded from a materialized timeline, which only the deterministic engine builds, so the real world
+declines the key with an error naming deterministic mode rather than accepting a declaration it cannot
+honour. Declare them as a world key under `deterministic_scenario:` (below `time_axis:`, or below
+`build_axis:` in the CI world). Branch selection and step content are seeded per-instance, so the same
+scenario+seed replays bit-identically — adding a flow never shifts an agent's own content.
 
 > **Agent-envelope inheritance (A1).** A flow step **inherits the bound agent's
 > deterministic effective envelope** — its `error_rate` and `latency` at the step's
@@ -1018,7 +1028,8 @@ agent's name rides `service.name`. Everything stays bit-identical across replays
 the seam (no float in the id path).
 
 ```yaml
-# requires deterministic mode — set a scenario `seed:` (spans are ignored in real mode)
+# deterministic-world only — author under a `deterministic_scenario:` root (a real `scenario:`
+# rejects `flows:`); the world keys below nest under its `time_axis:`
 outputs:
   - { name: spans, type: console, format: otel_span }
 
