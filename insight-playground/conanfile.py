@@ -19,7 +19,7 @@ class InsightScenariosConan(ConanFile):
     """
 
     name = "insight_scenarios"
-    version = "1.8.2"
+    version = "1.8.3"
     package_type = "build-scripts"          # pure data: no libs, no headers, no binary
     description = "Public InSight scenario + contract corpus (LogCraft scenarios, declarative contracts, fixtures)."
     license = "CC-BY-4.0"

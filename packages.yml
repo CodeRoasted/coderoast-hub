@@ -8,7 +8,7 @@ packages:
   # from a conan remote. So no release-publish.yml and no compatibility-matrix pin row are required.
   insight_scenarios:
     path: insight-playground
-    version: 1.8.2
+    version: 1.8.3
     public: true
     release: false
     depends: []
