@@ -30,6 +30,7 @@ deterministic_scenario:
       shm_backpressure_policy: block
 
   build_axis:
+    dialect: github
     edges:
       # build 1 — the build that BROKE lint: do(inject failure into step-lint). One knob, one step;
       # an upsert at a LEAF, so every sibling key (the chain included) is untouched.
@@ -49,9 +50,9 @@ deterministic_scenario:
 
     agents:
       - name: job                        # the chain head — exactly one agent follows nothing
-        intent: { kind: job, payload: "build (ubuntu-latest)", name: github }
+        intent: { kind: job, payload: "build (ubuntu-latest)"}
       - name: step-install
-        intent: { kind: step, payload: "yarn install", name: github }
+        intent: { kind: step, payload: "yarn install"}
         after: job
         rate_per_second: 4
         message_template: "installing {pkg}"
@@ -61,7 +62,7 @@ deterministic_scenario:
           - { name: service, generator: static, value: step-install }
           - { name: pkg, generator: choice, values: [react, lodash, typescript] }
       - name: step-lint
-        intent: { kind: step, payload: "yarn lint", name: github }
+        intent: { kind: step, payload: "yarn lint"}
         after: step-install
         rate_per_second: 4
         message_template: "linting {file}"
@@ -71,7 +72,7 @@ deterministic_scenario:
           - { name: service, generator: static, value: step-lint }
           - { name: file, generator: choice, values: [a.ts, b.ts, c.ts] }
       - name: step-build
-        intent: { kind: step, payload: "yarn build", name: github }
+        intent: { kind: step, payload: "yarn build"}
         after: step-lint
         rate_per_second: 4
         message_template: "compiling {unit}"

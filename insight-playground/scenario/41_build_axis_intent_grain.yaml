@@ -52,6 +52,7 @@ deterministic_scenario:
       shm_backpressure_policy: block
 
   build_axis:
+    dialect: github
     edges:
       # build 1 — the build that BROKE lint: do(inject failure into step-lint). The edge upserts the
       # `run` PHASE's error_rate, not the agent's: the phase overrides the agent for its slot, so an
@@ -72,10 +73,10 @@ deterministic_scenario:
 
     agents:
       - name: job                        # the chain head — exactly one agent follows nothing
-        intent: { kind: job, payload: "build (ubuntu-latest)", name: github }
+        intent: { kind: job, payload: "build (ubuntu-latest)"}
 
       - name: step-install
-        intent: { kind: step, payload: "yarn install", name: github }
+        intent: { kind: step, payload: "yarn install"}
         after: job
         rate_per_second: 0               # base = the behaviour BEFORE the first phase
         phases:
@@ -86,7 +87,7 @@ deterministic_scenario:
           - { name: pkg, generator: choice, values: [react, lodash, typescript] }
 
       - name: step-lint
-        intent: { kind: step, payload: "yarn lint", name: github }
+        intent: { kind: step, payload: "yarn lint"}
         after: step-install
         rate_per_second: 0
         start_delay_seconds: 10          # its slot opens where step-install's closes
@@ -98,7 +99,7 @@ deterministic_scenario:
           - { name: file, generator: choice, values: [a.ts, b.ts, c.ts] }
 
       - name: step-build
-        intent: { kind: step, payload: "yarn build", name: github }
+        intent: { kind: step, payload: "yarn build"}
         after: step-lint
         rate_per_second: 0
         start_delay_seconds: 20
