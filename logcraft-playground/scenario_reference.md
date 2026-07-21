@@ -440,36 +440,65 @@ The name is not decorative — it is emitted on every record (the `type` field i
 output, `[agent/type]` in `text`). Omit `intent:` entirely and you get the unnamed generic
 world: an ordinary flux agent.
 
-**Mapping form** — a declared quantum in a dialect world (e.g. GitHub Actions). `kind:` is
-required and must be `job` (container) or `step` (leaf):
+**Mapping form** — a declared **structural quantum**. Structural quanta live in the CI world
+only (under `build_axis:`), and that axis declares its `dialect:` **once**; a quantum never
+restates it. `kind:` is required and must be `job` (container) or `step` (leaf):
 
 ```yaml
-agents:
-  - name: build-job
-    intent: { kind: job, payload: "build" }        # container: emits its banner only
-  - name: lint-step
-    intent: { kind: step, payload: "yarn lint" }   # leaf: banner, then its content flux
-    rate_per_second: 20/s
-    error_rate: 0.02
+build_axis:
+  dialect: github                                    # declared ONCE for the whole axis
+  agents:
+    - name: build-job
+      intent: { kind: job, payload: "build" }        # BANNER: emits its banner, nothing else
+    - name: lint-step
+      intent: { kind: step, payload: "yarn lint" }   # CONTENT: banner, then its content flux
+      after: build-job
+      rate_per_second: 20/s
+      error_rate: 0.02
+      message_template: "checked {file}"             # the BODY — what makes it a content quantum
+      fields:
+        - { name: file, generator: choice, values: ["app.ts", "index.ts"] }
 ```
 
 Agents in declaration order form the document tree. A `job` is a container — it emits its
-banner and nothing else. A `step` opens with its banner, then emits content under it.
+banner and nothing else. A `step` opens with its banner, then emits content under it **if it
+has a body**.
 
-**The unbound-rate default follows the intent's kind**, which is why intent is parsed first:
+**A structural quantum is a BANNER or a CONTENT quantum, and the difference is the body** — a
+`message_template:` (with its `fields:`). That partition decides which dynamics keys are legal,
+so it governs the table rather than the other way round:
 
-| Intent | Unbound `rate_per_second` | Meaning |
-|--------|---------------------------|---------|
-| scalar / absent (generic world) | `1.0` | An ordinary flux agent |
-| `kind: job` or `kind: step` | `0` | Banner-only — a structural quantum has no flux of its own |
+| Intent | Body | `rate_per_second` | Meaning |
+|--------|------|-------------------|---------|
+| scalar / absent (generic world) | yes | unbound → `1.0` | An ordinary flux agent |
+| `kind: job` / `kind: step` | **no** → BANNER | **refused** | A banner has no body half, so there is nothing for dynamics to bind |
+| `kind: job` / `kind: step` | **yes** → CONTENT | **required** | Its content flux is dynamics the scenario must declare (`0` = declared silence) |
 
-So a banner-only step needs no `rate_per_second: 0` boilerplate — declaring the quantum is
-enough. Binding a rate explicitly always wins, and `rate_per_second: 0` stays a legitimate
-explicit binding on a generic agent (that is how flow-driven agents are silenced).
+A banner needs no `rate_per_second: 0` boilerplate — declaring the quantum is enough. But a
+banner does not merely *default* its dynamics away: it **refuses every dynamics key**, with an
+error. `rate_per_second`, `error_rate`, `latency_ms`, `use_template:` and the rest are not
+silently ignored on a banner, because a DSL that accepts a key it will ignore hides the
+mistake. A banner may carry only `name`, `intent`, `use_intent`, `payload`, `after`,
+`log_level`, `outputs`, `instances`, `seed`, `instances_seed`, `start_delay_seconds` and
+`dependencies` — identity, position, sinks, population; never behavior over time. **To give a
+quantum behavior, give it a body.**
 
-Rejected, deliberately, with an error rather than a silent fallback: agent-scope `type:`; the
-mapping form without `kind:`; `kind: none` (a quantum with no quantum — use the scalar form);
-and any unrecognized `kind:` spelling.
+`rate_per_second: 0` remains a legitimate explicit binding on a generic agent (that is how
+flow-driven agents are silenced) and on a content quantum (declared silence).
+
+Rejected, deliberately, with an error rather than a silent fallback:
+
+- agent-scope `type:` — removed; `type:` and `intent:` were two declarations of one structural axis;
+- `intent:` that is neither a scalar nor a mapping;
+- the mapping form without `kind:`;
+- `kind: none` — a quantum with no quantum; use the scalar form;
+- any unrecognized `kind:` spelling;
+- per-quantum `intent.name:` — removed; the dialect belongs to the axis and is declared once;
+- a structural quantum with no axis `dialect:` to inherit;
+- a structural quantum outside `build_axis:` — a stream world's agents are a population with no
+  intent tree to hold one; declare a generic intent instead;
+- any dynamics key on a banner quantum (see the allowlist above);
+- a content quantum with no bound `rate_per_second:`.
 
 ## Fields & Generators
 
@@ -1200,6 +1229,7 @@ deterministic_scenario:
   outputs: [ ... ]
 
   build_axis:
+    dialect: github                   # the axis's structural vocabulary, declared ONCE
     edges:                            # no names: coordinate 1 is "build 1"
       - upsert:                       # build 1 — do(inject failure into a step)
           - path: agents.step-lint.error_rate
@@ -1207,14 +1237,24 @@ deterministic_scenario:
     duration_seconds: 20              # the BUILD'S LENGTH — see "time in the CI world" below
     agents:                           # the CI world, inline — ordered by `after:`
       - name: job
-        intent: { kind: job, payload: "build (ubuntu-latest)", name: github }
+        intent: { kind: job, payload: "build (ubuntu-latest)" }
       - name: step-install
-        intent: { kind: step, payload: "yarn install", name: github }
+        intent: { kind: step, payload: "yarn install" }
         after: job
-      - name: step-lint
-        intent: { kind: step, payload: "yarn lint", name: github }
+      - name: step-lint                          # a CONTENT quantum: it has a body, so
+        intent: { kind: step, payload: "yarn lint" }   # dynamics can bind to it
         after: step-install
+        rate_per_second: 4
+        message_template: "checked {file}"
+        fields:
+          - { name: file, generator: choice, values: ["app.ts", "index.ts", "util.ts"] }
 ```
+
+Note which agent carries a body. `job` and `step-install` are **banners** — they emit their
+banner and nothing else, and they would *refuse* a dynamics key. `step-lint` has a
+`message_template:`, which makes it a **content quantum** — and that is precisely what makes
+the edge above legal: `do(error_rate = 0.9)` needs something with content to fail. Injecting
+failure into a banner is rejected at load, not silently ignored.
 
 **Coordinates.** Coordinate `0` is the **base** — the world exactly as written. Edge *k* lands at
 coordinate *k*: the world after applying edges 1..k **in order** (a fold — edge 2 operates on the
