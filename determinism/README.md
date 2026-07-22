@@ -7,7 +7,7 @@ levels**. This folder holds the
 committed *goldens* (the expected output) and their SHA-256 digests. Rebuild the
 engines from source at this release and you get these exact digests back.
 
-> Evidence snapshot for **v1.8.2**. Regenerated on every cut; the digests below move
+> Evidence snapshot for **v1.8.3**. Regenerated on every cut; the digests below move
 > only when the deterministic output legitimately changes.
 
 ## The goldens
