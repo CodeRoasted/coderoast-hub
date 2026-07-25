@@ -339,7 +339,7 @@ outputs:
   - type: file                      # the sink — where bytes go
     format: github_actions          # the format — the line shape + its enrichment
     intent_channel: annotated       # the channel — which materialization
-    path: build.log
+    file_path: build.log
 ```
 
 Declare it, or the writer defaults to `annotated` — the form GitHub actually serves. `stripped` is a
@@ -380,7 +380,7 @@ All options are parsed per-sink and ignored when not applicable to the sink type
 | `recording_format` | string | `"jsonl"` | `recording` | Recording sub-format (`smf` \| `jsonl`). NOT a log formatter — `format:` is **refused** on a `type: recording` output |
 | `project_fields` | sequence | absent (= all fields) | all | Field projection — when **present**, only these fields are emitted, in this order (the *which-fields* half, orthogonal to `format`). Presence is load-bearing: **absent** = emit every field, `project_fields: []` = emit **none** |
 | `intent_channel` | string | `""` (= writer default, `annotated`) | dialect formats | Which materialization to render (see [Intent channel](#intent-channel)). Only meaningful for a format that has more than one — today `github_actions` |
-| `path` | string | `""` | `file`, `recording`, `prometheus` | Output file path or metric prefix |
+| `file_path` | string | `""` | `file`, `recording`, `prometheus` | Output file path (the `prometheus` sink writes its exposition text to this file; the metric name prefix is `metrics_prefix`) |
 | `max_size_bytes` | integer | `0` | `file` | Rotate when file exceeds this size (0 = no rotation) |
 | `max_files` | integer | `5` | `file` | Number of rotated files to keep |
 | `url` | string | `""` | `http` | Destination endpoint URL |

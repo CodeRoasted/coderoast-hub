@@ -9,11 +9,11 @@ scenario:
   outputs:
     - name: log-aggregator
       type: file
-      path: /tmp/logcraft_json.log
+      file_path: /tmp/logcraft_json.log
       format: json
     - name: siem-backend
       type: file
-      path: /tmp/logcraft_clf.log
+      file_path: /tmp/logcraft_clf.log
       format: clf
 
   agents:

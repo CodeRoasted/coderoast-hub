@@ -9,15 +9,15 @@ scenario:
   outputs:
     - name: log-aggregator
       type: file
-      path: /tmp/logcraft_json.log
+      file_path: /tmp/logcraft_json.log
       format: json
     - name: alert-webhook
       type: file
-      path: /tmp/logcraft_ecs.log
+      file_path: /tmp/logcraft_ecs.log
       format: ecs
     - name: siem-backend
       type: file
-      path: /tmp/logcraft_kv.log
+      file_path: /tmp/logcraft_kv.log
       format: kv
 
   agents:

@@ -542,7 +542,7 @@ outputs:
   - type: console
     format: json
   - type: recording
-    path: captures/my_run.logcraft
+    file_path: captures/my_run.logcraft
 ```
 
 A recording plays back the captured records in their original order and timing,

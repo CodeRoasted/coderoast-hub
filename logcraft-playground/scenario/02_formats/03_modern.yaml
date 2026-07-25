@@ -37,23 +37,23 @@ scenario:
     # {"@timestamp":"...","log":{"level":"info"},"message":"...","service":{"name":"..."}}
     - name: ecs-log
       type: file
-      path: /tmp/logcraft_ecs.log
+      file_path: /tmp/logcraft_ecs.log
       format: ecs
 
     # OpenTelemetry log record format
     - name: otel-log
       type: file
-      path: /tmp/logcraft_otel.log
+      file_path: /tmp/logcraft_otel.log
       format: otel
 
     # AWS CloudWatch Logs JSON format
     - name: cloudwatch-log
       type: file
-      path: /tmp/logcraft_cloudwatch.log
+      file_path: /tmp/logcraft_cloudwatch.log
       format: cloudwatch
 
     # systemd journal export format
     - name: journal-log
       type: file
-      path: /tmp/logcraft_journal.log
+      file_path: /tmp/logcraft_journal.log
       format: systemd_journal
