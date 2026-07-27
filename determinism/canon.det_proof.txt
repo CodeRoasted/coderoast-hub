@@ -1,5 +1,5 @@
 # canon public determinism proof -- v2
-# semantic_identity 66921ac980d8ea02a5cbefd961b9b251
+# semantic_identity 1bbd31060dd571621c81933b7702d51d
 # semantic_packages github@1.3.0 jenkins@1.0.0 test_frameworks@1.0.0
 ## file ci_build.log
 ### templates (14)
@@ -154,7 +154,11 @@ Info	--	None	db query completed via shard "primary"
 ### det_math total=12 sum_c_log2c_qk=47300495456208
 ### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file masking_v4.log
-### templates (4)
+### templates (8)
+2	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+1	/nix/store/<*>/bin/tool started ok
+1	/tmp/<*>
+1	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
 3	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
 1	cache evicted entry "hot-key"
 1	db query completed via shard "primary"
@@ -169,7 +173,12 @@ Unknown	--	None	order completed total=$<*>
 Unknown	--	None	order completed total=$<*>
 Unknown	--	None	order completed total=$<*>
 Unknown	--	None	order completed total=$<*>
-### det_math total=9 sum_c_log2c_qk=14024147119604
+Warn	-W	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Warn	-W	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Error	F-	None	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
+Unknown	--	None	/tmp/<*>
+Unknown	--	None	/nix/store/<*>/bin/tool started ok
+### det_math total=14 sum_c_log2c_qk=16223170375156
 ### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
 ## file syslog.log
 ### templates (7)
