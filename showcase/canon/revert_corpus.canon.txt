@@ -1,7 +1,25 @@
-# canon public determinism proof -- v2
-# semantic_identity 66921ac980d8ea02a5cbefd961b9b251
-# semantic_packages github@1.3.0 jenkins@1.0.0 test_frameworks@1.0.0
-## file acme__widget__pr101__run900000101.log
+# canon public determinism proof -- v3
+# semantic_identity 423452c4dcb76bf6712018fa35782c05
+# semantic_packages github@1.4.0 jenkins@1.0.0 test_frameworks@1.0.0
+## file acme__widget__pr101__run900000101.log declared=-
+### templates (2)
+10	
+1	acme/widget
+### events
+Unknown	---	None	
+Unknown	---	None	acme/widget
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=11 sum_c_log2c_qk=36524985669640
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr101__run900000101.log declared=github+api-rfc3339-line-prefix
 ### templates (9)
 3	##[endgroup]
 1	##[group]Build
@@ -13,20 +31,54 @@
 1	cmake --build build --config Release
 1	ctest --output-on-failure
 ### events
-Unknown	--	GroupBegin	##[group]Run actions/checkout@v4
-Unknown	--	None	Syncing repository: acme/widget
-Unknown	--	GroupEnd	##[endgroup]
-Unknown	--	GroupBegin	##[group]Build
-Unknown	--	None	cmake --build build --config Release
-Unknown	--	None	[100%] Built target widget
-Unknown	--	GroupEnd	##[endgroup]
-Unknown	--	GroupBegin	##[group]Test
-Unknown	--	None	ctest --output-on-failure
-Error	F-	None	<*> tests passed, <*> tests failed out of <*>
-Unknown	--	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Run actions/checkout@v4
+Unknown	--T	None	Syncing repository: acme/widget
+Unknown	--T	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Build
+Unknown	--T	None	cmake --build build --config Release
+Unknown	--T	None	[100%] Built target widget
+Unknown	--T	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Test
+Unknown	--T	None	ctest --output-on-failure
+Error	F-T	None	<*> tests passed, <*> tests failed out of <*>
+Unknown	--T	GroupEnd	##[endgroup]
 ### det_math total=11 sum_c_log2c_qk=5228054097396
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file acme__widget__pr102__run900000102.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr101__run900000101.log declared=jenkins
+### templates (2)
+10	
+1	acme/widget
+### events
+Unknown	---	None	
+Unknown	---	None	acme/widget
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=11 sum_c_log2c_qk=36524985669640
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr102__run900000102.log declared=-
+### templates (1)
+10	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+Unknown	F--	None	
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=10 sum_c_log2c_qk=36524985669640
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr102__run900000102.log declared=github+api-rfc3339-line-prefix
 ### templates (9)
 2	##[endgroup]
 1	##[error]Process completed with exit code <*>
@@ -38,19 +90,50 @@ Unknown	--	GroupEnd	##[endgroup]
 1	cmake --build build --config Release
 1	ctest --output-on-failure
 ### events
-Unknown	--	GroupBegin	##[group]Build
-Unknown	--	None	cmake --build build --config Release
-Unknown	--	None	[100%] Built target widget
-Unknown	--	GroupEnd	##[endgroup]
-Unknown	--	GroupBegin	##[group]Test
-Unknown	--	None	ctest --output-on-failure
-Error	F-	None	The following tests FAILED:
-Error	F-	None	<*> - widget.serialize (Failed)
-Error	F-	Terminator	##[error]Process completed with exit code <*>
-Unknown	--	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Build
+Unknown	--T	None	cmake --build build --config Release
+Unknown	--T	None	[100%] Built target widget
+Unknown	--T	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Test
+Unknown	--T	None	ctest --output-on-failure
+Error	F-T	None	The following tests FAILED:
+Error	F-T	None	<*> - widget.serialize (Failed)
+Error	F-T	Terminator	##[error]Process completed with exit code <*>
+Unknown	--T	GroupEnd	##[endgroup]
 ### det_math total=10 sum_c_log2c_qk=2199023255552
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file demo__toolkit__pr55__run900000055.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr102__run900000102.log declared=jenkins
+### templates (1)
+10	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+Unknown	F--	None	
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=10 sum_c_log2c_qk=36524985669640
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr55__run900000055.log declared=-
+### templates (1)
+9	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=9 sum_c_log2c_qk=31368324584376
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr55__run900000055.log declared=github+api-rfc3339-line-prefix
 ### templates (8)
 2	##[endgroup]
 1	##[group]Package
@@ -61,18 +144,47 @@ Unknown	--	GroupEnd	##[endgroup]
 1	pytest -q
 1	python -m build
 ### events
-Unknown	--	GroupBegin	##[group]Run tests
-Unknown	--	None	pytest -q
-Unknown	--	None	........................ [100%]
-Unknown	--	None	<*> passed in <*>
-Unknown	--	GroupEnd	##[endgroup]
-Unknown	--	GroupBegin	##[group]Package
-Unknown	--	None	python -m build
-Unknown	--	None	Successfully built toolkit-0.4.2.tar.gz
-Unknown	--	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Run tests
+Unknown	--T	None	pytest -q
+Unknown	--T	None	........................ [100%]
+Unknown	--T	None	<*> passed in <*>
+Unknown	--T	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Package
+Unknown	--T	None	python -m build
+Unknown	--T	None	Successfully built toolkit-0.4.2.tar.gz
+Unknown	--T	GroupEnd	##[endgroup]
 ### det_math total=9 sum_c_log2c_qk=2199023255552
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file demo__toolkit__pr56__run900000056.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr55__run900000055.log declared=jenkins
+### templates (1)
+9	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=9 sum_c_log2c_qk=31368324584376
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr56__run900000056.log declared=-
+### templates (1)
+8	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=8 sum_c_log2c_qk=26388279066624
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr56__run900000056.log declared=github+api-rfc3339-line-prefix
 ### templates (7)
 2	##[endgroup]
 1	##[group]Lint
@@ -82,17 +194,43 @@ Unknown	--	GroupEnd	##[endgroup]
 1	pytest -q
 1	ruff check .
 ### events
-Unknown	--	GroupBegin	##[group]Lint
-Unknown	--	None	ruff check .
-Unknown	--	None	All checks passed!
-Unknown	--	GroupEnd	##[endgroup]
-Unknown	--	GroupBegin	##[group]Run tests
-Unknown	--	None	pytest -q
-Unknown	--	None	<*> passed in <*>
-Unknown	--	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Lint
+Unknown	--T	None	ruff check .
+Unknown	--T	None	All checks passed!
+Unknown	--T	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Run tests
+Unknown	--T	None	pytest -q
+Unknown	--T	None	<*> passed in <*>
+Unknown	--T	GroupEnd	##[endgroup]
 ### det_math total=8 sum_c_log2c_qk=2199023255552
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file sample__service__pr7__run900000007.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr56__run900000056.log declared=jenkins
+### templates (1)
+8	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=8 sum_c_log2c_qk=26388279066624
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file sample__service__pr7__run900000007.log declared=-
+### templates (2)
+4	
+1	parseToken
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	parseToken
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=5 sum_c_log2c_qk=8796093022208
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file sample__service__pr7__run900000007.log declared=github+api-rfc3339-line-prefix
 ### templates (5)
 1	##[endgroup]
 1	##[error]Process completed with exit code <*>
@@ -100,14 +238,41 @@ Unknown	--	GroupEnd	##[endgroup]
 1	go build ./...
 1	service/handler.go:<*>:<*>: undefined: parseToken
 ### events
-Unknown	--	GroupBegin	##[group]Build
-Unknown	--	None	go build ./...
-Unknown	--	None	service/handler.go:<*>:<*>: undefined: parseToken
-Error	F-	Terminator	##[error]Process completed with exit code <*>
-Unknown	--	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Build
+Unknown	--T	None	go build ./...
+Unknown	--T	None	service/handler.go:<*>:<*>: undefined: parseToken
+Error	F-T	Terminator	##[error]Process completed with exit code <*>
+Unknown	--T	GroupEnd	##[endgroup]
 ### det_math total=5 sum_c_log2c_qk=0
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file acme__widget__pr101__run900000101.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file sample__service__pr7__run900000007.log declared=jenkins
+### templates (2)
+4	
+1	parseToken
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	parseToken
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=5 sum_c_log2c_qk=8796093022208
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr101__run900000101.log declared=-
+### templates (2)
+7	
+1	acme/widget
+### events
+Unknown	---	None	
+Unknown	---	None	acme/widget
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+### det_math total=8 sum_c_log2c_qk=21607035660679
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr101__run900000101.log declared=github+api-rfc3339-line-prefix
 ### templates (8)
 1	<*> tests passed, <*> tests failed out of <*>
 1	Build
@@ -118,17 +283,46 @@ Unknown	--	GroupEnd	##[endgroup]
 1	cmake --build build --config Release
 1	ctest --output-on-failure
 ### events
-Unknown	--	None	Run actions/checkout@v4
-Unknown	--	None	Syncing repository: acme/widget
-Unknown	--	None	Build
-Unknown	--	None	cmake --build build --config Release
-Unknown	--	None	[100%] Built target widget
-Unknown	--	None	Test
-Unknown	--	None	ctest --output-on-failure
-Error	F-	None	<*> tests passed, <*> tests failed out of <*>
+Unknown	--T	None	Run actions/checkout@v4
+Unknown	--T	None	Syncing repository: acme/widget
+Unknown	--T	None	Build
+Unknown	--T	None	cmake --build build --config Release
+Unknown	--T	None	[100%] Built target widget
+Unknown	--T	None	Test
+Unknown	--T	None	ctest --output-on-failure
+Error	F-T	None	<*> tests passed, <*> tests failed out of <*>
 ### det_math total=8 sum_c_log2c_qk=0
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file acme__widget__pr102__run900000102.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr101__run900000101.log declared=jenkins
+### templates (2)
+7	
+1	acme/widget
+### events
+Unknown	---	None	
+Unknown	---	None	acme/widget
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+### det_math total=8 sum_c_log2c_qk=21607035660679
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr102__run900000102.log declared=-
+### templates (1)
+8	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=8 sum_c_log2c_qk=26388279066624
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr102__run900000102.log declared=github+api-rfc3339-line-prefix
 ### templates (8)
 1	<*> - widget.serialize (Failed)
 1	Build
@@ -139,17 +333,44 @@ Error	F-	None	<*> tests passed, <*> tests failed out of <*>
 1	cmake --build build --config Release
 1	ctest --output-on-failure
 ### events
-Unknown	--	None	Build
-Unknown	--	None	cmake --build build --config Release
-Unknown	--	None	[100%] Built target widget
-Unknown	--	None	Test
-Unknown	--	None	ctest --output-on-failure
-Error	F-	None	The following tests FAILED:
-Error	F-	None	<*> - widget.serialize (Failed)
-Unknown	--	None	Process completed with exit code <*>
+Unknown	--T	None	Build
+Unknown	--T	None	cmake --build build --config Release
+Unknown	--T	None	[100%] Built target widget
+Unknown	--T	None	Test
+Unknown	--T	None	ctest --output-on-failure
+Error	F-T	None	The following tests FAILED:
+Error	F-T	None	<*> - widget.serialize (Failed)
+Unknown	--T	None	Process completed with exit code <*>
 ### det_math total=8 sum_c_log2c_qk=0
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file demo__toolkit__pr55__run900000055.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file acme__widget__pr102__run900000102.log declared=jenkins
+### templates (1)
+8	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	
+Unknown	F--	None	
+Unknown	---	None	
+### det_math total=8 sum_c_log2c_qk=26388279066624
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr55__run900000055.log declared=-
+### templates (1)
+7	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=7 sum_c_log2c_qk=21607035660679
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr55__run900000055.log declared=github+api-rfc3339-line-prefix
 ### templates (7)
 1	........................ [100%]
 1	<*> passed in <*>
@@ -159,16 +380,41 @@ Unknown	--	None	Process completed with exit code <*>
 1	pytest -q
 1	python -m build
 ### events
-Unknown	--	None	Run tests
-Unknown	--	None	pytest -q
-Unknown	--	None	........................ [100%]
-Unknown	--	None	<*> passed in <*>
-Unknown	--	None	Package
-Unknown	--	None	python -m build
-Unknown	--	None	Successfully built toolkit-0.4.2.tar.gz
+Unknown	--T	None	Run tests
+Unknown	--T	None	pytest -q
+Unknown	--T	None	........................ [100%]
+Unknown	--T	None	<*> passed in <*>
+Unknown	--T	None	Package
+Unknown	--T	None	python -m build
+Unknown	--T	None	Successfully built toolkit-0.4.2.tar.gz
 ### det_math total=7 sum_c_log2c_qk=0
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file demo__toolkit__pr56__run900000056.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr55__run900000055.log declared=jenkins
+### templates (1)
+7	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=7 sum_c_log2c_qk=21607035660679
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr56__run900000056.log declared=-
+### templates (1)
+6	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=6 sum_c_log2c_qk=17053177961448
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr56__run900000056.log declared=github+api-rfc3339-line-prefix
 ### templates (6)
 1	<*> passed in <*>
 1	All checks passed!
@@ -177,24 +423,58 @@ Unknown	--	None	Successfully built toolkit-0.4.2.tar.gz
 1	pytest -q
 1	ruff check .
 ### events
-Unknown	--	None	Lint
-Unknown	--	None	ruff check .
-Unknown	--	None	All checks passed!
-Unknown	--	None	Run tests
-Unknown	--	None	pytest -q
-Unknown	--	None	<*> passed in <*>
+Unknown	--T	None	Lint
+Unknown	--T	None	ruff check .
+Unknown	--T	None	All checks passed!
+Unknown	--T	None	Run tests
+Unknown	--T	None	pytest -q
+Unknown	--T	None	<*> passed in <*>
 ### det_math total=6 sum_c_log2c_qk=0
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file sample__service__pr7__run900000007.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file demo__toolkit__pr56__run900000056.log declared=jenkins
+### templates (1)
+6	
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+### det_math total=6 sum_c_log2c_qk=17053177961448
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file sample__service__pr7__run900000007.log declared=-
+### templates (2)
+3	
+1	parseToken
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	parseToken
+Unknown	---	None	
+### det_math total=4 sum_c_log2c_qk=5228054097396
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file sample__service__pr7__run900000007.log declared=github+api-rfc3339-line-prefix
 ### templates (4)
 1	Build
 1	Process completed with exit code <*>
 1	go build ./...
 1	service/handler.go:<*>:<*>: undefined: parseToken
 ### events
-Unknown	--	None	Build
-Unknown	--	None	go build ./...
-Unknown	--	None	service/handler.go:<*>:<*>: undefined: parseToken
-Unknown	--	None	Process completed with exit code <*>
+Unknown	--T	None	Build
+Unknown	--T	None	go build ./...
+Unknown	--T	None	service/handler.go:<*>:<*>: undefined: parseToken
+Unknown	--T	None	Process completed with exit code <*>
 ### det_math total=4 sum_c_log2c_qk=0
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file sample__service__pr7__run900000007.log declared=jenkins
+### templates (2)
+3	
+1	parseToken
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	parseToken
+Unknown	---	None	
+### det_math total=4 sum_c_log2c_qk=5228054097396
+### run_outcome marker=0 token=- resolved=UNKNOWN
