@@ -1,7 +1,7 @@
-# canon public determinism proof -- v2
-# semantic_identity 1bbd31060dd571621c81933b7702d51d
-# semantic_packages github@1.3.0 jenkins@1.0.0 test_frameworks@1.0.0
-## file ci_build.log
+# canon public determinism proof -- v3
+# semantic_identity 423452c4dcb76bf6712018fa35782c05
+# semantic_packages github@1.4.0 jenkins@1.0.0 test_frameworks@1.0.0
+## file ci_build.log declared=-
 ### templates (14)
 1	Build failed with <*> error
 1	Build started for commit a1b2c3d on branch main
@@ -18,23 +18,108 @@
 1	test billing.charge passed
 1	warning: unused variable 'retry_count' in billing/charge.cpp
 ### events
-Unknown	--	None	Build started for commit a1b2c3d on branch main
-Unknown	--	None	Restoring dependencies from cache
-Unknown	--	None	Compiling module auth
-Unknown	--	None	Compiling module billing
-Unknown	--	None	Compiling module gateway
-Warn	-W	None	warning: unused variable 'retry_count' in billing/charge.cpp
-Unknown	--	None	Compiling module storage
-Unknown	--	None	Linking target service
-Unknown	--	None	Running unit suite
-Unknown	--	None	test auth.login passed
-Unknown	--	None	test auth.logout passed
-Unknown	--	None	test billing.charge passed
-Error	F-	None	error: test gateway.route failed: connection refused
-Error	F-	None	Build failed with <*> error
+Unknown	---	None	Build started for commit a1b2c3d on branch main
+Unknown	---	None	Restoring dependencies from cache
+Unknown	---	None	Compiling module auth
+Unknown	---	None	Compiling module billing
+Unknown	---	None	Compiling module gateway
+Warn	-W-	None	warning: unused variable 'retry_count' in billing/charge.cpp
+Unknown	---	None	Compiling module storage
+Unknown	---	None	Linking target service
+Unknown	---	None	Running unit suite
+Unknown	---	None	test auth.login passed
+Unknown	---	None	test auth.logout passed
+Unknown	---	None	test billing.charge passed
+Error	F--	None	error: test gateway.route failed: connection refused
+Error	F--	None	Build failed with <*> error
 ### det_math total=14 sum_c_log2c_qk=0
-### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
-## file github_actions.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file ci_build.log declared=github+api-rfc3339-line-prefix
+### templates (14)
+1	Build failed with <*> error
+1	Build started for commit a1b2c3d on branch main
+1	Compiling module auth
+1	Compiling module billing
+1	Compiling module gateway
+1	Compiling module storage
+1	Linking target service
+1	Restoring dependencies from cache
+1	Running unit suite
+1	error: test gateway.route failed: connection refused
+1	test auth.login passed
+1	test auth.logout passed
+1	test billing.charge passed
+1	warning: unused variable 'retry_count' in billing/charge.cpp
+### events
+Unknown	---	None	Build started for commit a1b2c3d on branch main
+Unknown	---	None	Restoring dependencies from cache
+Unknown	---	None	Compiling module auth
+Unknown	---	None	Compiling module billing
+Unknown	---	None	Compiling module gateway
+Warn	-W-	None	warning: unused variable 'retry_count' in billing/charge.cpp
+Unknown	---	None	Compiling module storage
+Unknown	---	None	Linking target service
+Unknown	---	None	Running unit suite
+Unknown	---	None	test auth.login passed
+Unknown	---	None	test auth.logout passed
+Unknown	---	None	test billing.charge passed
+Error	F--	None	error: test gateway.route failed: connection refused
+Error	F--	None	Build failed with <*> error
+### det_math total=14 sum_c_log2c_qk=0
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file ci_build.log declared=jenkins
+### templates (14)
+1	Build failed with <*> error
+1	Build started for commit a1b2c3d on branch main
+1	Compiling module auth
+1	Compiling module billing
+1	Compiling module gateway
+1	Compiling module storage
+1	Linking target service
+1	Restoring dependencies from cache
+1	Running unit suite
+1	error: test gateway.route failed: connection refused
+1	test auth.login passed
+1	test auth.logout passed
+1	test billing.charge passed
+1	warning: unused variable 'retry_count' in billing/charge.cpp
+### events
+Unknown	---	None	Build started for commit a1b2c3d on branch main
+Unknown	---	None	Restoring dependencies from cache
+Unknown	---	None	Compiling module auth
+Unknown	---	None	Compiling module billing
+Unknown	---	None	Compiling module gateway
+Warn	-W-	None	warning: unused variable 'retry_count' in billing/charge.cpp
+Unknown	---	None	Compiling module storage
+Unknown	---	None	Linking target service
+Unknown	---	None	Running unit suite
+Unknown	---	None	test auth.login passed
+Unknown	---	None	test auth.logout passed
+Unknown	---	None	test billing.charge passed
+Error	F--	None	error: test gateway.route failed: connection refused
+Error	F--	None	Build failed with <*> error
+### det_math total=14 sum_c_log2c_qk=0
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file github_actions.log declared=-
+### templates (2)
+11	
+1	connection refused
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	-W-	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	connection refused
+Unknown	F--	None	
+### det_math total=12 sum_c_log2c_qk=41840538192068
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file github_actions.log declared=github+api-rfc3339-line-prefix
 ### templates (12)
 1	##[endgroup]
 1	##[error]Process completed with exit code 1
@@ -49,21 +134,40 @@ Error	F-	None	Build failed with <*> error
 1	test auth.login passed
 1	test billing.charge passed
 ### events
-Unknown	--	GroupBegin	##[group]Run build and test
-Unknown	--	None	Restoring dependencies from cache
-Unknown	--	None	Compiling module auth
-Unknown	--	None	Compiling module billing
-Warn	-W	None	##[warning]deprecated API used in billing/charge.cpp
-Unknown	--	None	Linking target service
-Unknown	--	GroupEnd	##[endgroup]
-Unknown	--	GroupBegin	##[group]Run unit suite
-Unknown	--	None	test auth.login passed
-Unknown	--	None	test billing.charge passed
-Error	F-	Terminator	##[error]test gateway.route failed: connection refused
-Error	F-	Terminator	##[error]Process completed with exit code 1
+Unknown	--T	GroupBegin	##[group]Run build and test
+Unknown	--T	None	Restoring dependencies from cache
+Unknown	--T	None	Compiling module auth
+Unknown	--T	None	Compiling module billing
+Warn	-WT	None	##[warning]deprecated API used in billing/charge.cpp
+Unknown	--T	None	Linking target service
+Unknown	--T	GroupEnd	##[endgroup]
+Unknown	--T	GroupBegin	##[group]Run unit suite
+Unknown	--T	None	test auth.login passed
+Unknown	--T	None	test billing.charge passed
+Error	F-T	Terminator	##[error]test gateway.route failed: connection refused
+Error	F-T	Terminator	##[error]Process completed with exit code 1
 ### det_math total=12 sum_c_log2c_qk=0
-### run_outcome dialect=GitHubActions marker=0 token=- resolved=UNKNOWN
-## file jenkins_pipeline.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file github_actions.log declared=jenkins
+### templates (2)
+11	
+1	connection refused
+### events
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	-W-	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	---	None	
+Unknown	F--	None	connection refused
+Unknown	F--	None	
+### det_math total=12 sum_c_log2c_qk=41840538192068
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file jenkins_pipeline.log declared=-
 ### templates (29)
 1	+ cmake --build build --config Release -j <*>
 1	+ ctest --output-on-failure --timeout <*>
@@ -95,65 +199,245 @@ Error	F-	Terminator	##[error]Process completed with exit code 1
 1	[Pipeline] { (Test)
 5	[Pipeline] }
 ### events
-Unknown	--	None	Started by user CodeRoast CI
-Unknown	--	None	[Pipeline] Start of Pipeline
-Unknown	--	None	[Pipeline] node
-Unknown	--	None	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
-Unknown	--	None	[Pipeline] {
-Unknown	--	None	[Pipeline] stage
-Unknown	--	None	[Pipeline] { (Declarative: Checkout SCM)
-Unknown	--	None	[Pipeline] checkout
-Unknown	--	None	Checking out Revision <*> (refs/remotes/origin/main)
-Unknown	--	None	[Pipeline] }
-Unknown	--	None	[Pipeline] stage
-Unknown	--	None	[Pipeline] { (Build)
-Unknown	--	None	[Pipeline] sh
-Unknown	--	None	+ cmake --build build --config Release -j <*>
-Unknown	--	None	[ <*> Building CXX object src/engine/core.cpp.o
-Unknown	--	None	[100%] Built target proof_engine
-Unknown	--	None	[Pipeline] }
-Unknown	--	None	[Pipeline] stage
-Unknown	--	None	[Pipeline] { (Test)
-Unknown	--	None	[Pipeline] sh
-Unknown	--	None	+ ctest --output-on-failure --timeout <*>
-Unknown	--	None	Test project /home/jenkins/workspace/proof_pipeline_main/build
-Error	F-	None	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
-Error	F-	None	ERROR: expected <*> sealed windows, observed <*>
-Error	F-	None	<*> tests passed, <*> tests failed out of <*>
-Unknown	--	None	[Pipeline] junit
-Unknown	--	None	Recording test results
-Unknown	--	None	[Pipeline] }
-Unknown	--	None	[Pipeline] stage
-Unknown	--	None	[Pipeline] { (Package)
-Unknown	--	None	[Pipeline] sh
-Unknown	--	None	+ tar czf proof-engine-1.4.2.tar.gz build/dist
-Unknown	--	None	[Pipeline] archiveArtifacts
-Unknown	--	None	Archiving artifacts
-Unknown	--	None	[Pipeline] }
-Unknown	--	None	[Pipeline] }
-Unknown	--	None	[Pipeline] End of Pipeline
-Unknown	--	None	Finished: UNSTABLE
+Unknown	---	None	Started by user CodeRoast CI
+Unknown	---	None	[Pipeline] Start of Pipeline
+Unknown	---	None	[Pipeline] node
+Unknown	---	None	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
+Unknown	---	None	[Pipeline] {
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Declarative: Checkout SCM)
+Unknown	---	None	[Pipeline] checkout
+Unknown	---	None	Checking out Revision <*> (refs/remotes/origin/main)
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Build)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ cmake --build build --config Release -j <*>
+Unknown	---	None	[ <*> Building CXX object src/engine/core.cpp.o
+Unknown	---	None	[100%] Built target proof_engine
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Test)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ ctest --output-on-failure --timeout <*>
+Unknown	---	None	Test project /home/jenkins/workspace/proof_pipeline_main/build
+Error	F--	None	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
+Error	F--	None	ERROR: expected <*> sealed windows, observed <*>
+Error	F--	None	<*> tests passed, <*> tests failed out of <*>
+Unknown	---	None	[Pipeline] junit
+Unknown	---	None	Recording test results
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Package)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ tar czf proof-engine-1.4.2.tar.gz build/dist
+Unknown	---	None	[Pipeline] archiveArtifacts
+Unknown	---	None	Archiving artifacts
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] End of Pipeline
+Unknown	---	None	Finished: UNSTABLE
 ### det_math total=38 sum_c_log2c_qk=26789081815544
-### run_outcome dialect=Jenkins marker=1 token=UNSTABLE resolved=UNSTABLE
-## file json_ordinals.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file jenkins_pipeline.log declared=github+api-rfc3339-line-prefix
+### templates (29)
+1	+ cmake --build build --config Release -j <*>
+1	+ ctest --output-on-failure --timeout <*>
+1	+ tar czf proof-engine-1.4.2.tar.gz build/dist
+1	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
+1	<*> tests passed, <*> tests failed out of <*>
+1	Archiving artifacts
+1	Checking out Revision <*> (refs/remotes/origin/main)
+1	ERROR: expected <*> sealed windows, observed <*>
+1	Finished: UNSTABLE
+1	Recording test results
+1	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
+1	Started by user CodeRoast CI
+1	Test project /home/jenkins/workspace/proof_pipeline_main/build
+1	[ <*> Building CXX object src/engine/core.cpp.o
+1	[100%] Built target proof_engine
+1	[Pipeline] End of Pipeline
+1	[Pipeline] Start of Pipeline
+1	[Pipeline] archiveArtifacts
+1	[Pipeline] checkout
+1	[Pipeline] junit
+1	[Pipeline] node
+3	[Pipeline] sh
+4	[Pipeline] stage
+1	[Pipeline] {
+1	[Pipeline] { (Build)
+1	[Pipeline] { (Declarative: Checkout SCM)
+1	[Pipeline] { (Package)
+1	[Pipeline] { (Test)
+5	[Pipeline] }
+### events
+Unknown	---	None	Started by user CodeRoast CI
+Unknown	---	None	[Pipeline] Start of Pipeline
+Unknown	---	None	[Pipeline] node
+Unknown	---	None	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
+Unknown	---	None	[Pipeline] {
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Declarative: Checkout SCM)
+Unknown	---	None	[Pipeline] checkout
+Unknown	---	None	Checking out Revision <*> (refs/remotes/origin/main)
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Build)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ cmake --build build --config Release -j <*>
+Unknown	---	None	[ <*> Building CXX object src/engine/core.cpp.o
+Unknown	---	None	[100%] Built target proof_engine
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Test)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ ctest --output-on-failure --timeout <*>
+Unknown	---	None	Test project /home/jenkins/workspace/proof_pipeline_main/build
+Error	F--	None	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
+Error	F--	None	ERROR: expected <*> sealed windows, observed <*>
+Error	F--	None	<*> tests passed, <*> tests failed out of <*>
+Unknown	---	None	[Pipeline] junit
+Unknown	---	None	Recording test results
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Package)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ tar czf proof-engine-1.4.2.tar.gz build/dist
+Unknown	---	None	[Pipeline] archiveArtifacts
+Unknown	---	None	Archiving artifacts
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] End of Pipeline
+Unknown	---	None	Finished: UNSTABLE
+### det_math total=38 sum_c_log2c_qk=26789081815544
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file jenkins_pipeline.log declared=jenkins
+### templates (29)
+1	+ cmake --build build --config Release -j <*>
+1	+ ctest --output-on-failure --timeout <*>
+1	+ tar czf proof-engine-1.4.2.tar.gz build/dist
+1	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
+1	<*> tests passed, <*> tests failed out of <*>
+1	Archiving artifacts
+1	Checking out Revision <*> (refs/remotes/origin/main)
+1	ERROR: expected <*> sealed windows, observed <*>
+1	Finished: UNSTABLE
+1	Recording test results
+1	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
+1	Started by user CodeRoast CI
+1	Test project /home/jenkins/workspace/proof_pipeline_main/build
+1	[ <*> Building CXX object src/engine/core.cpp.o
+1	[100%] Built target proof_engine
+1	[Pipeline] End of Pipeline
+1	[Pipeline] Start of Pipeline
+1	[Pipeline] archiveArtifacts
+1	[Pipeline] checkout
+1	[Pipeline] junit
+1	[Pipeline] node
+3	[Pipeline] sh
+4	[Pipeline] stage
+1	[Pipeline] {
+1	[Pipeline] { (Build)
+1	[Pipeline] { (Declarative: Checkout SCM)
+1	[Pipeline] { (Package)
+1	[Pipeline] { (Test)
+5	[Pipeline] }
+### events
+Unknown	---	None	Started by user CodeRoast CI
+Unknown	---	None	[Pipeline] Start of Pipeline
+Unknown	---	None	[Pipeline] node
+Unknown	---	None	Running on linux-agent-07 in /home/jenkins/workspace/proof_pipeline_main
+Unknown	---	None	[Pipeline] {
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Declarative: Checkout SCM)
+Unknown	---	None	[Pipeline] checkout
+Unknown	---	None	Checking out Revision <*> (refs/remotes/origin/main)
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Build)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ cmake --build build --config Release -j <*>
+Unknown	---	None	[ <*> Building CXX object src/engine/core.cpp.o
+Unknown	---	None	[100%] Built target proof_engine
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Test)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ ctest --output-on-failure --timeout <*>
+Unknown	---	None	Test project /home/jenkins/workspace/proof_pipeline_main/build
+Error	F--	None	41/<*> Test #<*>: engine_replay_roundtrip .......... FAILED (2.31 sec)
+Error	F--	None	ERROR: expected <*> sealed windows, observed <*>
+Error	F--	None	<*> tests passed, <*> tests failed out of <*>
+Unknown	---	None	[Pipeline] junit
+Unknown	---	None	Recording test results
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] stage
+Unknown	---	None	[Pipeline] { (Package)
+Unknown	---	None	[Pipeline] sh
+Unknown	---	None	+ tar czf proof-engine-1.4.2.tar.gz build/dist
+Unknown	---	None	[Pipeline] archiveArtifacts
+Unknown	---	None	Archiving artifacts
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] }
+Unknown	---	None	[Pipeline] End of Pipeline
+Unknown	---	None	Finished: UNSTABLE
+### det_math total=38 sum_c_log2c_qk=26789081815544
+### run_outcome marker=1 token=UNSTABLE resolved=UNSTABLE
+## file json_ordinals.log declared=-
 ### templates (1)
 12	db query completed via shard "primary"
 ### events
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
-Info	--	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
 ### det_math total=12 sum_c_log2c_qk=47300495456208
-### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
-## file masking_v4.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file json_ordinals.log declared=github+api-rfc3339-line-prefix
+### templates (1)
+12	db query completed via shard "primary"
+### events
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+### det_math total=12 sum_c_log2c_qk=47300495456208
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file json_ordinals.log declared=jenkins
+### templates (1)
+12	db query completed via shard "primary"
+### events
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+Info	---	None	db query completed via shard "primary"
+### det_math total=12 sum_c_log2c_qk=47300495456208
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file masking_v4.log declared=-
 ### templates (8)
 2	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
 1	/nix/store/<*>/bin/tool started ok
@@ -164,23 +448,77 @@ Info	--	None	db query completed via shard "primary"
 1	db query completed via shard "primary"
 4	order completed total=$<*>
 ### events
-Error	F-	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
-Error	F-	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
-Error	F-	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
-Error	--	None	db query completed via shard "primary"
-Warn	-W	None	cache evicted entry "hot-key"
-Unknown	--	None	order completed total=$<*>
-Unknown	--	None	order completed total=$<*>
-Unknown	--	None	order completed total=$<*>
-Unknown	--	None	order completed total=$<*>
-Warn	-W	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
-Warn	-W	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
-Error	F-	None	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
-Unknown	--	None	/tmp/<*>
-Unknown	--	None	/nix/store/<*>/bin/tool started ok
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	---	None	db query completed via shard "primary"
+Warn	-W-	None	cache evicted entry "hot-key"
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Warn	-W-	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Warn	-W-	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Error	F--	None	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
+Unknown	---	None	/tmp/<*>
+Unknown	---	None	/nix/store/<*>/bin/tool started ok
 ### det_math total=14 sum_c_log2c_qk=16223170375156
-### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
-## file syslog.log
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file masking_v4.log declared=github+api-rfc3339-line-prefix
+### templates (8)
+2	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+1	/nix/store/<*>/bin/tool started ok
+1	/tmp/<*>
+1	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
+3	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+1	cache evicted entry "hot-key"
+1	db query completed via shard "primary"
+4	order completed total=$<*>
+### events
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	---	None	db query completed via shard "primary"
+Warn	-W-	None	cache evicted entry "hot-key"
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Warn	-W-	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Warn	-W-	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Error	F--	None	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
+Unknown	---	None	/tmp/<*>
+Unknown	---	None	/nix/store/<*>/bin/tool started ok
+### det_math total=14 sum_c_log2c_qk=16223170375156
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file masking_v4.log declared=jenkins
+### templates (8)
+2	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+1	/nix/store/<*>/bin/tool started ok
+1	/tmp/<*>
+1	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
+3	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+1	cache evicted entry "hot-key"
+1	db query completed via shard "primary"
+4	order completed total=$<*>
+### events
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	F--	None	[<*>:<*>/<*>:ERROR:dbus/bus.cc:<*>] Failed to connect to the bus
+Error	---	None	db query completed via shard "primary"
+Warn	-W-	None	cache evicted entry "hot-key"
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Unknown	---	None	order completed total=$<*>
+Warn	-W-	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Warn	-W-	None	/home/runner/.conan2/p/b/<*>/p/include/insight/span_unpack.cpp:<*>:<*>: warning: unused variable
+Error	F--	None	/tmp/<*>/src/foo.cpp:<*>:<*>: error: expected ';' before token
+Unknown	---	None	/tmp/<*>
+Unknown	---	None	/nix/store/<*>/bin/tool started ok
+### det_math total=14 sum_c_log2c_qk=16223170375156
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file syslog.log declared=-
 ### templates (7)
 1	GET /api/orders <*>
 2	GET /api/users <*>
@@ -190,13 +528,53 @@ Unknown	--	None	/nix/store/<*>/bin/tool started ok
 1	request failed after <*>
 1	upstream timeout on shard <*>
 ### events
-Unknown	--	None	GET /api/users <*>
-Unknown	--	None	GET /api/orders <*>
-Unknown	--	None	cache warmed in <*>
-Unknown	--	None	request completed in <*>
-Unknown	--	None	GET /api/users <*>
-Unknown	--	None	upstream timeout on shard <*>
-Unknown	F-	None	request failed after <*>
-Unknown	--	None	Out of memory: Killed process <*> (app)
+Unknown	---	None	GET /api/users <*>
+Unknown	---	None	GET /api/orders <*>
+Unknown	---	None	cache warmed in <*>
+Unknown	---	None	request completed in <*>
+Unknown	---	None	GET /api/users <*>
+Unknown	---	None	upstream timeout on shard <*>
+Unknown	F--	None	request failed after <*>
+Unknown	---	None	Out of memory: Killed process <*> (app)
 ### det_math total=8 sum_c_log2c_qk=2199023255552
-### run_outcome dialect=Unknown marker=0 token=- resolved=UNKNOWN
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file syslog.log declared=github+api-rfc3339-line-prefix
+### templates (7)
+1	GET /api/orders <*>
+2	GET /api/users <*>
+1	Out of memory: Killed process <*> (app)
+1	cache warmed in <*>
+1	request completed in <*>
+1	request failed after <*>
+1	upstream timeout on shard <*>
+### events
+Unknown	---	None	GET /api/users <*>
+Unknown	---	None	GET /api/orders <*>
+Unknown	---	None	cache warmed in <*>
+Unknown	---	None	request completed in <*>
+Unknown	---	None	GET /api/users <*>
+Unknown	---	None	upstream timeout on shard <*>
+Unknown	F--	None	request failed after <*>
+Unknown	---	None	Out of memory: Killed process <*> (app)
+### det_math total=8 sum_c_log2c_qk=2199023255552
+### run_outcome marker=0 token=- resolved=UNKNOWN
+## file syslog.log declared=jenkins
+### templates (7)
+1	GET /api/orders <*>
+2	GET /api/users <*>
+1	Out of memory: Killed process <*> (app)
+1	cache warmed in <*>
+1	request completed in <*>
+1	request failed after <*>
+1	upstream timeout on shard <*>
+### events
+Unknown	---	None	GET /api/users <*>
+Unknown	---	None	GET /api/orders <*>
+Unknown	---	None	cache warmed in <*>
+Unknown	---	None	request completed in <*>
+Unknown	---	None	GET /api/users <*>
+Unknown	---	None	upstream timeout on shard <*>
+Unknown	F--	None	request failed after <*>
+Unknown	---	None	Out of memory: Killed process <*> (app)
+### det_math total=8 sum_c_log2c_qk=2199023255552
+### run_outcome marker=0 token=- resolved=UNKNOWN
