@@ -1,4 +1,4 @@
-# 33 where_attribution_stray_floor — the WHERE-attribution HONESTY FLOOR (D-WHERE-8): a component
+# 33 where_attribution_stray_floor — the WHERE-attribution HONESTY FLOOR (SRC-D-WHERE-8): a component
 # that is a stray minority of the window does not earn a location.
 #
 # WHAT IT PINS, and the two poles are inseparable:
@@ -21,7 +21,7 @@
 # contract runs on — sets `recognize_test_where` (bibles/intent_identity §8), so every one of those
 # lines yields an IDENTITY-DERIVED test-file WHERE. Measured by holding the whole scenario fixed and
 # swapping only that one template: with the pytest bed the window is component-COVERED (the majority
-# of records carry a location, just not `myapp`), D-WHERE-8 admits it, and the syslog finding is
+# of records carry a location, just not `myapp`), SRC-D-WHERE-8 admits it, and the syslog finding is
 # correctly stamped `myapp`; with an unlocated bed the same 8/102 minority yields `where=absent`.
 #
 # So the retired fixture's claim held only at the AGGREGATE grain its harness happened to use, and

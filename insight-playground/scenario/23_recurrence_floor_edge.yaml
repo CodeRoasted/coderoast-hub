@@ -1,4 +1,4 @@
-# 23 recurrence_floor_edge — the D-VAN-1 recurrence FLOOR, at its boundary.
+# 23 recurrence_floor_edge — the SRC-D-VAN-1 recurrence FLOOR, at its boundary.
 #
 # The twin of `23_absence_severity_bump.yaml`, and separate from it for a measured reason. Both test
 # how a VANISH is reconciled; this one isolates the floor itself, where only ONE count separates the
