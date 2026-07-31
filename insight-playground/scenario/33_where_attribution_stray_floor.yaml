@@ -18,7 +18,7 @@
 # ── THE BED IS DELIBERATELY UNLOCATED, AND THAT IS A MEASURED CORRECTION ─────────────────────────
 # The retired pair's free-text majority was 100 lines of `tests/test_api.py::test_case_N PASSED`.
 # That is NOT free text at this grain: `diff_logs_aligned` — the CLI default, and the grain this
-# contract runs on — sets `recognize_test_where` (intent_identity_model §5.3), so every one of those
+# contract runs on — sets `recognize_test_where` (bibles/intent_identity §8), so every one of those
 # lines yields an IDENTITY-DERIVED test-file WHERE. Measured by holding the whole scenario fixed and
 # swapping only that one template: with the pytest bed the window is component-COVERED (the majority
 # of records carry a location, just not `myapp`), D-WHERE-8 admits it, and the syslog finding is
