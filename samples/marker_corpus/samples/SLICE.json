@@ -9,7 +9,7 @@
   },
   "dialect": "Jenkins (Pipeline: declarative / scripted / matrix + freestyle floor)",
   "generated_by": "coderoast-corpora/jenkins_corpora/marker_corpus/scripts/make_synthetic_slice.py",
-  "purpose": "ADR 0016 \u00a72a public-safe smoke slice \u2014 FABRICATED data, no third-party bytes; reproduces the Jenkins engine-emitted marker skeleton (both plain + timestamper console forms) across all four depth sub-types, so a public reader sees exactly what Canon/Sift recognize. Real-data prevalence/G1 gates run private (trusted runner).",
+  "purpose": "Public-safe smoke slice \u2014 FABRICATED data, no third-party bytes; reproduces the Jenkins engine-emitted marker skeleton (both plain + timestamper console forms) across all four depth sub-types, so a public reader sees exactly what Canon/Sift recognize. Real-data prevalence/G1 gates run private (trusted runner).",
   "samples": [
     {
       "console_form": "timestamper",
