@@ -25,7 +25,7 @@ code lives here or ever will.
   this repo by private CI at each release cut — the Hub only receives. Never
   hand-edit a golden or a measurement.
 - A scenario/contract edit in `insight-playground/` lands in lockstep with the
-  contract tests in `../insight-eidos/insight-e2e/` — this folder is the single
+  contract tests in the superproject checkout's `insight-eidos/insight-e2e/` — this folder is the single
   source of truth those gates read.
 - The LogCraft DSL reference here is the one reference — the bible shelf points
   at it; never duplicate it elsewhere.
