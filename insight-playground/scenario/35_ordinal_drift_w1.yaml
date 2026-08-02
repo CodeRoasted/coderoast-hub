@@ -3,7 +3,7 @@
 # THE CUT GATE for the W1 ordinal channel. One declared-ordinal field (`latency_ms`) over one
 # generated stream, and two counterfactuals of it: a ~10-octave shift must read OrdinalDrift /
 # regression / HIGH (and its mirror, recovery / HIGH), while a sub-octave jitter must read neither
-# HIGH nor MED. `latency_ms` routes to W1, never the categorical FieldShift channel (D-W1-5 router
+# HIGH nor MED. `latency_ms` routes to W1, never the categorical FieldShift channel (SRC-D-W1-5 router
 # exclusivity).
 #
 # GENERATABLE ONLY SINCE LF4 SHIPPED (emission contract §4). The earlier attempt at this migration
@@ -96,7 +96,7 @@ contract_scenario:
           must_fire:
             - { kind: OrdinalDrift, polarity: regression, shift: HIGH, template: "db query completed" }
           must_not_emit:
-            - { kind: FieldShift, template: "db query completed" }   # D-W1-5 router exclusivity
+            - { kind: FieldShift, template: "db query completed" }   # SRC-D-W1-5 router exclusivity
           attributable_to: ["latency_ms"]
         untouched_projection:
           exclude_rows:
