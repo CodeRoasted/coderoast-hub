@@ -1,4 +1,4 @@
-# 36 plaintext_ordinal_vanish — the PLAIN-TEXT demo path (§4A.5 D-W1-9 + SRC-D-VAN-1): a vanished
+# 36 plaintext_ordinal_vanish — the PLAIN-TEXT demo path (§4A.5 SRC-D-W1-9 + SRC-D-VAN-1): a vanished
 # recurrence LEADS, a real categorical move SURVIVES, and a bare re-run stays under the page band.
 #
 # WHAT IT PINS, across four arms sharing one vehicle:
@@ -17,7 +17,7 @@
 #
 # ── WHAT WAS MEASURED, AND WHAT IT COST TO GET RIGHT (2026-07-19) ────────────────────────────────
 # The Founder's read was that the earlier generated attempt had simply lost the `ms` unit suffix —
-# D-W1-9's suppression being lexical, a bare integer is exactly the token that floods — and that
+# SRC-D-W1-9's suppression being lexical, a bare integer is exactly the token that floods — and that
 # restoring `{latency}ms` would dissolve the blocker. The first half is confirmed: `format_message`
 # substring-replaces `{name}` with no delimiter requirement, so `{latency}ms` renders `23ms` and the
 # generated payload is byte-identical to the retired `.log`.
@@ -25,7 +25,7 @@
 # **The suffix is not what governs this, and the flood is real.** Two measurements, one variable each:
 #   ① Suffix, under IDENTICAL value movement: `{latency}ms` and `{latency} ms` produce the SAME four
 #     rows. The token masks wholesale to `<*>` either way, so the FieldShift channel never sees the
-#     suffix and D-W1-9 is not what is deciding here.
+#     suffix and SRC-D-W1-9 is not what is deciding here.
 #   ② A genuine RE-RUN — same generator, same band 4..80, same n≈14/endpoint, fresh seed — floods
 #     ALL SEVEN routes (JSD 0.07–0.11, every one Low). The vanish still leads at High.
 # The authored pair's single row is therefore a property of its particular hand-typed multisets, not

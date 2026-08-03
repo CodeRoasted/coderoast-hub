@@ -75,7 +75,7 @@ deterministic_scenario:
 
         # THE MEASUREMENT — a wide band, so cardinality clears the 4A.2 gate and the ratio test is
         # asked. `100 ms` is space-separated, so the token is a BARE INTEGER: the suppression here is
-        # 4A.2 cardinality, NOT the D-W1-9 lexical unit-suffix rule (flaws.md F14).
+        # 4A.2 cardinality, NOT the SRC-D-W1-9 lexical unit-suffix rule (flaws.md F14).
         - name: db
           rate_per_second: 3.45          # -> 70 records
           message_template: "db query latency {latency} ms"
