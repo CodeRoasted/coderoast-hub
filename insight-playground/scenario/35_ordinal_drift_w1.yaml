@@ -1,4 +1,4 @@
-# 35 ordinal_drift_w1 — the W1 ordinal-drift gate (§4A.4 D-W1-1/SRC-D-W1-2/SRC-D-W1-3/SRC-D-W1-4/SRC-D-W1-5/SRC-D-W1-6/D-W1-7), on a DECLARED intervention.
+# 35 ordinal_drift_w1 — the W1 ordinal-drift gate (§4A.4 D-W1-1/SRC-D-W1-2/SRC-D-W1-3/SRC-D-W1-4/SRC-D-W1-5/SRC-D-W1-6), on a DECLARED intervention.
 #
 # THE CUT GATE for the W1 ordinal channel. One declared-ordinal field (`latency_ms`) over one
 # generated stream, and two counterfactuals of it: a ~10-octave shift must read OrdinalDrift /
