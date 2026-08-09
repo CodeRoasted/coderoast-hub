@@ -134,11 +134,17 @@ contract_scenario:
       compare: RAW.run
       expect:
         ranked_changes:
+          # DN-31.D9 grain: the failing UNIT is the finding and the `linting {file}` lines are its
+          # evidence, so the row is UnitOutcomeChanged naming the unit — `yarn lint` — not a
+          # NewErrorPattern naming the observation. The PROPERTY is unchanged and now shown more
+          # directly: one failing unit, one alert, confined to the quantum the edge names.
           must_fire:
-            - { kind: NewErrorPattern, polarity: regression, template: "linting" }
+            - { kind: UnitOutcomeChanged, polarity: regression, template: "yarn lint" }
           must_not_emit:
-            - { kind: NewErrorPattern, template: "installing" }
-            - { kind: NewErrorPattern, template: "compiling" }
+            # The untouched units must produce no finding of their own — under D9 that means no
+            # unit row for them, which is a stronger statement than "no error pattern".
+            - { kind: UnitOutcomeChanged, template: "installing" }
+            - { kind: UnitOutcomeChanged, template: "compiling" }
         untouched_projection:
           exclude_rows:                  # EXACTLY K: every finding sits in the quantum the edge names
             - { phase: "yarn lint" }
@@ -151,6 +157,11 @@ contract_scenario:
       expect:
         ranked_changes:
           must_fire:
+            # ⚠ THE RECOVERY POLE DID NOT MOVE, and the asymmetry is the finding. DN-31.D9 folds a
+            # unit that CHANGED OUTCOME — a failing unit. A recovering one yields resolved_pattern
+            # rows naming the errors that cleared (measured: two, at 36.6% and 29.3% of baseline).
+            # So the grain move is one-directional, and repointing this pole "for symmetry" would
+            # assert a row the engine does not emit.
             - { kind: ResolvedPattern, polarity: recovery, template: "linting" }
         untouched_projection:
           exclude_rows:
