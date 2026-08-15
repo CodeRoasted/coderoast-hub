@@ -3,7 +3,7 @@
 How every number in `SUMMARY.md` and the `*.baseline.json` files is produced and what it
 does — and does not — claim.
 
-> Evidence snapshot for **v1.9.2**.
+> Evidence snapshot for **v1.9.3**.
 
 ## What is measured
 
