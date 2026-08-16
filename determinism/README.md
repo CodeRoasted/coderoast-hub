@@ -46,7 +46,7 @@ on each of the five legs and compared byte-for-byte. A divergence blocks the rel
 ## Reproduce it
 
 1. Provision the pinned toolchains (public actions):
-   `setup-gcc153`, `setup-clang21-libcxx`, and — for the Windows anchor — MSVC 14.52.
+   `setup-gcc`, `setup-clang21-libcxx`, and — for the Windows anchor — MSVC 14.52.
 2. Build the engines from source at this release, on **both an x86-64 and an arm64 host**
    (GCC and Clang on each; the MSVC anchor on Windows / x86-64).
 3. Regenerate each engine's determinism proof and hash it.
