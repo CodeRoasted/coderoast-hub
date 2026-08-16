@@ -27,7 +27,7 @@ sha256sum -c canon.det_proof.txt.sha256
 ## The claim, and why it holds
 
 The serialized MetaLog document is **bit-identical** across **five independent build
-legs** — GCC-15.3 / libstdc++ and Clang-21 / libc++ on **both x86-64 and arm64**, plus an
+legs** — GCC-16.2 / libstdc++ and Clang-21 / libc++ on **both x86-64 and arm64**, plus an
 MSVC anchor on Windows: a cross-OS, cross-toolchain, **cross-ISA** result, verified on every
 leg at each cut. Determinism is a first-class product constraint, engineered for, not hoped for:
 

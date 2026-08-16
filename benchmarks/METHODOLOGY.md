@@ -36,7 +36,7 @@ the counters — not the absolute time, which depends on the runner.
 
 ## Toolchain
 
-The ship leg is GCC-15.3 / libstdc++ with `-ffp-contract=off` and pinned CMake/Conan (the
+The ship leg is GCC-16.2 / libstdc++ with `-ffp-contract=off` and pinned CMake/Conan (the
 same pinned toolchain the determinism proof uses).
 
 ---
