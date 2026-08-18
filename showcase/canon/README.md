@@ -12,6 +12,11 @@ analysis runs. The end-to-end detection is exercised elsewhere (Eidos + Sift).
 - `semantic_identity e2731a5a8e602e0cb71abc9009d225ec`
 - `packages: github@1.4.0 gitlab@1.0.0 jenkins@1.1.0 test_frameworks@1.0.0`
 
+The two lines above are the canon vocabulary of **this run** — not a standing version claim.
+This page is rendered on demand, not at every release cut, so read it as a snapshot of one
+run. The release-stamped evidence lives beside it in [`determinism/`](../../determinism/),
+which is regenerated at each cut and names the version it belongs to.
+
 ## What each `*.canon.txt` shows
 
 Per source log, Canon emits three sections:

@@ -15,10 +15,11 @@ noise.** These samples are the evidence for both halves of that.
 
 - **noise floor** — two runs that both **passed**. A plain text diff (timestamps already
   stripped) reports thousands of differing lines. Sift reports what is left after the churn is
-  accounted for. This is the number that matters for a tool you leave switched on: it buries
-  noise instead of missing signal.
-- **regression** — the same passing run against the **failing** one. The report ranks the true
-  cause at the top, above the collateral.
+  accounted for. This is the number that matters for a tool you leave switched on: what it
+  costs you to read on a day when nothing broke.
+- **regression** — the same passing run against the **failing** one. The report's top three are
+  the failure and its cause: the step exited non-zero, then the package that failed to build and
+  the error it raised. Ranks 1, 2 and 3 of [the report](reports/regression.report.md) — open it and check.
 
 ## What is here
 
