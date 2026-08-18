@@ -31,5 +31,8 @@ Per source log, Canon emits three sections:
 | `marker_corpus` | 5 | [`marker_corpus.canon.txt`](marker_corpus.canon.txt) |
 | `revert_corpus` | 10 | [`revert_corpus.canon.txt`](revert_corpus.canon.txt) |
 
-> The sample logs are public-safe by construction — fully synthetic fixtures or
-> CC-BY-licensed corpora. Our real third-party crawl corpora stay private.
+> Every sample tree published here clears two independent checks: the **right** to
+> redistribute (a `SLICE.json` declaring it fully synthetic, or an `ATTRIBUTION.md`
+> naming a redistribution licence) **and** a scan that refuses declared
+> identifying-content classes. That scan matches byte shapes, so it is a floor and not
+> a certificate. Our real third-party crawl corpora stay private.
