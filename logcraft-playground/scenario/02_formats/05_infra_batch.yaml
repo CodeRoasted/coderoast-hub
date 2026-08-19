@@ -1,0 +1,60 @@
+# Formats 05 — Infrastructure & Batch Log Formats
+# Spark/HDFS big-data workers, HPC (Blue Gene/L RAS), IIS W3C extended, and the
+# plain human-readable text form as the baseline everything else is compared to.
+# Concepts: format: spark_hdfs, hpc, iis_w3c, text
+
+scenario:
+  name: infra-batch-formats
+  duration_seconds: 2m
+
+  agents:
+    - name: batch-worker
+      intent: batch_compute
+      rate_per_second: 15/s
+      message_template: "stage {stage_id} task {task_id}: {event} ({records} records)"
+      fields:
+        - name: stage_id
+          generator: sequence
+          prefix: "7"
+        - name: task_id
+          generator: range
+          min: 0
+          max: 512
+          integer: true
+        - name: event
+          generator: weighted_choice
+          values: [started, completed, shuffled, spilled, retried]
+          weights: [25, 45, 15, 10, 5]
+        - name: records
+          generator: range
+          min: 100
+          max: 2000000
+          integer: true
+        - name: node
+          generator: choice
+          values: ["10.2.0.11", "10.2.0.12", "10.2.0.13", "10.2.0.14"]
+
+  outputs:
+    # 26/01/15 10:23:45 INFO executor: stage 71 task 42: completed
+    - name: spark-log
+      type: file
+      file_path: /tmp/logcraft_spark.log
+      format: spark_hdfs
+
+    # - 1737000000 2026.01.15 R21-M0-N4 R21-M0-N4 RAS KERNEL INFO stage 71 task 42: completed
+    - name: hpc-log
+      type: file
+      file_path: /tmp/logcraft_hpc.log
+      format: hpc
+
+    # 2026-01-15 10:23:45 W3SVC1 host GET /jobs/71 - 443 - 10.2.0.11 agent 200
+    - name: iis-log
+      type: file
+      file_path: /tmp/logcraft_iis.log
+      format: iis_w3c
+
+    # [2026-01-15T10:23:45] [INFO] [batch-worker/batch_compute] stage 71 task 42: completed | records=104232
+    - name: text-log
+      type: file
+      file_path: /tmp/logcraft_text.log
+      format: text

@@ -1,0 +1,59 @@
+# Formats 04 — Endpoint & Device Log Formats
+# Android logcat, Windows CBS servicing, Proxifier, and the health-app pipe format —
+# the logs that come off end-user machines rather than servers.
+# Concepts: format: android_logcat, windows_cbs, proxifier, health_app
+
+scenario:
+  name: endpoint-device-formats
+  duration_seconds: 2m
+
+  agents:
+    - name: device-agent
+      intent: endpoint_client
+      rate_per_second: 10/s
+      message_template: "{operation} for {component} finished with {result} in {elapsed_ms}ms"
+      fields:
+        - name: operation
+          generator: weighted_choice
+          values: [sync, update, scan, upload, heartbeat]
+          weights: [40, 20, 20, 10, 10]
+        - name: component
+          generator: choice
+          values: [net.session, pkg.installer, ui.render, sensor.hub]
+        - name: result
+          generator: weighted_choice
+          values: [ok, retried, failed]
+          weights: [85, 10, 5]
+        - name: elapsed_ms
+          generator: range
+          min: 3
+          max: 1500
+          integer: true
+        - name: session_id
+          generator: sequence
+          prefix: "48f1-"
+
+  outputs:
+    # 01-15 10:23:45.123  1234  1234 I net.session: sync finished
+    - name: logcat
+      type: file
+      file_path: /tmp/logcraft_logcat.log
+      format: android_logcat
+
+    # 2026-01-15 10:23:45, Info                  CBS    Session initialized
+    - name: windows-cbs
+      type: file
+      file_path: /tmp/logcraft_cbs.log
+      format: windows_cbs
+
+    # [01.15 10:23:45] chrome.exe - proxy.example.com:443 open through proxy
+    - name: proxifier
+      type: file
+      file_path: /tmp/logcraft_proxifier.log
+      format: proxifier
+
+    # 20260115-10:23:45:123|net.session|1234|sync finished
+    - name: health-app
+      type: file
+      file_path: /tmp/logcraft_health.log
+      format: health_app
