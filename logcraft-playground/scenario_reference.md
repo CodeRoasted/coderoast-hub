@@ -312,7 +312,12 @@ Every output except `prometheus` and `statsd` requires a `format:` (or `formats:
 | `otel` | `opentelemetry`, `otlp` | OpenTelemetry OTLP JSON **log record** |
 | `otel_span` | `otlp_span`, `otel_trace` | OpenTelemetry OTLP JSON **span** — one flat span object per line (`traceId` / `spanId` / `parentSpanId` / `name` / `startTimeUnixNano` / `endTimeUnixNano` / `status` / `service.name`). Renders a [causal flow](#causal-flows)'s trace/span context + `span_duration_ms`; a non-flow record becomes a valid synthesised root span. This is the span-native surface (see [Span output](#span-output-otel_span)) |
 | `github_actions` | `gha` | Timestamped line with a GitHub Actions workflow-command prefix (`::error::` / `::warning::`; empty for info/trace) — the surface Sift annotates from |
+| `jenkins` | — | Jenkins console log — bare untimestamped body text with `[Pipeline] ` intent banners (`[Pipeline] { (Build)` for a `kind: job` container, `[Pipeline] sh` for a `kind: step`). The second marker-rendering dialect format (with `github_actions`), single materialization — `intent_channel` is ignored. When the build axis declares [`outcome:`](#the-ci-world-build_axis), this is the format that renders the terminal `Finished: <RESULT>` epilogue, once, at end-of-stream |
 | `raw` | `messy`, `stdout` | Unstructured `LEVEL message field=value` line — CI/app-stdout "dirty logs" the structured formats never exercise |
+
+An **unrecognized `format:` value is not a parse error**: the loader falls back to `json`. This is
+the one silent fallback on this table's axis — contrast `intent_channel:`, where a typo is a hard
+error — so a misspelled format token produces a valid JSON stream rather than a load failure.
 
 When `formats:` (sequence) is set it overrides `format:` (single string), allowing one
 sink to write multiple formats to the same path prefix.
@@ -380,6 +385,7 @@ All options are parsed per-sink and ignored when not applicable to the sink type
 | `recording_format` | string | `"jsonl"` | `recording` | Recording sub-format (`smf` \| `jsonl`). NOT a log formatter — `format:` is **refused** on a `type: recording` output |
 | `project_fields` | sequence | absent (= all fields) | all | Field projection — when **present**, only these fields are emitted, in this order (the *which-fields* half, orthogonal to `format`). Presence is load-bearing: **absent** = emit every field, `project_fields: []` = emit **none** |
 | `intent_channel` | string | `""` (= writer default, `annotated`) | dialect formats | Which materialization to render (see [Intent channel](#intent-channel)). Only meaningful for a format that has more than one — today `github_actions` |
+| `transport` | sequence | absent (= OFF, byte-untouched) | `console`, `file` | The declared **output wrap** — an ordered list of canon catalogue row names (`transport: [bracket-rfc3339-line-prefix]`), applied inside-out over every rendered line (banners, content, the epilogue trailer): the writer-side dual of an ingest declaration's `stack`. Delivery-shaped, never dialect-shaped — the wrap is what a shipping envelope (a Jenkins Timestamper prefix) does to lines, not part of any format. Hard rejects: a name that is no catalogue row, a row with no writer dual (a platform-owned stamp such as the GHA API timestamp, which `format: github_actions` already carries), or any sink type other than the order-bearing rendering sinks (`console`, `file`) |
 | `file_path` | string | `""` | `file`, `recording`, `prometheus` | Output file path (the `prometheus` sink writes its exposition text to this file; the metric name prefix is `metrics_prefix`) |
 | `max_size_bytes` | integer | `0` | `file` | Rotate when file exceeds this size (0 = no rotation) |
 | `max_files` | integer | `5` | `file` | Number of rotated files to keep |
@@ -623,6 +629,7 @@ fields:
 | `name` | string | Yes | Field identifier in generated records |
 | `generator` | string | Yes | Generator type (see below) |
 | `level_overrides` | map | No | Map of field value → log level override |
+| `emit` | bool | No (default `true`) | `emit: false` marks the field a **template input only**: the value is still generated and interpolable in `message_template`, then erased after interpolation — so an interpolated value is not *also* emitted in the output tail (the flat JSON key, the `k=v` tail). Uniform across every format by construction: the erasure happens before any formatter runs |
 
 ---
 
@@ -1418,6 +1425,33 @@ are bit-identical across adjacent coordinates.
 
 The world under `build_axis:` is the CI world, and the agents **inherit** it — which is what makes
 the keys below legal here and rejected elsewhere, and vice versa.
+
+**The dialect (`dialect:`).** A build history speaks **one** structural vocabulary, declared once
+on the axis and inherited by every structural quantum — never restated per agent (see
+[the mapping form](#intent)). The Intent library declares two dialects today: `github` and
+`jenkins`. A `dialect:` naming neither is a hard reject, with the live roster in the message.
+
+**The declared verdict (`outcome:`).** Run-grain, like the dialect: a run has **one** terminal
+verdict, and the writer renders it exactly once, at the document boundary. The token vocabulary is
+the dialect's own **native verdict string, verbatim** — never a LogCraft re-spelling. For
+`dialect: jenkins` the declarable set is `SUCCESS`, `FAILURE`, `UNSTABLE`, `ABORTED`, and the
+`format: jenkins` sink renders it as the terminal `Finished: <RESULT>` console line:
+
+```yaml
+build_axis:
+  dialect: jenkins
+  outcome: SUCCESS          # → the document ends with `Finished: SUCCESS`
+```
+
+- **`NOT_BUILT` is undeclarable.** Jenkins maps it to *the run produced no verdict*, and an
+  epilogue announcing absence would fabricate one. **Absence is expressed by omitting the key**:
+  no `outcome:` ⇒ no epilogue line, for every format — the writer never invents a verdict.
+- **Dialect-gated, hard.** Only `jenkins` ships a run-verdict console line, so `outcome:` under
+  `dialect: github` is a **hard reject** (a GHA document's verdict is carried out-of-band, not in
+  its bytes), as is `outcome:` outside a dialect-bearing `build_axis:` altogether.
+- **It needs a medium.** The epilogue materializes only through a `console`/`file` output rendering
+  `format: jenkins`; declaring `outcome:` with no such output is legal but **noticed** at
+  validation — the verdict would materialize nowhere.
 
 **The step chain (`after:`).** A CI document is ORDERED (the step sequence is semantics), so each
 agent names its predecessor. The chain is strict — exactly one head (an agent following nothing), at
