@@ -100,12 +100,8 @@ deterministic_scenario:
 contract_scenario:
   reference_scenario: insight-new-deployment-novelty
   pyramid_config:
-    raw_ring_capacity: 13
     ladder:
       levels: 3
-    raw_strides:
-    - lookback_windows: 2
-    - lookback_windows: 5
   metalog_config:
     top_k_size: 128
     ngram_size: 3

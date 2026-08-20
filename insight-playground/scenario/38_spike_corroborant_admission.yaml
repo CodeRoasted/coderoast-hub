@@ -85,7 +85,6 @@ contract_scenario:
 
   pyramid_config:
     ladder: { levels: 3, ring_depth: 4 }
-    raw_strides: [{ lookback_windows: 2 }, { lookback_windows: 5 }]
     disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
   metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
   explain_min_confidence: 0.75

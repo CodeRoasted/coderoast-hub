@@ -66,10 +66,9 @@ deterministic_scenario:
 contract_scenario:
   reference_scenario: insight-lone-fatal-in-tail
   pyramid_config:
-    raw_ring_capacity: 13
     ladder:
       levels: 1
-    raw_strides: []
+      ring_depth: 1
   metalog_config:
     top_k_size: 64
     reservoir_size: 64

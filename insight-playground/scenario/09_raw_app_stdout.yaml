@@ -72,10 +72,9 @@ deterministic_scenario:
 contract_scenario:
   reference_scenario: insight-raw-app-stdout
   pyramid_config:
-    raw_ring_capacity: 13
     ladder:
       levels: 1
-    raw_strides: []
+      ring_depth: 1
   explain_min_confidence: 0.75
   windows:
     mode: segmented
