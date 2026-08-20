@@ -122,6 +122,14 @@ contract_scenario:
       coordinates: { causal_axis: no-drift, time_axis: 2050s }
       signal:
         must_not_fire:
+          # THE FOLD, unqualified. This fixture declares the same instrument as 38 and drives the
+          # same class of world, and until 2026-08-20 neither of its positions could observe a
+          # Composite at all — so "silent everywhere" was a claim about the scales it happened to
+          # enumerate, not about the fold those scales feed. Deliberately UNqualified: a
+          # branch/band qualifier would narrow the guard to the fold shape measured today, and the
+          # shape is exactly what a geometry change moves. On the neutralized world no fold of any
+          # branch may form.
+          - envelope . Cmp . fired_set
           - DISJOINT.L2.s1 . Fld.dist . field_jsd
           - DISJOINT.L2.s3 . Fld.dist . field_jsd
           - DISJOINT.L2.s1 . Dft . js_divergence
