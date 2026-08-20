@@ -1,5 +1,5 @@
 # canon public determinism proof -- v4
-# semantic_identity c149d78640f3370409a48bddc5ddc402
+# semantic_identity 84df619d0946c1c7b470b5e6f71a825c
 # semantic_packages github@1.4.0 gitlab@1.0.0 jenkins@1.1.0 test_frameworks@1.0.0
 ## file ci_build.log declared=-
 ### templates (14)
@@ -134,23 +134,33 @@ Error	F--	None	Build failed with <*> error
 ### det_math total=14 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
 ## file github_actions.log declared=-
-### templates (2)
-11	
-1	connection refused
+### templates (12)
+1	<*> ##[endgroup]
+1	<*> ##[error]Process completed with exit code 1
+1	<*> ##[error]test gateway.route failed: connection refused
+1	<*> ##[group]Run build and test
+1	<*> ##[group]Run unit suite
+1	<*> ##[warning]deprecated API used in billing/charge.cpp
+1	<*> Compiling module auth
+1	<*> Compiling module billing
+1	<*> Linking target service
+1	<*> Restoring dependencies from cache
+1	<*> test auth.login passed
+1	<*> test billing.charge passed
 ### events
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	-W-	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	F--	None	connection refused
-Unknown	F--	None	
-### det_math total=12 sum_c_log2c_qk=41840538192068
+Unknown	---	None	<*> ##[group]Run build and test
+Unknown	---	None	<*> Restoring dependencies from cache
+Unknown	---	None	<*> Compiling module auth
+Unknown	---	None	<*> Compiling module billing
+Warn	-W-	None	<*> ##[warning]deprecated API used in billing/charge.cpp
+Unknown	---	None	<*> Linking target service
+Unknown	---	None	<*> ##[endgroup]
+Unknown	---	None	<*> ##[group]Run unit suite
+Unknown	---	None	<*> test auth.login passed
+Unknown	---	None	<*> test billing.charge passed
+Error	F--	None	<*> ##[error]test gateway.route failed: connection refused
+Error	F--	None	<*> ##[error]Process completed with exit code 1
+### det_math total=12 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
 ## file github_actions.log declared=github+api-rfc3339-line-prefix
 ### templates (12)
@@ -182,42 +192,62 @@ Error	F-T	Terminator	##[error]Process completed with exit code 1
 ### det_math total=12 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
 ## file github_actions.log declared=gitlab
-### templates (2)
-11	
-1	connection refused
+### templates (12)
+1	<*> ##[endgroup]
+1	<*> ##[error]Process completed with exit code 1
+1	<*> ##[error]test gateway.route failed: connection refused
+1	<*> ##[group]Run build and test
+1	<*> ##[group]Run unit suite
+1	<*> ##[warning]deprecated API used in billing/charge.cpp
+1	<*> Compiling module auth
+1	<*> Compiling module billing
+1	<*> Linking target service
+1	<*> Restoring dependencies from cache
+1	<*> test auth.login passed
+1	<*> test billing.charge passed
 ### events
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	-W-	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	F--	None	connection refused
-Unknown	F--	None	
-### det_math total=12 sum_c_log2c_qk=41840538192068
+Unknown	---	None	<*> ##[group]Run build and test
+Unknown	---	None	<*> Restoring dependencies from cache
+Unknown	---	None	<*> Compiling module auth
+Unknown	---	None	<*> Compiling module billing
+Warn	-W-	None	<*> ##[warning]deprecated API used in billing/charge.cpp
+Unknown	---	None	<*> Linking target service
+Unknown	---	None	<*> ##[endgroup]
+Unknown	---	None	<*> ##[group]Run unit suite
+Unknown	---	None	<*> test auth.login passed
+Unknown	---	None	<*> test billing.charge passed
+Error	F--	None	<*> ##[error]test gateway.route failed: connection refused
+Error	F--	None	<*> ##[error]Process completed with exit code 1
+### det_math total=12 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
 ## file github_actions.log declared=jenkins
-### templates (2)
-11	
-1	connection refused
+### templates (12)
+1	<*> ##[endgroup]
+1	<*> ##[error]Process completed with exit code 1
+1	<*> ##[error]test gateway.route failed: connection refused
+1	<*> ##[group]Run build and test
+1	<*> ##[group]Run unit suite
+1	<*> ##[warning]deprecated API used in billing/charge.cpp
+1	<*> Compiling module auth
+1	<*> Compiling module billing
+1	<*> Linking target service
+1	<*> Restoring dependencies from cache
+1	<*> test auth.login passed
+1	<*> test billing.charge passed
 ### events
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	-W-	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	---	None	
-Unknown	F--	None	connection refused
-Unknown	F--	None	
-### det_math total=12 sum_c_log2c_qk=41840538192068
+Unknown	---	None	<*> ##[group]Run build and test
+Unknown	---	None	<*> Restoring dependencies from cache
+Unknown	---	None	<*> Compiling module auth
+Unknown	---	None	<*> Compiling module billing
+Warn	-W-	None	<*> ##[warning]deprecated API used in billing/charge.cpp
+Unknown	---	None	<*> Linking target service
+Unknown	---	None	<*> ##[endgroup]
+Unknown	---	None	<*> ##[group]Run unit suite
+Unknown	---	None	<*> test auth.login passed
+Unknown	---	None	<*> test billing.charge passed
+Error	F--	None	<*> ##[error]test gateway.route failed: connection refused
+Error	F--	None	<*> ##[error]Process completed with exit code 1
+### det_math total=12 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
 ## file gitlab_ci.log declared=-
 ### templates (16)
@@ -851,7 +881,7 @@ Unknown	---	None	cache warmed in <*>
 Unknown	---	None	request completed in <*>
 Unknown	---	None	GET /api/users <*>
 Unknown	---	None	upstream timeout on shard <*>
-Unknown	F--	None	request failed after <*>
+Error	F--	None	request failed after <*>
 Unknown	---	None	Out of memory: Killed process <*> (app)
 ### det_math total=8 sum_c_log2c_qk=2199023255552
 ### run_outcome marker=0 token=- resolved=UNKNOWN
@@ -871,7 +901,7 @@ Unknown	---	None	cache warmed in <*>
 Unknown	---	None	request completed in <*>
 Unknown	---	None	GET /api/users <*>
 Unknown	---	None	upstream timeout on shard <*>
-Unknown	F--	None	request failed after <*>
+Error	F--	None	request failed after <*>
 Unknown	---	None	Out of memory: Killed process <*> (app)
 ### det_math total=8 sum_c_log2c_qk=2199023255552
 ### run_outcome marker=0 token=- resolved=UNKNOWN
@@ -891,7 +921,7 @@ Unknown	---	None	cache warmed in <*>
 Unknown	---	None	request completed in <*>
 Unknown	---	None	GET /api/users <*>
 Unknown	---	None	upstream timeout on shard <*>
-Unknown	F--	None	request failed after <*>
+Error	F--	None	request failed after <*>
 Unknown	---	None	Out of memory: Killed process <*> (app)
 ### det_math total=8 sum_c_log2c_qk=2199023255552
 ### run_outcome marker=0 token=- resolved=UNKNOWN
@@ -911,7 +941,7 @@ Unknown	---	None	cache warmed in <*>
 Unknown	---	None	request completed in <*>
 Unknown	---	None	GET /api/users <*>
 Unknown	---	None	upstream timeout on shard <*>
-Unknown	F--	None	request failed after <*>
+Error	F--	None	request failed after <*>
 Unknown	---	None	Out of memory: Killed process <*> (app)
 ### det_math total=8 sum_c_log2c_qk=2199023255552
 ### run_outcome marker=0 token=- resolved=UNKNOWN
