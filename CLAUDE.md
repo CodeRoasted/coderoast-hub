@@ -18,9 +18,18 @@ code lives here or ever will.
 
 ## Constraints & traps
 
-- PUBLIC repo: everything committed must be publishable as-is. No third-party
-  corpus bytes, no secrets, nothing unscrubbed — private corpora live in
-  `coderoast-corpora`.
+- PUBLIC repo: everything committed must be publishable as-is — no secrets,
+  nothing unscrubbed. Third-party corpus bytes are **private-only absent a clear
+  redistribution licence**; with one they may live here, and the licence is
+  declared *in the tree*. `samples/loghub/samples/ATTRIBUTION.md` is the one such
+  case — source, licence, and the verbatim-copy claim. Undeclared or unlicensed
+  corpora live in `coderoast-corpora`.
+- **A redistribution licence decides WHERE bytes may live, never WHAT IS IN
+  THEM.** Two independent axes; publishing needs both. A licensed tree still owes
+  a content pass on identifying bytes — routable addresses, authentication
+  records naming an account, emails, personal home paths — and that gate runs
+  outside this repo, because the hub carries no CI of its own. Reading the
+  licence as a safety claim is the failure this bullet exists to name.
 - `determinism/` and `benchmarks/` artifacts are rendered and published INTO
   this repo by private CI at each release cut — the Hub only receives. Never
   hand-edit a golden or a measurement.
