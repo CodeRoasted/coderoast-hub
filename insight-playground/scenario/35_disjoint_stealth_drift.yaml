@@ -98,14 +98,25 @@ contract_scenario:
         must_not_fire:
           # Same locus, wrong channel: a field-distribution move must not read as within-template drift.
           - DISJOINT.L2.s3 . Dft . js_divergence
-          # The CONTIGUOUS comparators: the stealth floor. The RAW horizons are the ladder's
-          # DERIVED grid at ring_depth 4 — {6,9,12} (DN-47.D2) — which is why h2/h5 are gone: a
-          # coordinate the instrument cannot spell is a guard that stopped constraining.
-          # h9 and h12 are deliberately NOT claimed here: measured 2026-08-20, RAW.h12 DOES fire
-          # on this creep (a 12-window raw-vs-raw diff spans enough of the ramp to break its own
-          # PH — it is not a running mean), ten windows before DISJOINT.s3. That is a real second
-          # witness on a real drift, not a stealth-floor violation; the matched control below
-          # claims the silence.
+          # THE FOLD, on the world that DOES drift. The only INSTANT voice that ever fused one
+          # here was RAW.h12, and this instrument no longer computes a 12-window raw-vs-raw diff
+          # at all: both declared comparisons are level 2, which is owed no corroborating stride
+          # (a FUSION bound, not a geometric one — DN-47.D13), so the grid is the tail detector's
+          # declared horizon alone. A lone DRIFT voice cannot close the cross-role gate.
+          # Deliberately UNqualified, for the reason the matched control states below.
+          - envelope . Cmp . fired_set
+          # The CONTIGUOUS comparators: the stealth floor. The RAW horizons are the DERIVED grid,
+          # and the grid is the union of what its consumers DECLARE (DN-47.D17). This fixture
+          # declares no level-1 comparison, so the corroboration term is empty and the grid is
+          # `{6}` — the tail detector's own horizon. h2/h5 went when the grid became derived;
+          # h9/h12 went when it stopped inheriting `ring_depth`, which is capacity and never was
+          # demand.
+          # KEPT AS A RECORD, no longer a claim: measured 2026-08-20 on the pre-repair grid,
+          # RAW.h12 DID fire on this creep (a 12-window raw-vs-raw diff spans enough of the ramp
+          # to break its own PH — it is not a running mean), ten windows before DISJOINT.s3, and
+          # that was a real second witness on a real drift rather than a stealth-floor violation.
+          # It is not exempted here because there is nothing left to exempt: the horizon that
+          # produced it is not computed for this instrument.
           - RAW.acute . Fld.dist . field_jsd
           - RAW.h6 . Fld.dist . field_jsd
           - ANCHORED.w3 . Fld.dist . field_jsd
@@ -135,9 +146,11 @@ contract_scenario:
           - DISJOINT.L2.s1 . Dft . js_divergence
           - DISJOINT.L2.s3 . Dft . js_divergence
           - RAW.acute . Fld.dist . field_jsd
+          # h9 and h12 are RE-EXPRESSED here, not deleted: this fixture's derived grid is `{6}`,
+          # so the whole RAW-horizon family it can observe is this one coordinate, and the claim
+          # "the contiguous comparators stay silent" survives on it (DN-47.D6 — a vacated
+          # must_not_fire is the can't-FAIL shape one tier down).
           - RAW.h6 . Fld.dist . field_jsd
-          - RAW.h9 . Fld.dist . field_jsd
-          - RAW.h12 . Fld.dist . field_jsd
           - ANCHORED.w3 . Fld.dist . field_jsd
           - ANCHORED.w6 . Fld.dist . field_jsd
           - ANCHORED.w12 . Fld.dist . field_jsd

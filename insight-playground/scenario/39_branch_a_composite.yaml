@@ -157,3 +157,10 @@ contract_scenario:
           - DISJOINT.L2.s3 . Fld.dist . field_jsd
         must_not_fire:
           - envelope . Cmp(branch=A) . fired_set
+          # THE FOLD, unqualified — the guard the branch=A claim above cannot make. A qualifier
+          # narrows the subject to the fold shape measured today, and the shape is exactly what a
+          # geometry change moves: before the grid stopped inheriting `ring_depth` (DN-47.D17),
+          # spurious level-1 corroborators put an INSTANT voice on this world and a branch-C
+          # Composite formed here below the floor, invisible to a branch=A guard. On the
+          # no-branching world no fold of any branch may form.
+          - envelope . Cmp . fired_set
