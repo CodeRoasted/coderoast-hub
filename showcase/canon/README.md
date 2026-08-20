@@ -30,14 +30,17 @@ Per source log, Canon emits three sections:
 
 ## Corpora in this showcase
 
-| corpus | source logs | canon output |
-| --- | --- | --- |
-| `loghub` | 16 | [`loghub.canon.txt`](loghub.canon.txt) |
-| `marker_corpus` | 5 | [`marker_corpus.canon.txt`](marker_corpus.canon.txt) |
-| `revert_corpus` | 10 | [`revert_corpus.canon.txt`](revert_corpus.canon.txt) |
+| corpus | source logs | right to redistribute | canon output |
+| --- | --- | --- | --- |
+| `loghub` | 16 | licensed — see [`ATTRIBUTION.md`](ATTRIBUTION.md) | [`loghub.canon.txt`](loghub.canon.txt) |
+| `marker_corpus` | 5 | synthetic fixture (`SLICE.json`) | [`marker_corpus.canon.txt`](marker_corpus.canon.txt) |
+| `revert_corpus` | 10 | synthetic fixture (`SLICE.json`) | [`revert_corpus.canon.txt`](revert_corpus.canon.txt) |
 
-> Every sample tree published here clears two independent checks: the **right** to
-> redistribute (a `SLICE.json` declaring it fully synthetic, or an `ATTRIBUTION.md`
-> naming a redistribution licence) **and** a scan that refuses declared
-> identifying-content classes. That scan matches byte shapes, so it is a floor and not
-> a certificate. Our real third-party crawl corpora stay private.
+> **What this run checked, and what it did not.** The *right to redistribute* in the table
+> above was read from each source corpus during this run — a `SLICE.json` declaring it
+> fabricated, or an `ATTRIBUTION.md` naming a licence — and this page is not rendered at
+> all when a corpus declares neither. **No identifying-content scan was computed for these
+> rendered artifacts.** That scan is a separate axis, it runs outside this repository, and
+> a redistribution licence says nothing about what is *in* the bytes. Read the table as a
+> statement about our right to publish these renders, never as a statement about their
+> contents. Our real third-party crawl corpora stay private.
