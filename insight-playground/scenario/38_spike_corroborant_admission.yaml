@@ -101,12 +101,16 @@ contract_scenario:
         must_not_fire:
           - envelope . Cmp(band=surfacing) . fired_set   # the safety cap: never pages
 
-    # NO SPIKE — the drift still speaks, and no Composite forms. Its `Fld.dist` must_fire is the
-    # §3.4 witness that this silence is about the missing spike, not a dead stream.
+    # NO SPIKE — the drift still speaks, and since DN-49.D12 its declared carriers corroborate
+    # it epoch-disjointly (DN-49.D8 case 6) even without the spike: a sub-floor branch-C fold
+    # forms — buffered, never a page (the DN-47.D15 disposition). The `Fld.dist` must_fire is
+    # still the §3.4 witness that the sub-floor band is about the missing spike, not a dead
+    # stream.
     - name: no-spike
       coordinates: { causal_axis: no-spike, time_axis: 2050s }
       signal:
         must_fire:
           - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - envelope . Cmp(branch=C, band=sub_floor) . fired_set
         must_not_fire:
-          - envelope . Cmp . fired_set
+          - envelope . Cmp(band=surfacing) . fired_set
