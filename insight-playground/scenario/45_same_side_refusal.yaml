@@ -1,0 +1,111 @@
+# 45 same_side_refusal — G-B1 NEGATIVE-ARM refusal subject (DN-49.D13 / DN-49.D8 cases 5–6):
+# the one corpus geometry on which the dependence relation's REFUSAL branch is non-vacuous.
+#
+# WHY THIS FIXTURE EXISTS. The negative arm's 2026-08-21 scaffold census measured the corpus's
+# manufactured folds at 0 REFUSED / 119 ADMITTED: every dense-grid fold held an epoch-disjoint
+# pair (h13 x L2.s3 above all — 13 < 19 clears the s3 far block at every phase), so
+# "Cube B admits 0 itemsets from same-side-dependent witness sets" was VACUOUSLY green — the
+# exact can't-FAIL shape the arm's exit criterion must be checked against
+# (MEM:synthetic-gate-vacuity-vs-judgment; DN-47.D6's minted rule). This fixture closes that
+# hole by declaring L2.s2 ALONE: its far block spans lookbacks [13+q..18+q], and the ONE deep
+# stride this creep class wakes — h13 (measured: the only stride Fld.dist that fires on the
+# slow walk; h8 stays silent) — reads that SAME epoch, same side (13 ∈ [13..23]). Under the
+# dense scaffold every cross-role pair this world can form is same-side-dependent, and the
+# model MUST refuse the fold the shipped gate manufactures. (An s1 draft measured hollow: the
+# adjacent-block contrast this slow ramp offers never trips s1's PH, and any drift fast enough
+# for s1 is h6-visible too — the s2 geometry is the one whose dependent set matches what
+# actually fires.)
+#
+# TODAY-TRUTH (shipped grid {6}): the s2 integrator sees the creep; no INSTANT voice exists
+# anywhere in this world (no burst, contiguous comparators stealth-silent), so no fold of any
+# kind forms — the lone drift voice keeps its primary report, which is the §5.3-C contract.
+#
+# ── PRE-REGISTERED SCAFFOLD EXPECTATION (the negative arm's refusal branch) ───────────────────
+# Under the dense build scaffold ({1,2,3,5,8,13} appended to BOTH raw_strides and
+# max_raw_stride): the shipped gate folds h13's creep echo with s2 (the DN-47.D6 manufacture
+# channel), and the D8 relation holds NO admissible pair — CB-REFUSED rows, not CB-ADJUDICATE.
+# A dense-arm run where this fixture's folds are ADMITTED is a red of the dependence matrix
+# itself. The mutation arm (matrix off) must re-admit exactly these folds.
+#
+# ── THE CONTROL IS A do(), NOT A SECOND FILE (the 35 idiom, verbatim) ─────────────────────────
+# `no-drift` replaces the ramp with one whose target weights are the weights the field already
+# has. Values are digit-leading (maskable — MEM:logcraft-precision-scenario-must-be-maskable).
+
+deterministic_scenario:
+  name: "same-side-refusal"
+  seed: 4545
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_same_side
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      - name: no-drift
+        upsert:
+          - path: agents.api-svc.phases.drift.field_weight_ramps
+            value:
+              - field: bucket
+                target_weights: [1.0, 0.0]
+                window_seconds: 25
+
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: api-svc
+          intent: api_service
+          rate_per_second: 50/s
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [1.0, 0.0]
+          phases:
+            - name: warm
+              duration_seconds: 550s
+              rate_per_second: 50/s
+            - name: drift
+              duration_seconds: 1500s
+              rate_per_second: 50/s
+              field_weight_ramps:
+                - field: bucket
+                  target_weights: [0.0, 1.0]
+                  window_seconds: 25
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: same-side-refusal
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 3 }
+    disjoint: [{ level: 2, separation: 2 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # THE DRIFT — the separated-block integrator sees it; nothing can corroborate it (no INSTANT
+    # voice exists in this world), so the fold never closes: the lone drift voice keeps its own
+    # primary report. Deliberately UNqualified Cmp guard, per the 35/39 rule: the fold shape is
+    # exactly what a geometry change moves.
+    - name: drifting
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s2 . Fld.dist . field_jsd
+        must_not_fire:
+          - envelope . Cmp . fired_set
+          - RAW.acute . Fld.dist . field_jsd
+          - RAW.h6 . Fld.dist . field_jsd
+
+    # THE MATCHED CONTROL — ramp neutralized: silent everywhere, integrator included.
+    - name: no-drift
+      coordinates: { causal_axis: no-drift, time_axis: 2050s }
+      signal:
+        must_not_fire:
+          - envelope . Cmp . fired_set
+          - DISJOINT.L2.s2 . Fld.dist . field_jsd
+          - RAW.acute . Fld.dist . field_jsd
+          - RAW.h6 . Fld.dist . field_jsd
