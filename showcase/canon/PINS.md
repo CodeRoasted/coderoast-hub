@@ -14,7 +14,7 @@ first — you are almost certainly not holding the same inputs or the same build
 
 ## Inputs
 
-- source repository commit: `ef2f2a12efe2e0873fc9faafdf78d285328ff498`
+- source repository commit: `ffece2891033cf60de63fb4f710978ca1e856879`
 
 Per corpus, the SHA-256 of every input log actually read by this run, in the order it was
 read. A corpus anchor is the SHA-256 of that list, so one line identifies the whole input set.
