@@ -1,0 +1,164 @@
+# 42 planted_identity_naming — G-B2b NAMING arm (DN-49.D16 arm 1): a deployment whose branching
+# identity is PERSISTENT AT BLOCK TIMESCALE and sub-threshold at every shipped raw-x-raw span —
+# authored so that, when Cube B lands and declares the L2.s3 identity carrier (RAW.h24 —
+# DN-49.D12/D16), the carrier's structural readout has a KNOWN planted identity to name, and the
+# matched control has nothing to name.
+#
+# THE WORLD (every number below is MEASURED, 2026-08-21, six calibration runs recorded in the
+# G-B2b authoring pass):
+#   * hb 80/s and api-svc 30/s are the steady floor; deploy-svc's template and edges exist from
+#     t=0 (a 0.2/s trickle), so template/edge MEMBERSHIP never changes after warm-up — the
+#     deployment moves WEIGHTS only, and no novelty rides it.
+#   * at t=1300 the deployment ramps 3→30/s in ten 50 s steps, overshoots to 70/s for one
+#     window, settles at 30/s: a template-mix migration whose per-window and 6-window branching
+#     deltas sit UNDER the declared 2.0-bit threshold (measured: `Seq` emits ZERO BranchingShift
+#     at RAW.acute and RAW.h6) while a 24-window span crosses it — the carrier's naming margin.
+#   * DISJOINT.L2.s3 . Dft (js_divergence) fires on the far-vs-recent mix contrast (measured),
+#     and the window-scope fold forms (measured: 10 Composites, sub-floor).
+#   * TODAY'S BRANCH LETTER IS A, AND THAT IS MEASURED TRUTH, NOT AN ERROR: the deployment's
+#     own overtake flips the modal path once (Dps n=2, a REAL structural event of this world),
+#     and that window-scope voice confirms the fold while it lives. The stealth claim this arm
+#     carries is on the BRANCHING-DELTA channel (the borders below), not on the branch letter:
+#     what no shipped witness can do is name the GRADUAL branching migration itself — its span
+#     never clears 2.0 bits at any computed raw-x-raw stride. Naming THAT is the carrier's job.
+#
+# ── PRE-REGISTERED CUBE-B EXPECTATIONS (DN-49.D16, fixed IN ADVANCE) ──────────────────────────
+#   * `drifting`: RAW.h24 becomes spellable (grid {6,12,24}, ring 25 — DN-49.D12) and
+#     `RAW.h24 . Seq . branching_bits` (emits BranchingShift) must_fire — the carrier NAMES the
+#     migration; the acute/h6 stealth borders below stay AS IS. The carrier's testimony enters
+#     the itemset on the identity axis only (DN-49.D9) — the landing census asserts its
+#     membership in the fold's closed set, not a branch-letter flip (the letter is already A
+#     here via Dps, an independent real event).
+#   * `no-deploy`: unchanged — no itemset of any branch, Cube-B-invariant (the arm's control).
+#
+# ── THE CONTROL IS A do(), NOT A SECOND FILE ──────────────────────────────────────────────────
+# `no-deploy` upserts the deployment's phases to the trickle forever — the same world where the
+# deployment never happens, template still known, nothing to name and nothing to bind.
+
+deterministic_scenario:
+  name: "planted-identity-naming"
+  seed: 4242
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_planted_naming
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      - name: no-deploy
+        upsert:
+          - path: agents.deploy-svc.phases
+            value:
+              - name: trickle-forever
+                duration_seconds: 750s
+                rate_per_second: 0.2/s
+
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: hb
+          intent: service
+          rate_per_second: 80/s
+          message_template: "heartbeat ok"
+        - name: api-svc
+          intent: api_service
+          rate_per_second: 30/s
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [1.0, 0.0]
+        # THE DEPLOYMENT: template and edges alive from t=0 (a trickle), so membership never
+        # changes; at t=1300 the WEIGHT ramps to service rate with a mid-ramp overshoot.
+        - name: deploy-svc
+          intent: api_service
+          rate_per_second: 0.2/s
+          message_template: "request handled shard {shard} done"
+          fields:
+            - name: shard
+              generator: weighted_choice
+              values: ["7", "31"]
+              weights: [0.5, 0.5]
+          phases:
+            - name: trickle
+              duration_seconds: 1300s
+              rate_per_second: 0.2/s
+            - name: ramp-0
+              duration_seconds: 50s
+              rate_per_second: 3/s
+            - name: ramp-1
+              duration_seconds: 50s
+              rate_per_second: 6/s
+            - name: ramp-2
+              duration_seconds: 50s
+              rate_per_second: 9/s
+            - name: ramp-3
+              duration_seconds: 50s
+              rate_per_second: 12/s
+            - name: ramp-4
+              duration_seconds: 50s
+              rate_per_second: 15/s
+            - name: ramp-5
+              duration_seconds: 50s
+              rate_per_second: 18/s
+            - name: ramp-6
+              duration_seconds: 50s
+              rate_per_second: 21/s
+            - name: ramp-7
+              duration_seconds: 50s
+              rate_per_second: 24/s
+            - name: ramp-8
+              duration_seconds: 50s
+              rate_per_second: 27/s
+            - name: ramp-9
+              duration_seconds: 50s
+              rate_per_second: 30/s
+            - name: overshoot
+              duration_seconds: 50s
+              rate_per_second: 70/s
+            - name: settle
+              duration_seconds: 200s
+              rate_per_second: 30/s
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: planted-identity-naming
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  sequence: { branching_delta_threshold_bits: 2.0 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # THE DEPLOYMENT DRIFT — the deep mix voice fires, the fold forms, and the branching
+    # migration stays invisible on every raw-x-raw span the instrument computes. That asymmetry
+    # (the fold exists; the migration that drives it is unnameable at any shipped stride) is the
+    # naming arm's before-state, and the two Seq borders are the stealth floor the carrier must
+    # beat from h24.
+    - name: drifting
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Dft . js_divergence
+          - envelope . Cmp . fired_set
+        must_not_fire:
+          # The identity channel's stealth floor: sub-threshold at the acute and at the h6
+          # stride by construction (measured silent at 2.0 bits). `emits` narrows to the
+          # branching claim so legitimate n-gram churn cannot vacate the border.
+          - { coordinate: RAW.acute . Seq . branching_bits, emits: BranchingShift }
+          - { coordinate: RAW.h6 . Seq . branching_bits, emits: BranchingShift }
+
+    # THE MATCHED CONTROL — the deployment never happens (trickle forever). Nothing binds: no
+    # fold of any branch, and the h6 branching border holds trivially-but-measurably. The
+    # drifting position above is this silence's §3.4 reachability witness (the 35 idiom).
+    - name: no-deploy
+      coordinates: { causal_axis: no-deploy, time_axis: 2050s }
+      signal:
+        must_not_fire:
+          - envelope . Cmp . fired_set
+          - { coordinate: RAW.h6 . Seq . branching_bits, emits: BranchingShift }

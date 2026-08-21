@@ -1,0 +1,174 @@
+# 43 carrier_coverage — G-B2b COVERAGE arm (DN-49.D16 arm 2): identity planted in an epoch the
+# carrier does NOT read. The acceptable outcome is fixed in advance: the carrier is SILENT and the
+# fold stays honestly unconfirmed (branch C) — the degrade-and-buffer contract doing its job. The
+# unacceptable outcome — the carrier naming SOMETHING ELSE — is the measured mis-naming rate, and
+# the two outcomes are distinguished MECHANICALLY: branch C (no structural item on the fold's
+# cell) versus branch A (a structural naming appeared). No eyeball is in the loop.
+#
+# THE WORLD is 38's admission geometry verbatim (drift + corroborant spike → branch-C fold,
+# measured fold epoch w≈74..79), plus a GHOST: a one-window template plant whose only job is to
+# exist at a known epoch. Two plants, one per position:
+#   * ghost-early  (t=500s, ≈w19): at fold time the ghost is ~55 windows old — beyond every
+#     carrier lookback (≤24) plus the evidence decay (12). NO instrument, today's or Cube B's,
+#     should reach it from the fold.
+#   * ghost-at-phase (t=1300s, ≈w51): placed so ghost_window + 24 lands INSIDE the measured fold
+#     epoch — the one alignment where a future RAW.h24 carrier reads the ghost's window on its
+#     far side while the fold is forming. Today this changes nothing (the ghost's evidence decays
+#     ~20 windows before the fold); under Cube B it is the deliberately-provoked coverage edge.
+#
+# ── PRE-REGISTERED CUBE-B EXPECTATIONS (DN-49.D16, fixed in advance) ──────────────────────────
+#   * BOTH ghost positions: `envelope . Cmp(branch=A)` stays must_not_fire — carrier-silent
+#     branch C is the acceptable outcome. A branch-A fold here means the carrier NAMED the ghost
+#     (vanished-side testimony at the aligned phase, or anything else): that firing IS the
+#     mis-naming datum, counted by the census, and it gates any carrier-confirmed branch A
+#     exactly as DN-49.D9 requires.
+#   * `no-ghost`: the local reference — fold identical with no plant anywhere; unchanged by the
+#     landing except the pre-registered 38-class flip NONE (this world's identity is a FIELD
+#     drift, which no structural readout can name — DN-49.D16's coverage position 2:
+#     an epoch no declared carrier reads, because no carrier reads field identity at all).
+#
+# ── THE CONTROLS ARE do() EDGES, NOT SECOND FILES — and the axis is a FOLD ────────────────────
+# Causal-axis edges apply CUMULATIVELY (coordinate k = edges 1..k in order), so the BASE world is
+# the no-plant reference and each edge moves one plant: edge 1 CREATES ghost-early (upsert
+# appends into the agents list), edge 2 removes it and creates ghost-at-phase. Every adjacent
+# pair of coordinates differs by exactly the plant under study — the match is structural.
+# The ghosts are one-window, bounded-content plants: they cannot flood templates and carry no
+# high-cardinality value at all (nothing for the masker to miss —
+# MEM:logcraft-precision-scenario-must-be-maskable).
+
+deterministic_scenario:
+  name: "carrier-coverage"
+  seed: 4343
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_carrier_cov
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # do(plant a one-window template at w≈19 — OFF every carrier lookback at fold time).
+      - name: ghost-early
+        upsert:
+          - path: agents.ghost-early
+            value:
+              intent: service
+              rate_per_second: 4/s
+              start_delay_seconds: 500
+              message_template: "ghost marker 4343 pass one"
+              phases:
+                - name: flash
+                  duration_seconds: 25s
+                  rate_per_second: 4/s
+                - name: gone
+                  duration_seconds: 1525s
+                  rate_per_second: 0/s
+      # do(move the plant to w≈51 — the window whose +24 lands inside the measured fold epoch).
+      - name: ghost-at-phase
+        upsert:
+          - path: agents.ghost-at-phase
+            value:
+              intent: service
+              rate_per_second: 4/s
+              start_delay_seconds: 1300
+              message_template: "phase marker 4343 pass one"
+              phases:
+                - name: flash
+                  duration_seconds: 25s
+                  rate_per_second: 4/s
+                - name: gone
+                  duration_seconds: 725s
+                  rate_per_second: 0/s
+        remove:
+          - agents.ghost-early
+
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: api-svc
+          intent: api_service
+          rate_per_second: 30/s
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [1.0, 0.0]
+          phases:
+            - name: warm
+              duration_seconds: 550s
+              rate_per_second: 30/s
+            - name: drift
+              duration_seconds: 1500s
+              rate_per_second: 30/s
+              field_weight_ramps:
+                - field: bucket
+                  target_weights: [0.0, 1.0]
+                  window_seconds: 25
+
+        - name: api-burst
+          intent: api_service
+          rate_per_second: 900/s
+          start_delay_seconds: 1700
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [0.0, 1.0]
+          phases:
+            - name: burst
+              duration_seconds: 50s
+              rate_per_second: 900/s
+            - name: silent
+              duration_seconds: 300s
+              rate_per_second: 0/s
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: carrier-coverage
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # OFF-LOOKBACK: the plant landed (its novelty is the §3.4 witness) and the fold neither sees
+    # it nor names anything — branch C, exactly 38's admission.
+    - name: ghost-early
+      coordinates: { causal_axis: ghost-early, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - RAW.acute . Spk . template_count
+          - envelope . Cmp(branch=C) . fired_set
+          - { coordinate: RAW.acute . Seq . ngram_presence, scope: { template: "ghost marker" } }
+        must_not_fire:
+          - envelope . Cmp(branch=A) . fired_set
+
+    # AT-PHASE: identical today-truth; the alignment only matters to a carrier that does not
+    # exist yet, and the branch-A border is the mechanical tripwire it will be measured against.
+    - name: ghost-at-phase
+      coordinates: { causal_axis: ghost-at-phase, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - RAW.acute . Spk . template_count
+          - envelope . Cmp(branch=C) . fired_set
+          - { coordinate: RAW.acute . Seq . ngram_presence, scope: { template: "phase marker" } }
+        must_not_fire:
+          - envelope . Cmp(branch=A) . fired_set
+
+    # THE LOCAL REFERENCE: the base world, no plant anywhere — the fold identical, proving the
+    # ghosts change nothing the shipped instrument can observe.
+    - name: no-ghost
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - envelope . Cmp(branch=C) . fired_set
+        must_not_fire:
+          - envelope . Cmp(branch=A) . fired_set

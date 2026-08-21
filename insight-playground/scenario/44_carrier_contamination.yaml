@@ -1,0 +1,136 @@
+# 44 carrier_contamination — G-B2b CONTAMINATION arm (DN-49.D16 arm 3): drift X in the blocks,
+# transient Y planted AFTER the recent block, inside the carrier's subject-side slack. Every
+# carrier's subject is raw[t], which postdates the recent block by 1+p ≤ W windows (DN-49.D16's
+# named mechanism), so a transient landing in the fold windows themselves enters diff(raw[t−24],
+# raw[t]) on the SUBJECT side — the carrier could name Y where the incident is X. The measured
+# Y-naming rate is the datum that triggers the block-aligned successor species (raw[t−(s+1)W] vs
+# raw[t−W]-class diffs, t on neither side); the threshold call is the Founder's, never this
+# fixture's.
+#
+# THE WORLD is again 38's admission geometry (drift X = the bucket field walk; corroborant spike;
+# branch-C fold at w≈74..79), plus Y: a one-window template plant at t=1900s (≈w75) — inside the
+# measured fold epoch, so Y is in raw[t] exactly while the fold re-fires.
+#
+# TODAY-TRUTH, and why it holds: Y's novelty fires on Y's OWN scope (its template / n-grams);
+# the fold's cell is the drifting template's scope, and structural confirmation reads the fold's
+# cell only — so Y cannot flip the fold to branch A through the shipped gate. The border below
+# pins that: fold stays branch C WITH Y present in its windows.
+#
+# ── PRE-REGISTERED CUBE-B EXPECTATIONS (DN-49.D16, fixed in advance) ──────────────────────────
+#   * `contaminated`: the census MEASURES which identity the carrier names at the fold windows —
+#     Y appearing in the carrier's structural readout on the fold's cell is the Y-naming rate,
+#     the arm's datum (printed, not thresholded here). The mechanical tripwire stays
+#     `envelope . Cmp(branch=A)` must_not_fire: a carrier-confirmed branch A naming Y on X's
+#     fold is contamination realized, and it must red, not degrade.
+#   * `no-contaminant`: unchanged — the same fold, no Y anywhere; the subtraction that makes the
+#     Y-rate attributable to the plant.
+#
+# Y's parameter is digit-leading (maskable — MEM:logcraft-precision-scenario-must-be-maskable);
+# Y is one window wide and cannot flood.
+
+deterministic_scenario:
+  name: "carrier-contamination"
+  seed: 4444
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_carrier_contam
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      - name: no-contaminant
+        remove:
+          - agents.contaminant
+
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: api-svc
+          intent: api_service
+          rate_per_second: 30/s
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [1.0, 0.0]
+          phases:
+            - name: warm
+              duration_seconds: 550s
+              rate_per_second: 30/s
+            - name: drift
+              duration_seconds: 1500s
+              rate_per_second: 30/s
+              field_weight_ramps:
+                - field: bucket
+                  target_weights: [0.0, 1.0]
+                  window_seconds: 25
+
+        - name: api-burst
+          intent: api_service
+          rate_per_second: 900/s
+          start_delay_seconds: 1700
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [0.0, 1.0]
+          phases:
+            - name: burst
+              duration_seconds: 50s
+              rate_per_second: 900/s
+            - name: silent
+              duration_seconds: 300s
+              rate_per_second: 0/s
+
+        # Y — the subject-side transient: one window, INSIDE the fold epoch.
+        - name: contaminant
+          intent: service
+          rate_per_second: 4/s
+          start_delay_seconds: 1900
+          message_template: "contaminant marker 4444 flare"
+          phases:
+            - name: flare
+              duration_seconds: 25s
+              rate_per_second: 4/s
+            - name: gone
+              duration_seconds: 125s
+              rate_per_second: 0/s
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: carrier-contamination
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # X's fold with Y in its windows: Y landed (the §3.4 witness), and the fold neither absorbs
+    # nor mis-names it through the shipped gate — branch C holds with the contaminant present.
+    - name: contaminated
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - RAW.acute . Spk . template_count
+          - envelope . Cmp(branch=C) . fired_set
+          - { coordinate: RAW.acute . Seq . ngram_presence, scope: { template: "contaminant marker" } }
+        must_not_fire:
+          - envelope . Cmp(branch=A) . fired_set
+
+    # The subtraction: same world, no Y — the fold identical, so anything Y-shaped in the
+    # contaminated arm is the plant's and only the plant's.
+    - name: no-contaminant
+      coordinates: { causal_axis: no-contaminant, time_axis: 2050s }
+      signal:
+        must_fire:
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+          - envelope . Cmp(branch=C) . fired_set
+        must_not_fire:
+          - envelope . Cmp(branch=A) . fired_set
