@@ -1,0 +1,122 @@
+# 46 fluke_injection — G-B2c (DN-49.D13 / DN-49.D8's inherited debt): ONE planted anomalous
+# window, NO drift, inside an epoch that shipped-independent witnesses share OPPOSITE-side —
+# the instrument that measures the residual dependence channel the same-side rule KNOWINGLY
+# inherits from the shipped model (DN-49.O2 rejected strict both-side intersection because it
+# kills every shipped fold; the concession got this instrument instead of a hand-wave).
+#
+# THE MECHANISM UNDER MEASUREMENT, scoped to diff×diff pairs (DN-49.D15 narrowed G-B2c: unary
+# pairs take the strict any-side clause and carry no opposite-side residual). The planted
+# window w_f perturbs:
+#   * the acute's SUBJECT/REFERENCE at w_f and w_f+1 (the flip in, the flip out), and
+#   * the L2 recent block's CONTENT once w_f composes into it (lags 2..7+q windows) — the
+#     DISJOINT's SUBJECT, i.e. the acute's reference epoch and the DISJOINT's subject epoch
+#     share the window OPPOSITE-side, which D8 counts independent.
+# If the recent-block contamination (a one-window flip diluted 1/6 into the composed
+# histogram) trips the s1 integrator while the acute's firing still sits in the evidence
+# buffer, a fold forms FROM ONE FLUKE — one cause, two "independent" witnesses. That fold
+# count is the residual channel measured live; per DN-49.D13 a firing here opens a
+# rule-refinement thread with this number as its first fact — the repair is never a threshold.
+#
+# THE FLUKE IS VOLUME-NEUTRAL BY CONSTRUCTION: the same agent, the same rate, one field's
+# weights flipped to [0, 1] for one 50 s phase (a 25 s phase cannot land its own 25 s ramp
+# step — measured: zero bytes changed) and snapped back — so the unary card
+# (Volume) has nothing to see and the measurement stays inside the diff×diff scope D15 set.
+# Values are digit-leading (maskable — MEM:logcraft-precision-scenario-must-be-maskable).
+#
+# MEASURED AT AUTHORING (2026-08-21, carrier-era instrument {6,12,24}/ring 25): the flip is
+# seen by every shallow opposite-side sharer — the acute, the w3 ANCHORED block, the h6
+# stride (Fld.dist, one firing each) — and the L2 composed-side echo stays BELOW every
+# integrator's PH — no DISJOINT firing, no fold. The residual channel measures ZERO at the
+# largest single-window distributional magnitude this world can produce. The borders pin that measured state: a future red on this
+# fixture's `Cmp` guard IS the residual channel appearing, loudly, with the fixture name
+# saying what it means — the measurement standing as a tripwire, not a hope.
+#
+# ── THE CONTROL IS A do(), NOT A SECOND FILE ──────────────────────────────────────────────────
+# `no-fluke` upserts the fluke phase's ramp to the weights the field already has (the 35
+# idiom): the same world where the anomalous window never happens.
+
+deterministic_scenario:
+  name: "fluke-injection"
+  seed: 4646
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_fluke
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      - name: no-fluke
+        upsert:
+          - path: agents.api-svc.phases.fluke.field_weight_ramps
+            value:
+              - field: bucket
+                target_weights: [1.0, 0.0]
+                window_seconds: 25
+
+    time_axis:
+      duration_seconds: 2050s
+      agents:
+        - name: api-svc
+          intent: api_service
+          rate_per_second: 50/s
+          message_template: "request processed bucket {bucket} done"
+          fields:
+            - name: bucket
+              generator: weighted_choice
+              values: ["10", "90"]
+              weights: [1.0, 0.0]
+          phases:
+            - name: steady
+              duration_seconds: 1600s
+              rate_per_second: 50/s
+            - name: fluke
+              duration_seconds: 50s
+              rate_per_second: 50/s
+              field_weight_ramps:
+                - field: bucket
+                  target_weights: [0.0, 1.0]
+                  window_seconds: 25
+            - name: recover
+              duration_seconds: 400s
+              rate_per_second: 50/s
+              field_weight_ramps:
+                - field: bucket
+                  target_weights: [1.0, 0.0]
+                  window_seconds: 25
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: fluke-injection
+
+  pyramid_config:
+    ladder: { levels: 3, ring_depth: 4 }
+    disjoint: [{ level: 2, separation: 1 }, { level: 2, separation: 3 }]
+  metalog_config: { top_k_size: 128, max_param_histograms: 4, max_histogram_values: 8 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # THE FLUKE — seen at the acute (the §3.4 witness that the plant landed), absorbed by every
+    # composed integrator, bound by nothing. The Cmp guard is the residual channel's tripwire:
+    # it reds the day one fluke's opposite-side echo closes a fold, and that red is the
+    # measurement G-B2c exists to take.
+    - name: fluke
+      coordinates: { causal_axis: null, time_axis: 2050s }
+      signal:
+        must_fire:
+          - RAW.acute . Fld.dist . field_jsd
+        must_not_fire:
+          - envelope . Cmp . fired_set
+          - DISJOINT.L2.s1 . Fld.dist . field_jsd
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd
+
+    # THE MATCHED CONTROL — the flip never happens: silent on every family.
+    - name: no-fluke
+      coordinates: { causal_axis: no-fluke, time_axis: 2050s }
+      signal:
+        must_not_fire:
+          - envelope . Cmp . fired_set
+          - RAW.acute . Fld.dist . field_jsd
+          - DISJOINT.L2.s1 . Fld.dist . field_jsd
+          - DISJOINT.L2.s3 . Fld.dist . field_jsd

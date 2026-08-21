@@ -22,14 +22,32 @@
 #     what no shipped witness can do is name the GRADUAL branching migration itself — its span
 #     never clears 2.0 bits at any computed raw-x-raw stride. Naming THAT is the carrier's job.
 #
-# ── PRE-REGISTERED CUBE-B EXPECTATIONS (DN-49.D16, fixed IN ADVANCE) ──────────────────────────
-#   * `drifting`: RAW.h24 becomes spellable (grid {6,12,24}, ring 25 — DN-49.D12) and
-#     `RAW.h24 . Seq . branching_bits` (emits BranchingShift) must_fire — the carrier NAMES the
-#     migration; the acute/h6 stealth borders below stay AS IS. The carrier's testimony enters
-#     the itemset on the identity axis only (DN-49.D9) — the landing census asserts its
-#     membership in the fold's closed set, not a branch-letter flip (the letter is already A
-#     here via Dps, an independent real event).
+# ── THE PRE-REGISTRATION, AND ITS MEASURED CORRECTION (2026-08-21, carrier landing) ───────────
+# The pre-registered flip named `RAW.h24 . Seq . branching_bits` (emits BranchingShift) as the
+# carrier's naming readout. MEASURED AT THE LANDING: zero BranchingShift at RAW.h24 — the
+# 24-span branching delta never clears the declared 2.0 bits, because the process-state fan-out
+# dilutes into the WHOLE transition graph's entropy (hb and api mass dominate), a magnitude the
+# authoring estimate mis-scaled. The channel prediction was wrong; the PROPERTY stands, and it
+# was never about a channel: DN-49.D9's identity axis is the structural PROJECTION — "a
+# structural-projection witness on the cell names what changed" — and the span-24 structural
+# testimony arrives, measured, on the n-gram channel: novel n-grams at RAW.h24 (n=41) whose
+# CONTENT contains the deployed template, i.e. testimony that names the plant, checkable
+# against the document. The must_fire below is therefore the scoped n-gram claim.
+#   Two routes were REFUSED in the correction: lowering the threshold until branching fired
+# (a cut moved to green a fixture is the gate authoring its claim —
+# MEM:never-move-the-significance-cut; and the measured h6 floor at 0.5 bits leaves no
+# demonstrated window), and re-shaping the world until aggregate graph entropy carries the
+# asymmetry (three measured envelope facts say it will not on any world this class offers).
+#   The branching-channel stealth borders STAY: they pin the migration's own-channel
+# invisibility at every shipped shallow span, which is the "no shallow witness names it" half
+# of the naming arm. The n-gram channel carries no such shallow silence (n-gram churn is
+# endemic at every span), so the deep/shallow asymmetry is spelled per-channel: silence on the
+# aggregate channel everywhere, content-pinned presence on the membership channel at the
+# carrier's span only.
 #   * `no-deploy`: unchanged — no itemset of any branch, Cube-B-invariant (the arm's control).
+#     Deliberately NO scoped-n-gram guard on the control: the 0.2/s trickle's rare
+#     neighborhoods flicker at every span, so a scoped must_not_fire there would be
+#     churn-fragile — the control's load-bearing claim is the absent fold.
 #
 # ── THE CONTROL IS A do(), NOT A SECOND FILE ──────────────────────────────────────────────────
 # `no-deploy` upserts the deployment's phases to the trickle forever — the same world where the
@@ -146,6 +164,11 @@ contract_scenario:
         must_fire:
           - DISJOINT.L2.s3 . Dft . js_divergence
           - envelope . Cmp . fired_set
+          # THE NAMING CLAIM (measured correction of the pre-registration — header): the
+          # carrier-span structural testimony whose content names the deployed template. The
+          # scope pin makes it a naming border, not a churn census: only a novel 24-span n-gram
+          # CONTAINING the plant satisfies it.
+          - { coordinate: RAW.h24 . Seq . ngram_presence, scope: { template: "request handled shard" }, emits: NoveltyNGram }
         must_not_fire:
           # The identity channel's stealth floor: sub-threshold at the acute and at the h6
           # stride by construction (measured silent at 2.0 bits). `emits` narrows to the
