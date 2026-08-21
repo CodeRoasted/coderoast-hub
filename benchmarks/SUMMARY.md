@@ -8,11 +8,11 @@ _5 benchmark(s)._
 
 | benchmark | real_time | items_per_second | ns_per_line |
 | --- | --- | --- | --- |
-| `BM_TokenizationThroughput/4` | 1951.737 us | 512404.572 | 1.952e-06 |
-| `BM_TokenizationThroughput/8` | 1812.027 us | 551845.209 | 1.812e-06 |
-| `BM_TokenizationThroughputDegenerate/4` | 1908.195 us | 523997.606 | 1.908e-06 |
-| `BM_TokenizationThroughputDegenerate/8` | 1758.136 us | 568789.232 | 1.758e-06 |
-| `BM_TokenizationThroughputNestedJson` | 2980.416 us | 335470.166 | 2.981e-06 |
+| `BM_TokenizationThroughput/4` | 1729.744 us | 578101.92 | 1.730e-06 |
+| `BM_TokenizationThroughput/8` | 1624.404 us | 615709.639 | 1.624e-06 |
+| `BM_TokenizationThroughputDegenerate/4` | 1684.734 us | 593555.261 | 1.685e-06 |
+| `BM_TokenizationThroughputDegenerate/8` | 1583.251 us | 631599.112 | 1.583e-06 |
+| `BM_TokenizationThroughputNestedJson` | 2847.983 us | 351111.506 | 2.848e-06 |
 
 ### `insight-metalog` — compression / MetaLog-document build
 
