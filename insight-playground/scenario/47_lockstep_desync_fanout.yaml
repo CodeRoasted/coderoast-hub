@@ -1,0 +1,183 @@
+# 47_lockstep_desync_fanout — the Gec (graph_edge_count) reachability gate: a transition-graph
+# fan-out explosion with NO new template, NO volume change and NO distribution change.
+#
+# THE MECHANISM, and why only Gec can see it: eight pipeline stages emit the same eight message
+# shapes at the same total volume in both phases. In `locked` they run in lock-step — every stage
+# fires at the same 4/s grid, so the interleave is a rigid cycle and the window's transition graph
+# holds ~8 distinct A→B template edges. In `desynced` the lock-step breaks (queue contention):
+# each stage keeps ITS OWN close-but-incommensurate rate summing to the identical 32/s, so the
+# per-pair phase relationships drift through every alignment and the SAME templates produce most
+# of the 64 possible ordered edges. Population unchanged, volume unchanged, template distribution
+# unchanged — only the ORDER moved. That is the blind spot of the population detectors (no novel
+# template for Nep/Rsv, no count shift for Vol, no distribution shift for Dft), and the edge-count
+# CUSUM (k=2, h=15 on `behavior.graph_edge_count`) alarms on the first desynced window:
+# baseline mean 8 over six 25 s windows, then ≥40 edges ⇒ s_pos ≈ 40 − (8+32/7) − 2 > 15.
+#
+# S61 provenance (Founder ruling 2026-08-22, falsify-before-rip): GraphEdgeCount had zero measured
+# firings anywhere — this fixture is the measured fact that the observer's condition is
+# SATISFIABLE through the LogCraft→canon→metalog→detection seam, and it stands as the regression
+# guard. Gec is add_silent-only (no-fatigue contract): the coordinate asserts the silent report,
+# which never surfaces as an Insight — see test_contract.md §2.2.
+#
+# MASKABILITY (precision arm): every parameter is digit-leading high-cardinality (sequence
+# counters with no prefix, integer ranges), so each stage masks to exactly ONE template and the
+# locked/control arms stay true negatives under closing windows.
+#
+# A LogCraft scenario / declarative contract — see insight-playground/HOW_TO_READ.md.
+
+deterministic_scenario:
+  name: lockstep-desync-fanout
+  seed: 4747
+
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_lockstep_desync
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # do(the lock-step never breaks). One upsert per stage pins the desynced phase back to the
+      # locked 4/s — the arms then differ in exactly the eight rate knobs and nothing else, so a
+      # silent control proves the DESYNC (not the phase boundary, not the world) is what fires Gec.
+      - name: no-desync
+        upsert:
+          - { path: agents.stage-ingest.phases.desynced.rate_per_second, value: 4.0 }
+          - { path: agents.stage-decode.phases.desynced.rate_per_second, value: 4.0 }
+          - { path: agents.stage-transform.phases.desynced.rate_per_second, value: 4.0 }
+          - { path: agents.stage-validate.phases.desynced.rate_per_second, value: 4.0 }
+          - { path: agents.stage-persist.phases.desynced.rate_per_second, value: 4.0 }
+          - { path: agents.stage-index.phases.desynced.rate_per_second, value: 4.0 }
+          - { path: agents.stage-publish.phases.desynced.rate_per_second, value: 4.0 }
+          - { path: agents.stage-ack.phases.desynced.rate_per_second, value: 4.0 }
+
+    time_axis:
+      duration_seconds: 250s
+      agents:
+        - name: stage-ingest
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "picked up batch {batch_id} queue depth {depth}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 41000 }
+            - { name: depth, generator: range, min: 1, max: 40, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 3.4 }
+
+        - name: stage-decode
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "decoded batch {batch_id} frames {frames}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 52000 }
+            - { name: frames, generator: range, min: 100, max: 900, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 3.6 }
+
+        - name: stage-transform
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "transformed batch {batch_id} rows {rows}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 63000 }
+            - { name: rows, generator: range, min: 200, max: 5000, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 3.8 }
+
+        - name: stage-validate
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "validated batch {batch_id} violations {violations}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 74000 }
+            - { name: violations, generator: range, min: 0, max: 9, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 3.9 }
+
+        - name: stage-persist
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "persisted batch {batch_id} bytes {bytes}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 85000 }
+            - { name: bytes, generator: range, min: 4096, max: 262144, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 4.1 }
+
+        - name: stage-index
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "indexed batch {batch_id} terms {terms}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 96000 }
+            - { name: terms, generator: range, min: 50, max: 800, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 4.2 }
+
+        - name: stage-publish
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "published batch {batch_id} to shard {shard}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 17000 }
+            - { name: shard, generator: range, min: 1, max: 16, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 4.4 }
+
+        - name: stage-ack
+          intent: pipeline_stage
+          rate_per_second: 4.0
+          message_template: "acked batch {batch_id} latency ms {latency}"
+          fields:
+            - { name: batch_id, generator: sequence, start_value: 28000 }
+            - { name: latency, generator: range, min: 2, max: 250, integer: true }
+          phases:
+            - { name: locked, duration_seconds: 150s, rate_per_second: 4.0 }
+            - { name: desynced, duration_seconds: 100s, rate_per_second: 4.6 }
+
+# ── The bundled contract (unified grammar, axis-dsl §4.3) ─────────────────────────────────────
+contract_scenario:
+  reference_scenario: lockstep-desync-fanout
+  pyramid_config:
+    ladder:
+      levels: 3
+  metalog_config:
+    top_k_size: 128
+    ngram_size: 2          # the transition grain itself — edges ARE the 2-gram keys
+    max_ngram_keys: 16384
+  explain_min_confidence: 0.75
+
+  positions:
+    # The quiet anchor — lock-step only: a rigid cycle is a CONSTANT edge count, and a constant
+    # series must keep the CUSUM at zero (the positive boundary, not a vacuous silence: the
+    # desynced position below is this claim's reachability witness).
+    - name: locked
+      coordinates: { causal_axis: null, time_axis: 150s }
+      signal:
+        must_not_fire:
+          - RAW.now . Gec . graph_edge_count
+
+    # THE FLIP — same templates, same volume, same distribution, chaotic order: Gec fires
+    # (silently — the coordinate reads the add_silent stream; no Insight may surface from it).
+    - name: desynced
+      coordinates: { causal_axis: null, time_axis: 250s }
+      signal:
+        must_fire:
+          - RAW.now . Gec . graph_edge_count
+
+    # THE MATCHED CONTROL — do(no-desync): the identical 250 s world with the eight desynced-phase
+    # rates pinned back to 4/s. Silent on Gec, so the firing above is the DESYNC, not the phase
+    # boundary or the world's population.
+    - name: no-desync
+      coordinates: { causal_axis: no-desync, time_axis: 250s }
+      signal:
+        must_not_fire:
+          - RAW.now . Gec . graph_edge_count
