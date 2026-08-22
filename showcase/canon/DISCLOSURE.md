@@ -13,7 +13,7 @@ before these bytes leave.
 
 **Ground:** the showcase keeps LogHub — a reproducible view of an already-declared tree earns its own entry rather than relaxing the byte-identity condition that authorised the source.
 
-**Discharges:** DN-48.D8 — the derived-artifact entry, a ruling that did not exist before this date and which no verdict about the source tree could have supplied.
+**Discharges:** ADR-33.D5 — the derived-artifact entry, a ruling that did not exist before this date and which no verdict about the source tree could have supplied.
 
 ## Why a derivation needs its own record
 
