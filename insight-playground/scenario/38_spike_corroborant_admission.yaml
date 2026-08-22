@@ -101,8 +101,8 @@ contract_scenario:
         must_not_fire:
           - envelope . Cmp(band=surfacing) . fired_set   # the safety cap: never pages
 
-    # NO SPIKE — the drift still speaks, and since DN-49.D12 its declared carriers corroborate
-    # it epoch-disjointly (DN-49.D8 case 6) even without the spike: a sub-floor branch-C fold
+    # NO SPIKE — the drift still speaks, and since ADR-32.D6 its declared carriers corroborate
+    # it epoch-disjointly (ADR-32.D2 case 6) even without the spike: a sub-floor branch-C fold
     # forms — buffered, never a page (the DN-47.D15 disposition). The `Fld.dist` must_fire is
     # still the §3.4 witness that the sub-floor band is about the missing spike, not a dead
     # stream.

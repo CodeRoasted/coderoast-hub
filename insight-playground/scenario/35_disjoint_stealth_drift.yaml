@@ -95,32 +95,32 @@ contract_scenario:
       signal:
         must_fire:
           - DISJOINT.L2.s3 . Fld.dist . field_jsd
-          # The stealth drift's honest corroboration (DN-49.D12 carriers): sub-floor branch C,
+          # The stealth drift's honest corroboration (ADR-32.D6 carriers): sub-floor branch C,
           # buffered — the fold's EXISTENCE is the design's claim, its band is the cap.
           - envelope . Cmp(branch=C, band=sub_floor) . fired_set
         must_not_fire:
           # Same locus, wrong channel: a field-distribution move must not read as within-template drift.
           - DISJOINT.L2.s3 . Dft . js_divergence
-          # THE FOLD's ceiling, on the world that DOES drift. Since DN-49.D12 the declared
+          # THE FOLD's ceiling, on the world that DOES drift. Since ADR-32.D6 the declared
           # comparisons carry their identity carriers ({6,12,24} on this instrument), and the
           # cross-carrier pairs (h12×L2.s3, h24×L2.s1) are epoch-disjoint — two instruments
           # over disjoint data both reporting this REAL drift, honest corroboration by the
-          # dependence rule's own logic (DN-49.D8 case 6). So a fold forms here BY DESIGN —
+          # dependence rule's own logic (ADR-32.D2 case 6). So a fold forms here BY DESIGN —
           # asserted sub-floor below — and the guard this position keeps is the product claim
           # the old unqualified guard was protecting: the stealth drift never PAGES on
           # corroboration this weak (the DN-47.D15 disposition: buffered, never
           # operator-visible).
           - envelope . Cmp(band=surfacing) . fired_set
           # The CONTIGUOUS comparators: the stealth floor. The RAW horizons are the DERIVED
-          # grid — under DN-49.D12 the two declared comparisons carry their identity carriers,
+          # grid — under ADR-32.D6 the two declared comparisons carry their identity carriers,
           # so this instrument computes {6,12,24}. The stealth claim is scoped to the
           # running-mean comparators (acute, the ANCHORED ladder) and the tail's short h6: they
           # absorb the sub-δ creep and must stay silent. The wide carriers h12/h24 are OUTSIDE
           # this floor by design — a wide-span raw-vs-raw diff exists precisely to see what the
           # contiguous comparators absorb (measured 2026-08-20 on the pre-repair grid and again
-          # at the DN-49 landing: h12 fires ~ten windows before DISJOINT.s3), and the
+          # at the Cube-B (ADR-32) landing: h12 fires ~ten windows before DISJOINT.s3), and the
           # coincidence fold embargoes each carrier's confidence against its own comparison
-          # (DN-49.D8 case 5), so their firing corroborates cross-wise, never manufactures.
+          # (ADR-32.D2 case 5), so their firing corroborates cross-wise, never manufactures.
           - RAW.acute . Fld.dist . field_jsd
           - RAW.h6 . Fld.dist . field_jsd
           - ANCHORED.w3 . Fld.dist . field_jsd

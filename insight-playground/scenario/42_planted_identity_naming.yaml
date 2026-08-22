@@ -1,7 +1,7 @@
-# 42 planted_identity_naming — G-B2b NAMING arm (DN-49.D16 arm 1): a deployment whose branching
+# 42 planted_identity_naming — G-B2b NAMING arm (ADR-32.D7 arm 1): a deployment whose branching
 # identity is PERSISTENT AT BLOCK TIMESCALE and sub-threshold at every shipped raw-x-raw span —
 # authored so that, when Cube B lands and declares the L2.s3 identity carrier (RAW.h24 —
-# DN-49.D12/D16), the carrier's structural readout has a KNOWN planted identity to name, and the
+# ADR-32.D6/D7), the carrier's structural readout has a KNOWN planted identity to name, and the
 # matched control has nothing to name.
 #
 # THE WORLD (every number below is MEASURED, 2026-08-21, six calibration runs recorded in the
@@ -28,7 +28,7 @@
 # 24-span branching delta never clears the declared 2.0 bits, because the process-state fan-out
 # dilutes into the WHOLE transition graph's entropy (hb and api mass dominate), a magnitude the
 # authoring estimate mis-scaled. The channel prediction was wrong; the PROPERTY stands, and it
-# was never about a channel: DN-49.D9's identity axis is the structural PROJECTION — "a
+# was never about a channel: ADR-32.D3's identity axis is the structural PROJECTION — "a
 # structural-projection witness on the cell names what changed" — and the span-24 structural
 # testimony arrives, measured, on the n-gram channel: novel n-grams at RAW.h24 (n=41) whose
 # CONTENT contains the deployed template, i.e. testimony that names the plant, checkable

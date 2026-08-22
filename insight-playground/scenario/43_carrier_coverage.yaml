@@ -1,4 +1,4 @@
-# 43 carrier_coverage — G-B2b COVERAGE arm (DN-49.D16 arm 2): identity planted in an epoch the
+# 43 carrier_coverage — G-B2b COVERAGE arm (ADR-32.D7 arm 2): identity planted in an epoch the
 # carrier does NOT read. The acceptable outcome is fixed in advance: the carrier is SILENT and the
 # fold stays honestly unconfirmed (branch C) — the degrade-and-buffer contract doing its job. The
 # unacceptable outcome — the carrier naming SOMETHING ELSE — is the measured mis-naming rate, and
@@ -16,15 +16,15 @@
 #     far side while the fold is forming. Today this changes nothing (the ghost's evidence decays
 #     ~20 windows before the fold); under Cube B it is the deliberately-provoked coverage edge.
 #
-# ── PRE-REGISTERED CUBE-B EXPECTATIONS (DN-49.D16, fixed in advance) ──────────────────────────
+# ── PRE-REGISTERED CUBE-B EXPECTATIONS (ADR-32.D7, fixed in advance) ──────────────────────────
 #   * BOTH ghost positions: `envelope . Cmp(branch=A)` stays must_not_fire — carrier-silent
 #     branch C is the acceptable outcome. A branch-A fold here means the carrier NAMED the ghost
 #     (vanished-side testimony at the aligned phase, or anything else): that firing IS the
 #     mis-naming datum, counted by the census, and it gates any carrier-confirmed branch A
-#     exactly as DN-49.D9 requires.
+#     exactly as ADR-32.D3 requires.
 #   * `no-ghost`: the local reference — fold identical with no plant anywhere; unchanged by the
 #     landing except the pre-registered 38-class flip NONE (this world's identity is a FIELD
-#     drift, which no structural readout can name — DN-49.D16's coverage position 2:
+#     drift, which no structural readout can name — ADR-32.D7's coverage position 2:
 #     an epoch no declared carrier reads, because no carrier reads field identity at all).
 #
 # ── THE CONTROLS ARE do() EDGES, NOT SECOND FILES — and the axis is a FOLD ────────────────────

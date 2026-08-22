@@ -1,6 +1,6 @@
-# 44 carrier_contamination — G-B2b CONTAMINATION arm (DN-49.D16 arm 3): drift X in the blocks,
+# 44 carrier_contamination — G-B2b CONTAMINATION arm (ADR-32.D7 arm 3): drift X in the blocks,
 # transient Y planted AFTER the recent block, inside the carrier's subject-side slack. Every
-# carrier's subject is raw[t], which postdates the recent block by 1+p ≤ W windows (DN-49.D16's
+# carrier's subject is raw[t], which postdates the recent block by 1+p ≤ W windows (ADR-32.D7's
 # named mechanism), so a transient landing in the fold windows themselves enters diff(raw[t−24],
 # raw[t]) on the SUBJECT side — the carrier could name Y where the incident is X. The measured
 # Y-naming rate is the datum that triggers the block-aligned successor species (raw[t−(s+1)W] vs
@@ -16,7 +16,7 @@
 # cell only — so Y cannot flip the fold to branch A through the shipped gate. The border below
 # pins that: fold stays branch C WITH Y present in its windows.
 #
-# ── PRE-REGISTERED CUBE-B EXPECTATIONS (DN-49.D16, fixed in advance) ──────────────────────────
+# ── PRE-REGISTERED CUBE-B EXPECTATIONS (ADR-32.D7, fixed in advance) ──────────────────────────
 #   * `contaminated`: the census MEASURES which identity the carrier names at the fold windows —
 #     Y appearing in the carrier's structural readout on the fold's cell is the Y-naming rate,
 #     the arm's datum (printed, not thresholded here). The mechanical tripwire stays
