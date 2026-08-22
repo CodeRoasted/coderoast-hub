@@ -1,0 +1,155 @@
+# 48 tail_takeover — TailShift's FIRST crossing of the LogCraft↔InSight seam.
+#
+# Until this fixture, `Tsh` was the only observer in the §2.1 registry with zero coordinates
+# anywhere in the corpus, and the only detector never driven through the seam. Its own unit suite
+# hand-builds the comparison pair, and the one end-to-end tail test (insight-e2e
+# tests/diff/tail_summary_detection_test.cpp) feeds `InsightPipeline` directly and declares its own
+# tightened instrument — so nothing had ever asked whether a LogCraft-generated stream, carried over
+# SHM through canon's masking and metalog's windowing, can reach the tail detector AT THE SHIPPED
+# HORIZON. That is the whole claim here.
+#
+# WHY THE SHIPPED HORIZON IS THE POINT
+# ------------------------------------
+# A fixture cannot declare a tail: `contract_loader.hpp`'s `kFixtureTailShift` is a CONSTANT, so
+# every fixture runs the shipped `TailShiftConfig` — horizon 6, loudness 3.0x, entropy 0.5x,
+# min_lines 200. And with no `disjoint:` declared the derived RAW grid is exactly `{6}`, so
+# `RAW.h6 . Tsh . tail_loudness` is both the only tail coordinate spellable here and the shipped
+# default under test. The fixture cannot drift off the production value even by accident.
+#
+# THE WORLD — a takeover INSIDE the bounded tail
+#   * 8 `ledger-*` agents at 6/s each carry the window (≈1200 lines) and exactly fill top_k.
+#   * 20 `bg-*` agents at 0.08/s are the DIFFUSE tail: ~2 events each per 25 s window, so the
+#     baseline tail is ~21 templates of equal mass — maximal entropy, minimal max-rate. This is the
+#     shape a healthy service's long tail actually has, and it is what a concentration test needs
+#     to have something to collapse FROM.
+#   * `retired-connection-sweep` is the takeover. It sits in the tail at the same ~2 ev/window for
+#     twelve windows, then floods to ~140 ev/window. 140 is deliberately BELOW the 150 ev/window
+#     each ledger template carries: the flood must stay UNDER top_k or it stops being a tail event
+#     and every top_k-keyed detector catches it instead — which is precisely the blind spot
+#     TailShift exists to cover.
+#
+# Both axes clear with margin at h6 (hand-derived, then measured): loudness ≈ 63x against the 3.0x
+# bar, entropy ≈ 0.39 of baseline against the 0.5 bar.
+#
+# MEASURED at the border, and the number is the horizon: the takeover arm emits `tail_shift@s2`
+# SIX times — windows 12..17, onset window through onset+5 — then nothing for the remaining six
+# windows, while the flood is still running at full rate. Six firings for horizon 6 is the alarm
+# LIFETIME: from window 18 on, raw[t-6] is itself inside the flood, both ratios return to ~1, and
+# the chronic condition is unreported. The seam reproduces exactly the law the unit sweep pins
+# (detection/tests/detectors/test_tail_shift_horizon.cpp), which is the join those two grains
+# never had. `insights=0` on the same run is the fatigue contract holding end-to-end: six reports
+# at the 0.7 cap, none of them clearing the 0.75 explain floor alone.
+#
+# MASKING POSTURE (MEM:logcraft-precision-scenario-must-be-maskable). Every message here is static
+# text with NO interpolated field — there is no high-cardinality value to mask and therefore no
+# letter-prefixed-counter over-split channel. That is deliberate for a fixture carrying a
+# `must_not_fire`: a per-id template flood would manufacture tail templates and make the control
+# arm's silence an accident of the masker rather than a fact about the world.
+#
+# THE CONTROL IS A do() ON THE WORLD, not an instrument ablation: `no-takeover` replaces the flood
+# phase's rate with the quiet rate it already had, so the sweep never floods and everything else —
+# same agents, same seed, same 600 s, same instrument — is shared by construction.
+
+deterministic_scenario:
+  name: "tail-takeover"
+  seed: 4848
+  outputs:
+    - name: insight-stream
+      type: insight_shm
+      channel: ipl_tail_takeover
+      shm_slot_count: 256
+      shm_backpressure_policy: block
+
+  causal_axis:
+    edges:
+      # do(the sweep never floods). The upsert lands on the flood phase's rate, restoring the quiet
+      # rate — the takeover's ONLY cause, removed at its only site.
+      - name: no-takeover
+        upsert:
+          - path: agents.retired-connection-sweep.phases.flood.rate_per_second
+            value: 0.08
+
+    time_axis:
+      duration_seconds: 600s
+      agents:
+        # ── the top_k anchor: 8 templates that carry the window ──
+        - { name: ledger-append,   intent: background_worker, rate_per_second: 6, log_level: info, message_template: "appended ledger segment" }
+        - { name: ledger-flush,    intent: background_worker, rate_per_second: 6, log_level: info, message_template: "flushed ledger buffer" }
+        - { name: ledger-rotate,   intent: background_worker, rate_per_second: 6, log_level: info, message_template: "rotated ledger volume" }
+        - { name: ledger-verify,   intent: background_worker, rate_per_second: 6, log_level: info, message_template: "verified ledger checksum" }
+        - { name: ledger-compact,  intent: background_worker, rate_per_second: 6, log_level: info, message_template: "compacted ledger extent" }
+        - { name: ledger-mirror,   intent: background_worker, rate_per_second: 6, log_level: info, message_template: "mirrored ledger replica" }
+        - { name: ledger-seal,     intent: background_worker, rate_per_second: 6, log_level: info, message_template: "sealed ledger epoch" }
+        - { name: ledger-index,    intent: background_worker, rate_per_second: 6, log_level: info, message_template: "indexed ledger keyspace" }
+
+        # ── the diffuse tail: 20 benign templates, ~2 events per window each ──
+        # Distinct FIRST tokens keep them distinct templates under canon's drain. Info level,
+        # benign wording, on-path: salience 0, so none is promoted into the reservoir and out of
+        # the tail residual (SPEC §3.7.3) — the tail under test is the whole below-top_k population.
+        - { name: bg-snapshot,   intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "snapshotted ring buffer" }
+        - { name: bg-prune,      intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "pruned ephemeral lease" }
+        - { name: bg-scrub,      intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "scrubbed checkpoint manifest" }
+        - { name: bg-hydrate,    intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "hydrated replication peer" }
+        - { name: bg-drain,      intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "drained outbound mailbox" }
+        - { name: bg-anchor,     intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "anchored consensus epoch" }
+        - { name: bg-validate,   intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "validated transport handshake" }
+        - { name: bg-quiesce,    intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "quiesced ingest controller" }
+        - { name: bg-promote,    intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "promoted standby partition" }
+        - { name: bg-evict,      intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "evicted stale watcher" }
+        - { name: bg-negotiate,  intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "negotiated replication offset" }
+        - { name: bg-harvest,    intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "harvested telemetry batch" }
+        - { name: bg-checkpoint, intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "checkpointed reservation map" }
+        - { name: bg-release,    intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "released advisory lock" }
+        - { name: bg-attest,     intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "attested manifest signature" }
+        - { name: bg-demote,     intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "demoted leader candidate" }
+        - { name: bg-trim,       intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "trimmed audit ledger" }
+        - { name: bg-patch,      intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "patched routing table" }
+        - { name: bg-broadcast,  intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "broadcast quorum heartbeat" }
+        - { name: bg-rebuild,    intent: background_worker, rate_per_second: 0.08, log_level: info, message_template: "rebuilt index segment" }
+
+        # ── the takeover: quiet for 12 windows, then it owns the tail ──
+        # Base rate is the behaviour BEFORE the first phase; the phase list is the timeline. The
+        # flood phase is terminal, so the condition is CHRONIC from 300 s on — which is what makes
+        # this fixture also a seam reading of the horizon's alarm lifetime.
+        - name: retired-connection-sweep
+          intent: background_worker
+          rate_per_second: 0.08
+          log_level: info
+          message_template: "vacated retired connection"
+          phases:
+            - { name: quiet, duration_seconds: 300s, rate_per_second: 0.08 }
+            - { name: flood, duration_seconds: 300s, rate_per_second: 5.6 }
+
+# ── The bundled contract ─────────────────────────────────────────────────────────────────────────
+contract_scenario:
+  reference_scenario: tail-takeover
+
+  # No `disjoint:` — so the derived RAW grid is exactly {6}, the tail's own demand (DN-47.D17), and
+  # `RAW.h6` is the shipped horizon itself. top_k_size 8 seats the ledger family in top_k and puts
+  # everything else in the tail; the shipped 64 would swallow all 29 templates and leave NO tail at
+  # all, which is the documented starvation shape (tail_summary absent ⇒ no tail_delta ⇒ the
+  # detector cannot fire). That is a real reachability limit on the shipped default and it is
+  # recorded here rather than papered over.
+  pyramid_config:
+    ladder: { levels: 1 }
+  metalog_config: { top_k_size: 8 }
+  explain_min_confidence: 0.75
+
+  positions:
+    # THE TAKEOVER — the tail detector sees a flood that never enters top_k.
+    - name: takeover
+      coordinates: { causal_axis: null, time_axis: 600s }
+      signal:
+        must_fire:
+          - coordinate: RAW.h6 . Tsh . tail_loudness
+            emits: TailShift
+
+    # THE MATCHED CONTROL — same world, the flood removed at its only cause. The tail stays diffuse,
+    # so neither axis can trip and `Tsh` must be silent for the whole run. The `takeover` position
+    # above is this claim's reachability witness: without it, this silence would be unfalsifiable.
+    - name: no-takeover
+      coordinates: { causal_axis: no-takeover, time_axis: 600s }
+      signal:
+        must_not_fire:
+          - coordinate: RAW.h6 . Tsh . tail_loudness
+            emits: TailShift
