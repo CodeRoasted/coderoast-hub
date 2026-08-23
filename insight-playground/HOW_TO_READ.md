@@ -5,17 +5,18 @@ what InSight must — and must not — detect on each one. It is meant to be rea
 answering "**does CodeRoast cover case X?**". Nothing here runs the engine; the goldens are produced
 by private CI and the contracts are the falsifiable claim.
 
-Each case is **two files** that share a number and name:
+Each case is **ONE file**, `NN_name.yaml`, carrying two document roots:
 
-| File | What it is |
+| Root | What it is |
 |---|---|
-| `NN_name.yaml` | The **scenario** — a LogCraft description of a fleet of services and how they behave (rates, latencies, phases, incidents). Running it deterministically produces a log stream. |
-| `NN_name.contract.yaml` | The **contract** — what InSight must assert about that stream. Declarative; the harness checks it against the engine's real output. |
+| `deterministic_scenario:` | The **scenario** — a LogCraft description of a fleet of services and how they behave (rates, latencies, phases, incidents). Running it deterministically produces a log stream. |
+| `contract_scenario:` | The **contract** — what InSight must assert about that stream. Declarative; the harness checks it against the engine's real output. |
 
-Some cases add a subfolder (`NN_name/`) with input fixtures (hand-authored `.jsonl` / `.log`), or a
-paired `control` scenario file used to contrast two authored runs.
+They are bundled so a contract can never point at the wrong scenario: `reference_scenario:` is a
+**checked label** and must equal the bundled scenario's `name:`. Agents shared across scenarios live
+in `agents/`.
 
-**Transition cases are ONE bundled file** (`NN_name.yaml` carrying both roots): the
+**A transition case uses the same bundle**: the
 `deterministic_scenario` declares the world **and** the intervention — an axis edge — and the
 `contract_scenario` root addresses **coordinates** of that axis. The second arm is *derived* by the
 engine from the declared edge, never hand-authored, so the intervention has exactly one source of
@@ -45,7 +46,7 @@ contract_scenario:
         untouched_projection: { exclude_where: [ ... ] }  # everything else byte-identical
 ```
 
-## Reading a scenario (`NN_name.yaml`)
+## Reading a scenario (the `deterministic_scenario:` root)
 
 Scenarios are written in the **LogCraft DSL**. The full grammar — agents, fields, latency
 distributions (p50/p99), phases, incidents, `rate: 0` = silence — is documented once, in the LogCraft
@@ -56,19 +57,33 @@ reference:
 
 The header comment on each scenario says, in one line, **what it does**.
 
-## Reading a contract (`NN_name.contract.yaml`)
+## Reading a contract (the `contract_scenario:` root)
 
-The header comment says **what it asserts**. Below that, three blocks:
+The header comment says **what it asserts**. Below that, the **instrument** — the conditions every
+claim is pinned to — then the claims themselves, which hang off named `positions:`.
 
-### `meta:` — the conditions of the run
-- `scenario:` — the scenario file this contract is evaluated against.
-- `target_seconds:` — how far to run the deterministic clock.
-- `axis:` — the ordering axis (`time` for a single run over time).
+### The instrument — the conditions of the run
+- `reference_scenario:` — the bundled scenario's `name:`. A checked label, not a file path.
 - `pyramid_config:` / `metalog_config:` / `sequence:` — the engine configuration the assertions hold
-  under (so a claim is pinned to a *specific*, reproducible setup, not a vague default).
+  under (so a claim is pinned to a *specific*, reproducible setup, not a vague default). An
+  instrument is **mandatory** wherever a claim is made: the coordinate alphabet is derived from it.
 - `explain_min_confidence:` — the confidence floor for narration. (The deterministic **seed** is
   scenario-side — `deterministic_scenario.seed`, per-agent/instance — **not** a contract key; the
   contract asserts the detection border, it does not drive the scenario's RNG.)
+- `windows:` — the offline segmentation policy. Absent, windows roll naturally on event time;
+  `mode: single` closes ONE window over the whole replay; `mode: segmented` makes the positions
+  themselves the window boundaries, so one run carries an ordered sequence of claims
+  (baseline silent → onset → recovery).
+
+**How far the clock runs is not a contract-level key**: each position declares its own
+`coordinates: { time_axis: <N>s }`, which is that claim's horizon — and, under a segmented
+instrument, the mark where its window closes.
+
+### `positions:` — the claim anchors
+Every claim hangs off a **named position**: a `coordinates:` vector saying *which world and which
+horizon*, plus the two blocks below read AT it. A contract with no position claiming anything is
+refused. Under `windows: {mode: segmented}` the positions are also the window marks, in ascending
+time order.
 
 ### `signal:` — what the detectors must (and must not) do
 - `must_fire:` — a list of detections that **must** occur. Each is a `coordinate:` (which detector
@@ -80,9 +95,17 @@ The header comment says **what it asserts**. Below that, three blocks:
   different world coordinate on the scenario's axis.
 
 ### `interpretation:` — what the final insight must say
-- `must_emit:` / `must_not_emit:` — assertions at the **insight** level (the operator-facing verdict),
-  above the raw detector coordinates. `{ any: true }` under `must_not_emit` means "*emit nothing*" — a
-  true-negative case where silence is the correct answer.
+Assertions at the **insight** level — the operator-facing verdict, above the raw detector
+coordinates. Three verbs:
+- `must_not_emit:` — a list of guards, none of which may match a surfaced insight.
+  `{ any: true }` means "*emit nothing*" — a true-negative case where silence is the correct answer;
+  `{ severity: Critical }` forbids that band alone.
+- `composite: { severity: <band> }` — the **positive** form: an insight at that severity must
+  surface. This is what makes a contract's negatives non-vacuous — a run where nothing can page
+  satisfies every `must_not_emit` for the wrong reason.
+- `cube_a: { upper: [ … ] }` — cells that must appear on the *emerging upper border*, the
+  window-to-window structural headline. It needs at least two windows to exist, so it is read on a
+  contract whose positions segment one run.
 
 ## The short version
 

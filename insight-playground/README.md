@@ -12,10 +12,10 @@ private. What you read here is *what we guarantee and test*.
 - **`scenario/NN_name.yaml`** — LogCraft scenarios: a fleet of services and how they behave. Running
   one deterministically produces a log stream. Grammar: the LogCraft reference in
   [`../logcraft-playground/scenario_reference.md`](../logcraft-playground/scenario_reference.md).
-- **`scenario/NN_name.contract.yaml`** — the declarative contract for that scenario: which detections
-  must fire, which must stay silent, and what the final insight must say. Tested on every cut.
-- **`scenario/NN_name/`** — where present, input fixtures (`.jsonl` / `.log`) or paired arms
-  (`factual` / `ablated` / `control`) for a case.
+  The same file also carries the **`contract_scenario:`** root — the declarative contract: which
+  detections must fire, which must stay silent, and what the final insight must say. Scenario and
+  contract are bundled in one file so a contract can never point at the wrong scenario. Tested on
+  every cut.
 - **`scenario/agents/`** — a reusable agent library the scenarios draw on.
 
 Each file opens with a one-line header saying **what it does** (scenario) or **what it asserts**
