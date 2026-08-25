@@ -22,7 +22,7 @@
   "note": "Public evidence mirrored from the gated private release cut. The Hub holds no secrets.",
   "showcase": {
     "canon": {
-      "version": "v1.9.6",
+      "version": "v1.10.0",
       "path": "showcase/canon/"
     }
   }
