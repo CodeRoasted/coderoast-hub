@@ -288,39 +288,39 @@ Error	F--	None	ERROR: Job failed: exit code 1
 ### run_outcome marker=0 token=- resolved=UNKNOWN
 ## file gitlab_ci.log declared=github+api-rfc3339-line-prefix
 ### templates (16)
-1	<*> $ cmake --build build --config Release -j <*>
-1	<*> ++ echo -e '\e[0Ksection_start:<*>:phantom\r\e[0K'
-1	<*> Cleaning up project directory and file based variables
-1	<*> ERROR: Job failed: exit code 1
-1	<*> Fetching changes with git depth set to <*>
-1	<*> Preparing the docker executor
-1	<*> Running with gitlab-runner <*> (a1b2c3d4)
-1	<*> [ <*> Building CXX object src/engine/core.cpp.o
-1	<*> df: /proc/mounts: permission denied
-1	<*> on runner-alpha proof-shard
-1	<*> section_start:%s:duration_blind
-1	<*> section_start:<*>:after_script
-1	<*> section_start:<*>:get_sources
-1	<*> section_start:<*>:log_disk_usage[collapsed=true]Disk usage detail
-1	<*> section_start:<*>:prepare_executor
-1	<*> section_start:<*>:step_script
+1	$ cmake --build build --config Release -j <*>
+1	++ echo -e '\e[0Ksection_start:<*>:phantom\r\e[0K'
+1	Cleaning up project directory and file based variables
+1	ERROR: Job failed: exit code 1
+1	Fetching changes with git depth set to <*>
+1	Preparing the docker executor
+1	Running with gitlab-runner <*> (a1b2c3d4)
+1	[ <*> Building CXX object src/engine/core.cpp.o
+1	df: /proc/mounts: permission denied
+1	on runner-alpha proof-shard
+1	section_start:%s:duration_blind
+1	section_start:<*>:after_script
+1	section_start:<*>:get_sources
+1	section_start:<*>:log_disk_usage[collapsed=true]Disk usage detail
+1	section_start:<*>:prepare_executor
+1	section_start:<*>:step_script
 ### events
-Unknown	--T	None	<*> Running with gitlab-runner <*> (a1b2c3d4)
-Unknown	--T	None	<*> on runner-alpha proof-shard
-Unknown	--T	None	<*> section_start:<*>:prepare_executor
-Unknown	--T	None	<*> Preparing the docker executor
-Unknown	--T	None	<*> section_start:<*>:get_sources
-Unknown	--T	None	<*> Fetching changes with git depth set to <*>
-Unknown	--T	None	<*> section_start:<*>:step_script
-Unknown	--T	None	<*> $ cmake --build build --config Release -j <*>
-Unknown	--T	None	<*> [ <*> Building CXX object src/engine/core.cpp.o
-Unknown	--T	None	<*> section_start:<*>:log_disk_usage[collapsed=true]Disk usage detail
-Error	F-T	None	<*> df: /proc/mounts: permission denied
-Unknown	--T	None	<*> ++ echo -e '\e[0Ksection_start:<*>:phantom\r\e[0K'
-Unknown	--T	None	<*> section_start:%s:duration_blind
-Unknown	--T	None	<*> section_start:<*>:after_script
-Unknown	--T	None	<*> Cleaning up project directory and file based variables
-Error	F-T	None	<*> ERROR: Job failed: exit code 1
+Unknown	---	None	Running with gitlab-runner <*> (a1b2c3d4)
+Unknown	---	None	on runner-alpha proof-shard
+Unknown	---	None	section_start:<*>:prepare_executor
+Unknown	---	None	Preparing the docker executor
+Unknown	---	None	section_start:<*>:get_sources
+Unknown	---	None	Fetching changes with git depth set to <*>
+Unknown	---	None	section_start:<*>:step_script
+Unknown	---	None	$ cmake --build build --config Release -j <*>
+Unknown	---	None	[ <*> Building CXX object src/engine/core.cpp.o
+Unknown	---	None	section_start:<*>:log_disk_usage[collapsed=true]Disk usage detail
+Error	F--	None	df: /proc/mounts: permission denied
+Unknown	---	None	++ echo -e '\e[0Ksection_start:<*>:phantom\r\e[0K'
+Unknown	---	None	section_start:%s:duration_blind
+Unknown	---	None	section_start:<*>:after_script
+Unknown	---	None	Cleaning up project directory and file based variables
+Error	F--	None	ERROR: Job failed: exit code 1
 ### det_math total=16 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
 ## file gitlab_ci.log declared=gitlab
