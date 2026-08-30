@@ -22,7 +22,7 @@
 # "and NOTHING BEYOND the intervention moved" needs an *else*, and only a DECLARED edge defines it.
 # The non-vacuity is real and not free — `yarn install` and `yarn build` draw their own RNG streams
 # in both builds, and stay bit-identical across the fold only because the RNG is identity-keyed
-# (adr/0020). A fold that keyed on position, or that rewrote an agent name, would light those two
+# (ADR-10.D1). A fold that keyed on position, or that rewrote an agent name, would light those two
 # quanta up here and nowhere else.
 #
 # (That a step delta surfaces AT ALL is already proven, on hand-authored scenarios, by
@@ -47,7 +47,7 @@ deterministic_scenario:
       type: insight_shm
       channel: ipl_intent_grain
       format: github_actions           # the DOCUMENT vehicle: banners open the quanta the diff aligns
-      intent_channel: stripped         # ADR 0029 D3/D4 — declared once here, read back by the harness
+      intent_channel: stripped         # ADR-22.D4 — declared once here, read back by the harness
       shm_slot_count: 256
       shm_backpressure_policy: block
 

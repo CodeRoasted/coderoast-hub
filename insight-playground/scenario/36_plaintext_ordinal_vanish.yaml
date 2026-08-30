@@ -77,7 +77,7 @@ deterministic_scenario:
   causal_axis:
     edges:
       # ── THE RE-RUN. do(nothing changed — the job simply ran again): every route's latency stream
-      #    is RE-BASED onto a fresh seed (adr/0020: a declared `seed:` re-bases the identity-derived
+      #    is RE-BASED onto a fresh seed (ADR-10.D4: a declared `seed:` re-bases the identity-derived
       #    stream while the name still keys it). Same generator, same band, same n per endpoint —
       #    an uncorrelated draw from the identical distribution, which is what a re-run IS.
       - name: job-rerun
