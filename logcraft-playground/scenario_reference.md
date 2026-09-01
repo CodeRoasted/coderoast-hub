@@ -1646,9 +1646,12 @@ plainly a CI history.
 
 **Coordinates multiply, and the cost bound is the PRODUCT.** The two levels are independent
 coordinates, so the file materializes their product — `knob(4) × build(4)` is **16** worlds, not 8 —
-and every one is fully parsed at load, not merely folded. Two caps therefore apply: **64 per axis**
-and **256 tower-wide**. Exceeding the product cap is refused naming the shape and the number, because
-a per-axis cap alone waves the product through.
+and every one is fully parsed at load, not merely folded. Two caps therefore apply, **and they are not
+symmetric**: **64 coordinates on a `knob_axis`** — its `cardinality` is bounded precisely because its
+edges are GENERATED, so a typo'd `cardinality: 100000` would otherwise be unbounded work — and **256
+tower-wide**. An authored `causal_axis` or `build_axis` writes its edges by hand and carries **no
+per-axis cap at all**; it is bounded only by the tower-wide product. Exceeding the product cap is
+refused naming the shape and the number, because a per-axis cap alone waves the product through.
 
 **A coordinate is a VECTOR, in declaration order, never normalized.** One entry per level, outermost
 first — `knob_axis: 0, build_axis: 1`. Nesting order is *the experiment*: `compose` and `diff` do not
