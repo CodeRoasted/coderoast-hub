@@ -131,6 +131,7 @@ deterministic_scenario:
 | `includes` | sequence | absent | Merge other YAML files |
 | `causal_axis` | map | absent | The counterfactual axis — `{ edges, time_axis }`; NAMED coordinates. When declared, `time_axis` nests under it. Deterministic only. See [Interventional Axes](#interventional-axes) |
 | `build_axis` | map | absent | The CI history — `{ edges, <the CI world inline> }`; ORDINAL coordinates, no `time_axis`. Deterministic only. See [Interventional Axes](#interventional-axes) |
+| `knob_axis` | map | absent | The swept parameter — `{ path, increment, cardinality, <base> }`; ORDINAL coordinates with GENERATED edges. Its base is a `time_axis:` or a nested `build_axis:` (the tower). Deterministic only. See [Interventional Axes](#interventional-axes) |
 
 **World keys — under `time_axis:` in the deterministic world; flat at the root in the real world:**
 
