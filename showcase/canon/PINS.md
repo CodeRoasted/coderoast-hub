@@ -8,8 +8,8 @@ first — you are almost certainly not holding the same inputs or the same build
 
 ## Tool
 
-- `det_proof` sha256: `23104dc5581c4d9f3df66d82f45f1396323c5010c3f1840ddb1e43b48ed422d5`
-- canon ruleset: `semantic_identity d5175c869368cab9ad28804e4ad0d8ce`
+- `det_proof` sha256: `0acc686ba925ae465a1cfeec5331b25bda6fcfc17f23fdf6988da26e82710351`
+- canon ruleset: `semantic_identity bf776af11aea469d5fb96c0438e495d4`
 - canon packages: github@1.4.0 gitlab@1.0.0 jenkins@1.1.0 test_frameworks@1.0.0
 
 ## Inputs
