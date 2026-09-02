@@ -26,7 +26,7 @@
 # quanta up here and nowhere else.
 #
 # (That a step delta surfaces AT ALL is already proven, on hand-authored scenarios, by
-# gha_document_g2_seam_test.cpp. Re-asserting it on an axis would be a SUT==ORACLE re-run; the claim
+# gha_document_intent_seam_test.cpp. Re-asserting it on an axis would be a SUT==ORACLE re-run; the claim
 # here is the one only an axis can make.)
 #
 # TIME IN THE CI WORLD — why every step carries `start_delay_seconds` + a two-phase block. `after:`
