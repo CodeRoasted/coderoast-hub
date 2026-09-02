@@ -9,7 +9,7 @@ It is a **transparency showcase, not a test result**: nothing here passes or fai
 It lets you read, line by line, what Canon does to a log before any of our proprietary
 analysis runs. The end-to-end detection is exercised elsewhere (Eidos + Sift).
 
-- `semantic_identity d5175c869368cab9ad28804e4ad0d8ce`
+- `semantic_identity bf776af11aea469d5fb96c0438e495d4`
 - `packages: github@1.4.0 gitlab@1.0.0 jenkins@1.1.0 test_frameworks@1.0.0`
 
 The two lines above are the canon vocabulary of **this run** — not a standing version claim.
