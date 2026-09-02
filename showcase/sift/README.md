@@ -11,15 +11,15 @@ noise.** These samples are the evidence for both halves of that.
 | pair | logs | lines a plain `diff` reports | changes Sift reports | |
 | --- | --- | --- | --- | --- |
 | **noise-floor** | [`logcraft__ci-build__green-a.log`](logs/logcraft__ci-build__green-a.log) → [`logcraft__ci-build__green-b.log`](logs/logcraft__ci-build__green-b.log) | **5,571** | **1** | [report](reports/noise-floor.report.md) |
-| **regression** | [`logcraft__ci-build__green-a.log`](logs/logcraft__ci-build__green-a.log) → [`logcraft__ci-build__red.log`](logs/logcraft__ci-build__red.log) | **4,889** | **13** | [report](reports/regression.report.md) |
+| **regression** | [`logcraft__ci-build__green-a.log`](logs/logcraft__ci-build__green-a.log) → [`logcraft__ci-build__red.log`](logs/logcraft__ci-build__red.log) | **4,889** | **11** | [report](reports/regression.report.md) |
 
 - **noise floor** — two runs that both **passed**. A plain text diff (timestamps already
   stripped) reports thousands of differing lines. Sift reports what is left after the churn is
   accounted for. This is the number that matters for a tool you leave switched on: what it
   costs you to read on a day when nothing broke.
 - **regression** — the same passing run against the **failing** one. The report's top three are
-  the failure and its cause: the step exited non-zero, then the package that failed to build and
-  the error it raised. Ranks 1, 2 and 3 of [the report](reports/regression.report.md) — open it and check.
+  the failure and its cause: the step exited non-zero, then the error it raised. Ranks 1, 2
+  and 3 of [the report](reports/regression.report.md) — open it and check.
 
 ## What is here
 
@@ -48,12 +48,16 @@ The two, in full:
 
 Redacting identity could silently change the result: alter a template and the ranked report changes with it. So the build runs Sift twice — once on the logs before identity redaction, once on the published logs — and refuses to publish unless both reports carry the same claim.
 
-- The same change counts and the same run verdicts.
-- The same ranking curve, position by position, so nothing crosses a rank boundary unseen.
+- The same run verdicts and the same line totals.
+- The same ranking curve for the significant changes, position by position, so nothing crosses a rank boundary unseen.
 - The same findings, with the same evidence and the same line references.
 - Template hashes that correspond one-to-one, so the redaction can neither merge two line shapes nor split one.
-- All of it at two significance floors — the shipped one, and floor 0, which admits every change the engine RANKED rather than only the significant ones. What floor 0 does NOT do is compare every change the engine DETECTED, and an earlier wording said it did. The ranked set is capped at 50, so the floor-0 arm compares the top 50 against the top 50; on these pairs the engine detects roughly 940 and 1 070 changes, and the suppressed tail below the ranking is outside the comparison. The figure published per floor under `pairs[].declared.honesty_gate` is named `ranked_total_changes` for that reason: at floor 0 it saturates at the cap and is not a population.
-- One tolerance, declared rather than hidden: some findings surface because a BOUNDED reservoir of high-salience lines happened to retain that line, and the reservoir keys on line content — so redacting the runner path, which is not optional, can swap which of several equally-ranked lines it kept. Those findings must still match on shape, severity, score and step; only which line was sampled is free, and the count is published per pair under `pairs[].declared.honesty_gate`. Here it is 0 for the noise-floor pair and 1 for the regression pair.
+- The engine's raw per-step MetaLogDiff documents, held to the same rule: every count, frequency, divergence, verdict, n-gram and cube cell pinned; only the template hashes are free, and they must still correspond one-to-one.
+- That the redaction changed NOTHING ABOUT WHAT WAS OBSERVED: per step, the number of line occurrences the engine attributed to templates is identical on both sides. Regrouping lines into different templates cannot move that number; inventing, dropping or rewording a line is the only thing that can.
+- All of it at two significance floors, 0.05 and 0.0, so the raw tier is exercised twice over and the sub-significance tail is surfaced even when the published report is a single line. How many ranked rows each arm actually compared position by position is published per arm and reads: the noise-floor pair 1 of 1 at floor 0.05, 0 of 50 at floor 0; the regression pair 10 of 11 at floor 0.05, 10 of 50 at floor 0. Floor 0 compares FEWER of them, not more, and that is the point: at floor 0 the engine's ranked list is a fifty-row slice of a population of roughly a thousand, most of it below the shipped floor, and on the noise-floor pair it does not carry the single significant finding at all. Comparing an arbitrary slice row by row is not a claim; the raw tier below it is.
+- WHAT IS COMPARED IS THE SIGNIFICANT SET, and the tail is declared instead. The changes at or above the shipped significance floor — the ones these reports headline — are held to every check above. Below that floor the redaction genuinely does move something, and pretending otherwise would be the dishonest choice: the runner path MUST be redacted, redacting it shortens the path by one segment, and the tokenizer then groups the lines carrying it into different templates. So the tail's grouping is not a claim this showcase makes. What holds it instead is the observation check above — regrouping cannot change how many lines were seen — plus a published count of exactly how many templates it reached: 50 and 55 for the noise-floor pair and 57 and 51 for the regression pair respectively, under `pairs[].declared.honesty_gate[].raw_tail_templates_repartitioned_by_the_redaction`. The population it moves is published on both sides too, as `detected_changes`: 936 against 941 for the noise-floor pair and 1072 against 1066 for the regression pair. And no template in the significant set may be one of them — if the redaction ever reached a change these reports publish, the build stops.
+- One tolerance on which line was kept, declared rather than hidden: some findings surface because a BOUNDED store of high-salience lines happened to hold that line, and both such stores key on line content — so redacting the runner path can swap which of several equally-ranked lines was kept. Those findings must still match on shape, severity, score and step; only which line was sampled is free, and the count is published per pair. At the shipped floor it is 0 for the noise-floor pair and 0 for the regression pair; in the raw tier, where the same swap shows as a row whose template and count changed, it is 0 for the noise-floor pair and 0 for the regression pair.
+- One tolerance on whether such a line is reported at all: the same stores are bounded, so changing a line's template can change its MEMBERSHIP and not merely its identity. A finding may therefore appear on one side and not the other — but only if it is a plain line appearing or disappearing, only if the store is why it surfaced, and only if it ranks strictly below every finding the failure lexicon or the statistics produced. The findings this showcase is about can never move that way. The count is published per pair: at the shipped floor it is 0 for the noise-floor pair and 1 for the regression pair.
 
 This is not a formality: it rejected the first redaction map this showcase was built with, which would have published a report the real logs do not support.
 
