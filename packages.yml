@@ -9,6 +9,6 @@ packages:
   insight_scenarios:
     path: insight-playground
     version: 1.10.4
-    public: true
+    source_public: true
     release: false
     depends: []
