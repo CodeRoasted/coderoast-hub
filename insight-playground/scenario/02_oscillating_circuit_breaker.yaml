@@ -6,6 +6,15 @@
 # OPEN windows across the run) — the reproducible do-edge form of the old stochastic `health_state`
 # machine. The old `auto_cascade` was a no-op (no `dependencies:`); its intent is now an explicit dampened
 # effect on the api-gateway inside each window.
+#
+# NO `contract_scenario:` ROOT HERE, AND THAT IS DELIBERATE, NOT AN OMISSION. The property this
+# scenario exists to exercise is a BOUNDED OPERATOR ALERT COUNT over an oscillating fault, and the
+# contract grammar cannot spell a count: its interpretation verbs are `cube_a`, `composite` and
+# `must_not_emit` — set membership and absence. A contract written out of those three would be
+# GREEN while measuring nothing about the count, which is worse than no contract. The bound is
+# asserted instead where a fixture can vary the run length and disable the alert register, neither
+# of which a bundle can reach: insight-eidos's engine pipeline suite (`alert_fold_gate_test`). The
+# corpus harness skips a bundle with no contract root by design, so nothing here is unwired.
 
 deterministic_scenario:
   name: "oscillating-circuit-breaker"
