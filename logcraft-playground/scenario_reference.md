@@ -281,6 +281,13 @@ outputs:
 | `statsd` | *(real world only)* Push metrics over UDP |
 | `insight_shm` | Shared-memory IPC channel for InSight integration |
 
+**On the hosted CodeRoast server, a named output is redirected to the engine's drain, whatever its
+host.** Every output that carries a `name:` — an `insight_shm` output excepted — is rewritten into
+an `http` output pointed at the engine's own drain endpoint, whatever `url` it named. That is
+intended: the hosted server never posts to a destination a scenario supplies. If a real sink of
+yours receives nothing while the scenario runs there, read what reached the drain with
+`GET /api/v1/engines/{id}/drain`. A `logcraft` run on your own machine rewrites nothing.
+
 The three push sinks carry a wall-clock flush thread, so their emission cadence is not reproducible:
 all three are hard-rejected under `deterministic_scenario:` (see
 [What each world declines](#what-each-world-declines)).
