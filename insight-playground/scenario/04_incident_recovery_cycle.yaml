@@ -123,6 +123,29 @@ deterministic_scenario:
             error_rate: 0.01
             latency_ms: [3, 25]
 
+      # THE RECOGNISED-RECOVERY CARRIER. The two agents above emit every one of their templates in
+      # all three phases, so their recovery is a rate snap-back and nothing of theirs VANISHES. This
+      # agent is an error-class line the pool has logged since startup and that the incident's
+      # remediation clears: it runs through `healthy` and `incident`, then goes silent in `recovery`
+      # while the workload holds — the one shape the detector reads as a recovery rather than a
+      # fault. It carries a low-cardinality field only, so it cannot trip a value-space detector.
+      # 5/s is about 1.5 % of a healthy window and 3.7 % of an incident one: a vanish is read only
+      # for a line that held at least 1 % of the window before it went, and at 1/s this one did not.
+      - name: pool-guard
+        rate_per_second: 0
+        log_level: error
+        message_template: "connection pool {pool} saturated: acquire timed out, request retried"
+        fields:
+          - name: pool
+            generator: weighted_choice
+            values: [payments-rw, payments-ro]
+            weights: [80, 20]
+
+        phases:
+          - { name: healthy,  duration_seconds: 10m, rate_per_second: 5 }
+          - { name: incident, duration_seconds: 10m, rate_per_second: 5 }
+          - { name: recovery, duration_seconds: 10m, rate_per_second: 0 }
+
     incidents:
       - name: db_connection_pool_exhausted
         trigger: "time > 10m"
