@@ -1,4 +1,4 @@
-# 35 ordinal_drift_w1 — the W1 ordinal-drift gate (the W1 ordinal channel: `F-SRC-insight-metalog:metalog.api.cppm:ordinal_w1`, `F-SRC-insight-canon:canon.api.cppm:OrdinalSchedule`, the θ_k thresholds `F-SRC-insight-eidos:classify.cpp:kOrdinalLowSignificance`), on a DECLARED intervention.
+# 35 ordinal_drift_w1 — the W1 ordinal-drift gate (the W1 ordinal channel: `F-SRC-insight-metalog:metalog.api.cppm:ordinal_w1`, `F-SRC-insight-canon:canon.api.cppm:OrdinalSchedule`, Sift's significance weights for the ordinal buckets `F-SRC-insight-eidos:classify.cpp:kOrdinalLowSignificance`), on a DECLARED intervention.
 #
 # THE CUT GATE for the W1 ordinal channel. One declared-ordinal field (`latency_ms`) over one
 # generated stream, and two counterfactuals of it: a ~10-octave shift must read OrdinalDrift /
