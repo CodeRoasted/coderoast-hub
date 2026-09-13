@@ -241,6 +241,7 @@ declared table each, enforced at a single point:
 | | `outputs: type: http` | wall-clock flush thread + TCP |
 | | `replay:` | recording playback; the deterministic engine never reads it |
 | `scenario:` (real) | `flows:` | a causal flow is **unfolded** from a materialized timeline, which only the deterministic engine builds — so the real world has nothing to unfold the walk with |
+| | `outputs: type: insight_shm` | a real clock seals the stream only when the engine stops, so InSight receives nothing while it runs; start a `deterministic_scenario:` Playing for paced, replayable live analysis |
 
 Two further gates are mode-shaped rather than feature-shaped: `timezone: local` (host TZ) is rejected
 in the deterministic world, and `pipeline.policy` must be `block` there (auto-forced) while the real
@@ -248,7 +249,9 @@ world defaults to `drop`.
 
 This is **DSL validation policy, not capability removal.** The engine implements every one of these
 for both worlds; the deterministic world declines them because it is authored with do-operator / axis
-semantics, and a knob it would not honour is refused rather than advertised.
+semantics, and a knob it would not honour is refused rather than advertised. The one exception is
+`insight_shm` in the real world: the sink runs there, but nothing seals its stream until the engine
+stops, so lifting that refusal needs a real-clock seal horizon first.
 
 ---
 
@@ -279,7 +282,7 @@ outputs:
 | `http` | *(real world only)* Batched HTTP POST (e.g. Elasticsearch, Loki, any webhook) |
 | `prometheus` | *(real world only)* Expose `/metrics` scrape endpoint |
 | `statsd` | *(real world only)* Push metrics over UDP |
-| `insight_shm` | Shared-memory IPC channel for InSight integration |
+| `insight_shm` | *(deterministic world only)* Shared-memory IPC channel for InSight integration |
 
 **On the hosted CodeRoast server, a named output is redirected to the engine's drain, whatever its
 host.** Every output that carries a `name:` — an `insight_shm` output excepted — is rewritten into
