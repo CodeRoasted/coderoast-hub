@@ -50,7 +50,7 @@ deterministic_scenario:
       type: insight_shm
       channel: ipl_absence_bump
       format: json                       # the VEHICLE: newline-delimited JSON, as the retired pair.
-      shm_slot_count: 256                # No FIELD claim here (templates only), so flaws.md LF4 —
+      shm_slot_count: 256                # No FIELD claim here (templates only), so flaws.md FLAW-22 —
       shm_backpressure_policy: block     # nested, string-quoted fields — does not reach this fixture.
 
   causal_axis:

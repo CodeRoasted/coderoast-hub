@@ -96,7 +96,7 @@ scenario:
       rate_per_second: 20/s
       message_template: "notification type={notification_type} channel={channel} status={status}"
       fields:
-        # Renamed from `type`: with LF4 the JSON envelope's own `type` key is reserved, and a flat
+        # Renamed from `type`: with FLAW-22 the JSON envelope's own `type` key is reserved, and a flat
         # custom field of that name would shadow it. The rendered message is unchanged — the
         # literal `type=` lives in the template, only the placeholder moved.
         - name: notification_type

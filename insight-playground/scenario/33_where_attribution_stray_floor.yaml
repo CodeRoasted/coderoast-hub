@@ -36,7 +36,7 @@
 # That was read off the vehicle label, not the bytes. The retired .log carries ONE `##[group]`
 # marker, 8 syslog-shaped lines and 93 bare stdout lines: no line bears a GHA transport prefix
 # (`2026-07-18T10:30:00.1234567Z `), so there is no envelope and no second head level. The syslog
-# head is ordinary author-owned payload of the STRIPPED channel — precisely LF3's shipped dividend:
+# head is ordinary author-owned payload of the STRIPPED channel — precisely FLAW-21's shipped dividend:
 # `raw` owns zero head bytes, so one stream carries as many head shapes as it declares agents. That
 # is the capability the register asked for, obtained without any transport vocabulary. K/T4 is still
 # owed, for the TIMESTAMPED GHA form neither this fixture nor 24 ever used.
@@ -88,7 +88,7 @@ deterministic_scenario:
 
       agents:
         # ── The GHA-marked bed. Two head shapes already live here (a workflow-command marker and
-        #    bare tool stdout), which is the LF3 capability the correction above records.
+        #    bare tool stdout), which is the FLAW-21 capability the correction above records.
         - name: group-open
           rate_per_second: 0.01
           message_template: "##[group]Run the acceptance suite"

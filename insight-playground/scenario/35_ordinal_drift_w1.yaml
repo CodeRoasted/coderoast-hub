@@ -6,8 +6,8 @@
 # HIGH nor MED. `latency_ms` routes to W1, never the categorical FieldShift channel (router
 # exclusivity, `F-SRC-insight-metalog:metalog.api.cppm:OrdinalHistogram`).
 #
-# GENERATABLE ONLY SINCE LF4 SHIPPED (emission contract §4). The earlier attempt at this migration
-# is what produced LF4: `format: json` nested custom fields under a `"fields"` object and
+# GENERATABLE ONLY SINCE FLAW-22 SHIPPED (emission contract §4). The earlier attempt at this migration
+# is what produced FLAW-22: `format: json` nested custom fields under a `"fields"` object and
 # string-quoted every value, and the W1 channel reads only a FLAT, natively-typed number. Measured
 # then by varying one cloud four ways — flat+number fired HIGH, while flat+string, nested+number and
 # nested+string each yielded ZERO rows. JSON now emits flat and natively typed, with the type DERIVED

@@ -11,11 +11,11 @@
 # BOTH PARAMS GENUINELY MOVE, which is the point: the gate must separate them on WHAT THEY ARE, not
 # on whether anything changed. A gate that keyed on movement would fire on both.
 #
-# ON LF4, AND A CORRECTION. This fixture was listed as LF4-blocked (JSON fields nested and
+# ON FLAW-22, AND A CORRECTION. This fixture was listed as FLAW-22-blocked (JSON fields nested and
 # string-quoted). That was WRONG, and re-measuring it is what showed why: 22's values live in the
 # MESSAGE (`db query latency 100 ms`), not in JSON fields, so the field-emission shape never reached
 # it. What actually blocked the migration was nothing — it was never tried. The generators below are
-# `emit: false` (LF5) precisely so they stay template inputs and no `k=v` tail appears, which is what
+# `emit: false` (FLAW-23) precisely so they stay template inputs and no `k=v` tail appears, which is what
 # keeps the vehicle identical to the retired pair's.
 #
 # ITS RELATION TO FIXTURE 36, and why both must exist. Both carry a bare-integer measurement param.
@@ -71,7 +71,7 @@ deterministic_scenario:
               generator: weighted_choice
               values: ["1", "2", "3"]
               weights: [60, 6, 4]
-              emit: false                # a TEMPLATE INPUT (LF5) — no `k=v` tail, as the retired pair
+              emit: false                # a TEMPLATE INPUT (FLAW-23) — no `k=v` tail, as the retired pair
 
         # THE MEASUREMENT — a wide band, so cardinality clears the 4A.2 gate and the ratio test is
         # asked. `100 ms` is space-separated, so the token is a BARE INTEGER: the suppression here is
