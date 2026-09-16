@@ -36,7 +36,7 @@
 # contract addresses coordinates of ONE declared world, and an arm that changes the world's SCALE is
 # a different world, not a coordinate.
 #
-# NOT HERE: the F3b reword phantom (`Image pulled` → `Image fetched`). The retired pair carried it,
+# NOT HERE: the FLAW-15 reword phantom (`Image pulled` → `Image fetched`). The retired pair carried it,
 # the contract never asserted it, and it is homed as a unit test (tests/unit/reword_phantom_pair_test).
 # Carrying it here would force its two phantom rows onto the allowlist and blunt the exact claim this
 # migration buys. `registry` stays as a plain stable filler so the volume arithmetic is unchanged.
