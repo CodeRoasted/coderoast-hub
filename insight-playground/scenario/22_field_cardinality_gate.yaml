@@ -6,7 +6,7 @@
 #     0.04). Its distribution really moves (60/6/4 -> 30/12/28), so a FieldShift MUST fire.
 #   • PRECISION — `db query latency N ms` is a measurement, not a category (~50 distinct values over
 #     70 records, ratio ~0.7+). Its values also really move, and a FieldShift must NOT fire. This is
-#     the F2 precision bug the 4A.2 gate closed.
+#     the FLAW-2 precision bug the 4A.2 gate closed.
 #
 # BOTH PARAMS GENUINELY MOVE, which is the point: the gate must separate them on WHAT THEY ARE, not
 # on whether anything changed. A gate that keyed on movement would fire on both.
@@ -22,7 +22,7 @@
 # Here the latency slot runs card ~50 >= the 4A.2 `max_card` gate, so the uniqueness-ratio test is
 # ASKED and correctly answers "not a categorical" -> suppressed. In 36 the per-endpoint latency slots
 # run card 12-14, UNDER that gate, so the ratio test is never asked and the same kind of value floods
-# (flaws.md F14). The two fixtures sit on opposite sides of one threshold; keeping them apart is what
+# (flaws.md FLAW-14). The two fixtures sit on opposite sides of one threshold; keeping them apart is what
 # makes the threshold visible.
 
 deterministic_scenario:
@@ -75,7 +75,7 @@ deterministic_scenario:
 
         # THE MEASUREMENT — a wide band, so cardinality clears the 4A.2 gate and the ratio test is
         # asked. `100 ms` is space-separated, so the token is a BARE INTEGER: the suppression here is
-        # 4A.2 cardinality, NOT the `LSRC-15` lexical unit-suffix rule (flaws.md F14).
+        # 4A.2 cardinality, NOT the `LSRC-15` lexical unit-suffix rule (flaws.md FLAW-14).
         - name: db
           rate_per_second: 3.45          # -> 70 records
           message_template: "db query latency {latency} ms"

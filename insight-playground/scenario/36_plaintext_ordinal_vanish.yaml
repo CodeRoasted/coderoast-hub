@@ -5,7 +5,7 @@
 #   • THE RE-RUN BOUNDARY (precision) — do(nothing changed; the job simply ran again): every route's
 #     latency stream is re-based onto a fresh seed, so the draws are uncorrelated but the generator,
 #     the band and the per-endpoint n are identical. Nothing may vanish, nothing may read as a new
-#     error, and nothing may reach Medium or High. This is the F14 surface, PINNED.
+#     error, and nothing may reach Medium or High. This is the FLAW-14 surface, PINNED.
 #   • THE VANISH (recall) — `order completed total=<*>` stops. VanishedTemplate / High, and it must
 #     TOP-RANK the report.
 #   • THE DOLLAR VANISH — the same claim on a currency-prefixed ordinal (`total=$<*>`), which masks
@@ -31,13 +31,13 @@
 # The authored pair's single row is therefore a property of its particular hand-typed multisets, not
 # a guarantee the engine offers. Two independent samples of ~14 from a 77-value uniform genuinely do
 # differ by that much; what is missing is a null model for sampling noise at small n, which is
-# precisely F14's "uncalibrated significance" — now with a DECLARED intervention behind it, so the
+# precisely FLAW-14's "uncalibrated significance" — now with a DECLARED intervention behind it, so the
 # ground truth ("nothing moved distributionally") is known rather than assumed.
 #
 # So this fixture does NOT assert "a re-run emits nothing". It asserts what is true and what actually
 # protects a user: a re-run never vanishes anything, never reads as a new error, and never reaches
 # the page band. That is a stronger contract than the retired pair's, because the retired pair's
-# stronger-looking claim held only for its own bytes. When F14's significance is recalibrated, the
+# stronger-looking claim held only for its own bytes. When FLAW-14's significance is recalibrated, the
 # re-run arm tightens to zero rows and this comment is the record of why it was ever wider.
 #
 # ── THE RE-RUN ARM'S STATED LIMIT — it is NOT a latency-regression gate (measured) ───────────────
@@ -47,9 +47,9 @@
 # JS divergence is already saturated by sampling sparsity — 14 draws from 77 values barely overlap
 # whatever you do — so a genuine regression cannot push it higher than noise already does.
 #
-# This is the same uncalibrated statistic F14 names (③: raw JS, no null normalization by support
+# This is the same uncalibrated statistic FLAW-14 names (③: raw JS, no null normalization by support
 # size or sample count), showing its RECALL face rather than its precision one, and it is the more
-# serious of the two: F14's ruling ⑤ fenced the suppression arm precisely to avoid converting a
+# serious of the two: FLAW-14's ruling ⑤ fenced the suppression arm precisely to avoid converting a
 # false-positive flood into "a silent false negative on the wedge's headline signal class". The
 # measurement above says that false negative is ALREADY PRESENT in the un-suppressed detector. Routed
 # to Daidalos as evidence, not ruled on here. Recorded in-fixture so nobody reads this arm's green as
@@ -231,7 +231,7 @@ contract_scenario:
   transitions:
     # THE RE-RUN BOUNDARY — see the header. A pure re-run is not an incident: nothing may vanish,
     # nothing may reach the page band, and the ONLY thing allowed to rank at all is weak churn on the
-    # latency param. This arm PINS F14's blast radius instead of pretending it is absent.
+    # latency param. This arm PINS FLAW-14's blast radius instead of pretending it is absent.
     - from: orders-flowing
       to: reran
       compare: RAW.run
