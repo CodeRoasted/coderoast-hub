@@ -7,9 +7,9 @@
 #
 # THE VEHICLE IS UNIFORM SYSLOG, and that is exactly why this one is generatable where its twin is
 # not. One format for the whole stream means the head the emitter owns IS the correct head, so
-# flaws.md LF3 — the line head belongs to the format, not the author — never bites. Fixture 33 needs
+# flaws.md FLAW-21 — the line head belongs to the format, not the author — never bites. Fixture 33 needs
 # a syslog-shaped line INSIDE a GHA stream, i.e. two head shapes in one stream, and stays
-# hand-authored until LF3 is retired.
+# hand-authored until FLAW-21 is retired.
 #
 # THE EDGE IS ONE KNOB. The retired pair moved from 100 healthy records to 60 healthy + 40 errors.
 # Here that is a single structural upsert replacing the message-body generator: a `static` value

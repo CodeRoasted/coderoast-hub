@@ -22,7 +22,7 @@
 # envelope, which is the `2026-07-18T10:30:00.1234567Z ` prefix that appears on no line here.
 #
 # So there is no second head level, and nothing to model. This is the STRIPPED channel, which is
-# precisely LF3's shipped dividend: with `raw` owning zero head bytes, the head is declared payload
+# precisely FLAW-21's shipped dividend: with `raw` owning zero head bytes, the head is declared payload
 # and one stream carries as many line shapes as it declares agents. K/T4 is still owed — for the
 # TIMESTAMPED GHA form, which neither this fixture nor 33 ever used.
 #

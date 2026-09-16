@@ -8,7 +8,7 @@
 #     (`image segmentation pipeline complete`, `page fault handler registered`) must NOT read as
 #     error patterns. A lexicon that fires on either has learned the token, not the failure.
 #
-# GENERATABLE ONLY SINCE LF3's `raw` HALF SHIPPED (emission contract §2.3). The claim is about the
+# GENERATABLE ONLY SINCE FLAW-21's `raw` HALF SHIPPED (emission contract §2.3). The claim is about the
 # ABSENCE of a head: while `raw` fabricated a level word, every line arrived pre-marked and the
 # escalation under test was handed to the marker instead of the lexicon — the claim would have
 # silently relocated to another detection path. `raw` now owns zero bytes of the head, so the line
