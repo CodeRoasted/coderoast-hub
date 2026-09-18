@@ -9,9 +9,9 @@ and capability modules (`core.api-agent.cppm`, `core.api-scenario.cppm`), and
 
 A scenario is a YAML file under **exactly one world root**: `scenario:` — the real,
 wall-clock world, randomized on every run — or `deterministic_scenario:` — the virtual-clock
-world that replays bit-identically. The root **selects the engine**: a `seed:` is required
-under `deterministic_scenario:` and rejected under `scenario:`, so the root key alone tells
-you which world a file describes (see [Scenario Root Keys](#scenario-root-keys) and
+world that replays bit-identically. The root **selects the engine**: a `seed:` belongs
+under `deterministic_scenario:` (absent, the common seed `42` is used and the load says so)
+and is rejected under `scenario:`, so the root key alone tells you which world a file describes (see [Scenario Root Keys](#scenario-root-keys) and
 [Engine Modes](#engine-modes)). These scenarios are openly published (CC-BY-4.0); the
 LogCraft **engine** that runs them is part of [CodeRoast](https://coderoast.fr), where you
 run a scenario in the hosted **Lab**.
@@ -87,10 +87,11 @@ the schema accepts can still fail to load. This reference stays the authority on
 ## Scenario Root Keys
 
 A file starts with **one** world root: `scenario:` (the REAL, wall-clock world) or
-`deterministic_scenario:` (the DETERMINISTIC, virtual-clock world — a `seed:` is required). See
+`deterministic_scenario:` (the DETERMINISTIC, virtual-clock world — its `seed:` defaults to `42`). See
 [Engine Modes](#engine-modes). The **document root is a closed vocabulary** — `scenario:`,
-`deterministic_scenario:`, and an optional bundled `contract_scenario:` (read by the InSight
-contract harness, ignored by LogCraft); any other document root is a **hard reject** (a typo'd root
+`deterministic_scenario:`, and two optional bundled siblings LogCraft ignores — `contract_scenario:`
+(read by the InSight contract harness) and `insight:` (the InSight pipeline config); any other
+document root is a **hard reject** (a typo'd root
 must fail loudly, never parse as an empty scenario). *Scenario-level* unrecognized keys warn but do
 not fail parsing.
 
@@ -129,7 +130,7 @@ deterministic_scenario:
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | `name` | string | `"unnamed"` | Human-readable scenario name |
-| `seed` | uint64 | 42 (det) | The RNG root. **Required** under `deterministic_scenario:`; **rejected** under `scenario:`. See [Engine Modes](#engine-modes) |
+| `seed` | uint64 | 42 (det) | The RNG root under `deterministic_scenario:` — absent, it is `42` and the load prints a notice saying so; **rejected** under `scenario:`. See [Engine Modes](#engine-modes) |
 | `outputs` | sequence | `[{type: console, format: json}]` | Output sink definitions |
 | `pipeline` | map | absent | Sharded pipeline config |
 | `templates` | map | absent | Named reusable agent presets |
@@ -169,7 +170,7 @@ deterministic_scenario:
 | Key | Type | Description |
 |-----|------|-------------|
 | `flows` | sequence | Causal flows — instanced traces (see [Causal Flows](#causal-flows)). A world key: under `time_axis:`, or under `build_axis:` in the CI world |
-| `seed` | uint64 | The RNG root — required here, and the reason the real world has no deterministic replay |
+| `seed` | uint64 | The RNG root — `42` when absent, and the reason the real world has no deterministic replay |
 | agent `seed` / `instances_seed` | uint64 / sequence | Per-agent and per-instance RNG seed bases (see [Agent Keys](#agent-keys)) |
 
 ---
@@ -224,7 +225,7 @@ phase that **omits** the key keeps the current rate. The per-field default (agen
 | Mode | Selected by | Clock | Notes |
 |------|-------------|-------|-------|
 | **Real** | `scenario:` root (no `seed:`) | real wall-clock (structural) | Default. Randomized each run. Flat — no axis. |
-| **Deterministic** | `deterministic_scenario:` root (`seed:` required) | virtual (structural; no `clock:`/`mode:`) | Same logs every run. The clock + world nest under `time_axis`; `epoch_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
+| **Deterministic** | `deterministic_scenario:` root (`seed:`, default `42`) | virtual (structural; no `clock:`/`mode:`) | Same logs every run. The clock + world nest under `time_axis`; `epoch_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
 
 In deterministic mode the clock is **virtual by construction** (the `deterministic_scenario:` root
 types the world — there is no `clock:`/`mode:`); the loader forces `pipeline.policy: block` when the
