@@ -16,6 +16,12 @@ you which world a file describes (see [Scenario Root Keys](#scenario-root-keys) 
 LogCraft **engine** that runs them is part of [CodeRoast](https://coderoast.fr), where you
 run a scenario in the hosted **Lab**.
 
+**A machine-readable schema sits beside this file:** [`scenario.schema.json`](scenario.schema.json),
+a JSON Schema (draft 2020-12) an editor can check a scenario against as you type. It states every
+closed key set the engine's strict load enforces, the shapes it refuses and the value tokens it
+refuses — and nothing the engine decides by cross-reference, arithmetic or world policy, so a file
+the schema accepts can still fail to load. This reference stays the authority on what each key means.
+
 ---
 
 ## Table of Contents

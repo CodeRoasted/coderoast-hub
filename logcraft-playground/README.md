@@ -22,6 +22,7 @@ licensed [CC-BY-4.0](../LICENSE).
 | `scenario/01_starter/` | Starter scenarios, ordered by increasing complexity. |
 | `scenario/agents/` | Reusable agent definitions (nginx, postgres, redis, kafka, …). |
 | `scenario_reference.md` | Complete DSL reference — every key, type, and default. |
+| `scenario.schema.json` | JSON Schema of the DSL for editors and CI — every closed key set and load refusal it can state; weaker than the engine by design. |
 
 ## License
 

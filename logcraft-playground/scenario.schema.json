@@ -1,0 +1,494 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LogCraft scenario",
+  "description": "The LogCraft scenario DSL as a JSON Schema (draft 2020-12), for editors and for CodeRoast's `dsl` check. It judges the YAML the way the engine's parser (yaml-cpp) sees it: every scalar is untyped text, so a key's value is constrained only to a SCALAR, a SEQUENCE or a MAPPING where the engine refuses the other shapes, and a value token only where the engine refuses an unknown one. It carries every closed key vocabulary the engine's strict load enforces, at the positions the engine enforces it, and the value rules the engine refuses at load. It is WEAKER than the engine by construction: cross-references (an agent naming an unknown output, a duplicate name, a flow transition to an unknown state), rate and duration arithmetic, the world policies (a real-world-only knob under `deterministic_scenario:`), the intent library, and every rule inside an axis edge are the engine's alone. Every `x-logcraft-vocabulary` and `x-logcraft-tokens` annotation names the engine declaration the node mirrors; CodeRoast's CI compares each one with the engine source, and compares this schema's verdict with the engine validator's over every published scenario and a set of known-bad ones. The reference prose is scenario_reference.md beside this file.",
+  "type": "object",
+  "x-logcraft-vocabulary": "document_root",
+  "properties": {
+    "scenario": { "$ref": "#/$defs/real_root" },
+    "deterministic_scenario": { "$ref": "#/$defs/deterministic_root" },
+    "contract_scenario": true,
+    "insight": true
+  },
+  "additionalProperties": false,
+  "oneOf": [
+    { "required": ["scenario"] },
+    { "required": ["deterministic_scenario"] }
+  ],
+  "$defs": {
+    "scalar": {
+      "description": "A YAML scalar — text to the engine, whatever an editor's YAML loader types it as. A null, a sequence and a mapping are not scalars.",
+      "type": ["string", "number", "boolean"]
+    },
+    "real_root": {
+      "description": "The real, wall-clock world. Its world keys sit at the root.",
+      "x-logcraft-vocabulary": "kRealRootKeys",
+      "properties": {
+        "name": true,
+        "duration_seconds": true,
+        "timezone": true,
+        "offset_minutes": true,
+        "outputs": { "$ref": "#/$defs/outputs" },
+        "registry": true,
+        "templates": true,
+        "includes": true,
+        "pipeline": { "$ref": "#/$defs/pipeline" },
+        "agents": { "$ref": "#/$defs/agents" },
+        "environment": { "$ref": "#/$defs/environment" },
+        "noise": { "$ref": "#/$defs/noise" },
+        "users": { "$ref": "#/$defs/users" },
+        "entity_pool": true,
+        "field_variations": { "$ref": "#/$defs/field_variations" },
+        "incidents": { "$ref": "#/$defs/incidents" },
+        "personas": true,
+        "rules": true,
+        "auto_cascade": true,
+        "replay": true
+      },
+      "additionalProperties": false
+    },
+    "deterministic_root": {
+      "description": "The virtual-clock world. Its world nests in a `time_axis:` block, or in a `build_axis:`, optionally under `causal_axis:` / `knob_axis:` levels.",
+      "type": "object",
+      "x-logcraft-vocabulary": "kDeterministicRootKeys",
+      "properties": {
+        "name": true,
+        "seed": true,
+        "outputs": { "$ref": "#/$defs/outputs" },
+        "registry": true,
+        "templates": true,
+        "includes": true,
+        "pipeline": { "$ref": "#/$defs/pipeline" },
+        "time_axis": { "$ref": "#/$defs/time_world" },
+        "causal_axis": { "$ref": "#/$defs/causal_axis" },
+        "build_axis": { "$ref": "#/$defs/build_world" },
+        "knob_axis": { "$ref": "#/$defs/knob_axis" }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["time_axis"], "properties": { "time_axis": { "type": "object" } } },
+        { "required": ["build_axis"], "properties": { "build_axis": { "type": "object" } } },
+        {
+          "required": ["causal_axis"],
+          "properties": {
+            "causal_axis": {
+              "type": "object",
+              "required": ["time_axis"],
+              "properties": { "time_axis": { "type": "object" } }
+            }
+          }
+        },
+        {
+          "required": ["knob_axis"],
+          "properties": {
+            "knob_axis": {
+              "type": "object",
+              "anyOf": [
+                { "required": ["time_axis"], "properties": { "time_axis": { "type": "object" } } },
+                { "required": ["build_axis"], "properties": { "build_axis": { "type": "object" } } }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "causal_axis": {
+      "x-logcraft-vocabulary": "kCausalAxisKeys",
+      "properties": {
+        "edges": true,
+        "time_axis": { "$ref": "#/$defs/time_world" }
+      },
+      "additionalProperties": false
+    },
+    "knob_axis": {
+      "x-logcraft-vocabulary": "kKnobAxisKeys",
+      "properties": {
+        "path": true,
+        "increment": true,
+        "cardinality": true,
+        "time_axis": { "$ref": "#/$defs/time_world" },
+        "build_axis": { "$ref": "#/$defs/build_world" }
+      },
+      "additionalProperties": false
+    },
+    "time_world": {
+      "description": "The deterministic world under `time_axis:` — the clock and the world.",
+      "x-logcraft-vocabulary": "kTimeAxisKeys",
+      "properties": {
+        "duration_seconds": true,
+        "epoch_duration_ns": true,
+        "start_time_unix_ns": true,
+        "timezone": true,
+        "offset_minutes": true,
+        "environment": { "$ref": "#/$defs/environment" },
+        "noise": { "$ref": "#/$defs/noise" },
+        "users": { "$ref": "#/$defs/users" },
+        "entity_pool": true,
+        "field_variations": { "$ref": "#/$defs/field_variations" },
+        "agents": { "$ref": "#/$defs/agents" },
+        "incidents": { "$ref": "#/$defs/incidents" },
+        "personas": true,
+        "flows": { "$ref": "#/$defs/flows" }
+      },
+      "additionalProperties": false
+    },
+    "build_world": {
+      "description": "The CI world under `build_axis:` — a build history whose agents are the job's steps.",
+      "x-logcraft-vocabulary": "kBuildAxisKeys",
+      "properties": {
+        "edges": true,
+        "dialect": true,
+        "outcome": true,
+        "duration_seconds": true,
+        "start_time_unix_ns": true,
+        "timezone": true,
+        "offset_minutes": true,
+        "environment": { "$ref": "#/$defs/environment" },
+        "noise": { "$ref": "#/$defs/noise" },
+        "users": { "$ref": "#/$defs/users" },
+        "entity_pool": true,
+        "field_variations": { "$ref": "#/$defs/field_variations" },
+        "agents": { "$ref": "#/$defs/agents" },
+        "personas": true,
+        "flows": { "$ref": "#/$defs/flows" }
+      },
+      "additionalProperties": false
+    },
+    "outputs": { "items": { "$ref": "#/$defs/output" } },
+    "output": {
+      "x-logcraft-vocabulary": "kOutputKeys",
+      "properties": {
+        "name": true,
+        "type": true,
+        "format": true,
+        "recording_format": true,
+        "formats": { "type": "array", "items": { "$ref": "#/$defs/scalar" } },
+        "transport": true,
+        "project_fields": { "type": "array", "items": { "$ref": "#/$defs/scalar" } },
+        "file_path": true,
+        "max_size_bytes": true,
+        "max_files": true,
+        "host": true,
+        "port": true,
+        "url": true,
+        "metrics_prefix": true,
+        "metrics_interval_seconds": true,
+        "http_batch_size": true,
+        "http_flush_interval_ms": true,
+        "http_content_type": true,
+        "headers": true,
+        "channel": true,
+        "intent_channel": true,
+        "shm_slot_count": true,
+        "shm_window_seal_interval_seconds": true,
+        "shm_backpressure_policy": true
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "description": "A recording output takes `recording_format:`, never `format:`.",
+          "if": { "required": ["type"], "properties": { "type": { "const": "recording" } } },
+          "then": { "not": { "required": ["format"] } }
+        },
+        {
+          "description": "A path-bearing sink names its path.",
+          "if": {
+            "required": ["type"],
+            "properties": { "type": { "enum": ["file", "recording", "prometheus"] } }
+          },
+          "then": {
+            "required": ["file_path"],
+            "properties": { "file_path": { "$ref": "#/$defs/scalar", "minLength": 1 } }
+          }
+        }
+      ]
+    },
+    "pipeline": {
+      "x-logcraft-vocabulary": "kPipelineKeys",
+      "properties": {
+        "num_shards": true,
+        "ring_capacity": true,
+        "low_watermark": true,
+        "high_watermark": true,
+        "min_batch": true,
+        "max_batch": true,
+        "policy": true
+      },
+      "additionalProperties": false
+    },
+    "environment": {
+      "x-logcraft-vocabulary": "kEnvironmentKeys",
+      "properties": { "region": true, "cluster": true, "version": true },
+      "additionalProperties": false
+    },
+    "noise": {
+      "description": "Both the world's `noise:` and an agent's.",
+      "x-logcraft-vocabulary": "kNoiseKeys",
+      "properties": {
+        "log_duplication_rate": true,
+        "missing_fields_rate": true,
+        "random_delay_ms": true
+      },
+      "additionalProperties": false
+    },
+    "users": {
+      "x-logcraft-vocabulary": "kUsersKeys",
+      "properties": {
+        "count": true,
+        "sessions": { "$ref": "#/$defs/sessions" }
+      },
+      "additionalProperties": false
+    },
+    "sessions": {
+      "x-logcraft-vocabulary": "kSessionKeys",
+      "properties": { "duration_seconds": true, "requests_per_session": true },
+      "additionalProperties": false
+    },
+    "field_variations": { "items": { "$ref": "#/$defs/field_variation" } },
+    "field_variation": {
+      "x-logcraft-vocabulary": "kFieldVariationKeys",
+      "properties": { "field": true, "jitter_percent": true },
+      "additionalProperties": false
+    },
+    "incidents": { "items": { "$ref": "#/$defs/incident" } },
+    "incident": {
+      "x-logcraft-vocabulary": "kIncidentKeys",
+      "properties": {
+        "name": true,
+        "trigger": true,
+        "trigger_probability": true,
+        "duration_seconds": true,
+        "effects": true
+      },
+      "additionalProperties": false
+    },
+    "agents": { "items": { "$ref": "#/$defs/agent" } },
+    "agent": {
+      "x-logcraft-vocabulary": "kAgentKeys",
+      "required": ["name"],
+      "properties": {
+        "name": { "$ref": "#/$defs/scalar" },
+        "intent": { "$ref": "#/$defs/intent" },
+        "use_intent": true,
+        "payload": true,
+        "field_distributions": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/field_binding" }
+        },
+        "after": true,
+        "rate_per_second": true,
+        "log_level": { "$ref": "#/$defs/log_level" },
+        "level_weights": true,
+        "error_rate": true,
+        "message_template": true,
+        "use_template": true,
+        "instances": true,
+        "seed": true,
+        "instances_seed": true,
+        "start_delay_seconds": true,
+        "fields": { "items": { "$ref": "#/$defs/field" } },
+        "phases": { "items": { "$ref": "#/$defs/phase" } },
+        "latency_ms": true,
+        "state": true,
+        "effects": true,
+        "failures": true,
+        "dependencies": true,
+        "contention": true,
+        "slow_queries": true,
+        "availability": true,
+        "noise": { "$ref": "#/$defs/noise" },
+        "health_state": true,
+        "rate_modulation": true,
+        "outputs": { "type": "array", "items": { "$ref": "#/$defs/scalar" } }
+      },
+      "additionalProperties": false,
+      "dependentRequired": { "field_distributions": ["use_intent"] }
+    },
+    "intent": {
+      "description": "The scalar form names a generic-world intent; the mapping form is a structural quantum whose `kind:` is `job` or `step`, any case.",
+      "anyOf": [
+        { "$ref": "#/$defs/scalar" },
+        { "$ref": "#/$defs/intent_quantum" }
+      ]
+    },
+    "intent_quantum": {
+      "type": "object",
+      "x-logcraft-vocabulary": "kIntentKeys",
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "x-logcraft-tokens": "intent_kind",
+          "pattern": "^(?:[Jj][Oo][Bb]|[Ss][Tt][Ee][Pp])$"
+        },
+        "payload": true
+      },
+      "additionalProperties": false
+    },
+    "log_level": {
+      "description": "A level token. An empty value falls back to `info`.",
+      "if": { "$ref": "#/$defs/scalar" },
+      "then": {
+        "x-logcraft-tokens": "log_level_or_empty",
+        "enum": ["", "debug", "error", "fatal", "info", "trace", "warn"]
+      }
+    },
+    "phase": {
+      "x-logcraft-vocabulary": "kPhaseKeys",
+      "required": ["name"],
+      "properties": {
+        "name": { "$ref": "#/$defs/scalar" },
+        "duration_seconds": true,
+        "rate_per_second": true,
+        "error_rate": true,
+        "latency_ms": true,
+        "field_weight_ramps": true,
+        "level_weight_ramp": true
+      },
+      "additionalProperties": false
+    },
+    "field": {
+      "description": "An agent's `fields:` entry: the field grammar plus the closed field vocabulary.",
+      "allOf": [
+        { "$ref": "#/$defs/field_declaration" },
+        { "$ref": "#/$defs/field_keys" }
+      ]
+    },
+    "field_binding": {
+      "description": "A `field_distributions:` binding; one that names a `generator:` is a generator spec and takes the closed field vocabulary.",
+      "if": { "type": "object", "required": ["generator"] },
+      "then": { "$ref": "#/$defs/field_keys" }
+    },
+    "field_keys": {
+      "x-logcraft-vocabulary": "kFieldKeys",
+      "properties": {
+        "name": true,
+        "generator": true,
+        "values": true,
+        "weights": true,
+        "min": true,
+        "max": true,
+        "integer": true,
+        "prefix": true,
+        "start_value": true,
+        "value": true,
+        "strftime": true,
+        "mean": true,
+        "stddev": true,
+        "p50": true,
+        "p95": true,
+        "p99": true,
+        "condition_field": true,
+        "branches": true,
+        "default": true,
+        "level_overrides": true,
+        "emit": true
+      },
+      "additionalProperties": false
+    },
+    "field_declaration": {
+      "description": "Every field declaration the engine parses — an agent's, and a flow state's. A field is named, never after an envelope key, and generated.",
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/scalar",
+          "not": {
+            "x-logcraft-tokens": "reserved_field_name",
+            "enum": ["agent", "level", "message", "timestamp", "type"]
+          }
+        },
+        "level_overrides": {
+          "additionalProperties": {
+            "if": { "$ref": "#/$defs/scalar" },
+            "then": {
+              "x-logcraft-tokens": "log_level",
+              "enum": ["debug", "error", "fatal", "info", "trace", "warn"]
+            }
+          }
+        }
+      },
+      "$ref": "#/$defs/generator"
+    },
+    "generator": {
+      "description": "A generator spec. `conditional` names its condition field and generates each branch, and its default, with a generator spec of its own.",
+      "required": ["generator"],
+      "properties": {
+        "generator": {
+          "x-logcraft-tokens": "generator",
+          "enum": [
+            "choice",
+            "conditional",
+            "normal",
+            "percentile",
+            "range",
+            "sequence",
+            "static",
+            "timestamp",
+            "weighted_choice"
+          ]
+        }
+      },
+      "if": { "required": ["generator"], "properties": { "generator": { "const": "conditional" } } },
+      "then": {
+        "required": ["condition_field"],
+        "properties": {
+          "condition_field": { "$ref": "#/$defs/scalar" },
+          "branches": {
+            "type": "object",
+            "additionalProperties": {
+              "if": { "type": "object" },
+              "then": { "$ref": "#/$defs/generator" }
+            }
+          },
+          "default": { "type": "object", "$ref": "#/$defs/generator" }
+        }
+      }
+    },
+    "flows": { "items": { "$ref": "#/$defs/flow" } },
+    "flow": {
+      "x-logcraft-vocabulary": "kFlowKeys",
+      "required": ["name", "start_state"],
+      "properties": {
+        "name": { "$ref": "#/$defs/scalar" },
+        "instance_rate_per_second": true,
+        "start_delay_seconds": true,
+        "max_concurrent": true,
+        "max_steps": true,
+        "start_state": { "$ref": "#/$defs/scalar" },
+        "correlation_field": true,
+        "states": { "additionalProperties": { "$ref": "#/$defs/flow_state" } },
+        "transitions": { "items": { "$ref": "#/$defs/flow_transition" } },
+        "branch_weight_ramps": true,
+        "field_weight_ramps": true
+      },
+      "additionalProperties": false
+    },
+    "flow_state": {
+      "x-logcraft-vocabulary": "kFlowStateKeys",
+      "required": ["agent"],
+      "properties": {
+        "agent": { "$ref": "#/$defs/scalar" },
+        "message_template": true,
+        "log_level": { "$ref": "#/$defs/log_level" },
+        "error_rate": true,
+        "fields": { "items": { "$ref": "#/$defs/field_declaration" } },
+        "span_duration_ms": true,
+        "fan_out": true,
+        "links_to": true
+      },
+      "additionalProperties": false
+    },
+    "flow_transition": {
+      "x-logcraft-vocabulary": "kFlowTransitionKeys",
+      "required": ["from", "to"],
+      "properties": {
+        "from": { "$ref": "#/$defs/scalar" },
+        "to": { "$ref": "#/$defs/scalar" },
+        "weight": true,
+        "network_latency_ms": true,
+        "network_jitter_ms": true
+      },
+      "additionalProperties": false
+    }
+  }
+}
