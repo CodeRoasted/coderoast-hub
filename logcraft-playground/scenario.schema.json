@@ -136,6 +136,7 @@
     "time_world": {
       "description": "The deterministic world under `time_axis:` — the clock and the world.",
       "x-logcraft-vocabulary": "kTimeAxisKeys",
+      "required": ["duration_seconds"],
       "properties": {
         "duration_seconds": true,
         "epoch_duration_ns": true,
@@ -157,6 +158,7 @@
     "build_world": {
       "description": "The CI world under `build_axis:` — a build history whose agents are the job's steps.",
       "x-logcraft-vocabulary": "kBuildAxisKeys",
+      "required": ["duration_seconds"],
       "properties": {
         "edges": true,
         "dialect": true,

@@ -144,9 +144,9 @@ deterministic_scenario:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `duration_seconds` | string/number | `0` | Auto-stop duration (`0` = run forever). Duration string (`"5m"`) or seconds. See [Duration Format](#duration-format) |
-| `epoch_duration_ns` | int/duration | `1s` | *(deterministic)* the epoch grid. Int ns or `1s`/`250ms`/`1us` |
-| `start_time_unix_ns` | int | `0` | *(deterministic)* the virtual-clock start |
+| `duration_seconds` | string/number | required (deterministic); `0` (real) | Deterministic world: the run horizon, required, > 0 and at most 315 576 000 s (10 years). Every record lies in `[0, duration]`, and a play-to-target past it is refused. Real world: an auto-stop duration, `0` = run until stopped. Duration string (`"5m"`) or seconds. See [Duration Format](#duration-format) |
+| `epoch_duration_ns` | int/duration | `1s` | *(deterministic)* the epoch grid. Int ns or `1s`/`250ms`/`1us`; > 0, at most the maximum horizon (315 576 000 s); a value whose unit product overflows is refused |
+| `start_time_unix_ns` | int | `0` | *(deterministic)* the virtual-clock start: `0` = seed-derived, otherwise 1 to 8 592 220 036 854 775 807 ns |
 | `timezone` / `offset_minutes` | string/int | `UTC` / `0` | Calendar context; `local` is real-only |
 | `agents` | sequence | required | One or more agent definitions |
 | `environment` | map | absent | Global metadata (region, cluster, version) |
@@ -580,6 +580,7 @@ deterministic_scenario:
 
   build_axis:
     dialect: github
+    duration_seconds: 60           # the run horizon — required in a deterministic world
     agents:
       - name: job
         intent: {kind: job, payload: "build (ubuntu-latest)"}
@@ -2239,9 +2240,9 @@ real world is always wall-clock). The `time_axis` clock keys:
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `duration_seconds` | string/number | `0` | The run horizon (`0` = run forever) |
-| `start_time_unix_ns` | int64 | `0` | Unix epoch nanoseconds start; `0` = seed-derived |
-| `epoch_duration_ns` | int/duration | `1s` | The epoch grid → `TimelineConfig::epoch_duration_ns` (the materialization/parallelism grain + window-seal cadence). Int ns or a duration (`1s`/`250ms`/`1us`); sub-second is supported (a de-risked pure materialization grain) |
+| `duration_seconds` | string/number | required | The run horizon: > 0, at most 315 576 000 s (10 years). A play-to-target past it is refused |
+| `start_time_unix_ns` | int64 | `0` | Unix epoch nanoseconds start; `0` = seed-derived, otherwise 1 to 8 592 220 036 854 775 807 ns |
+| `epoch_duration_ns` | int/duration | `1s` | The epoch grid → `TimelineConfig::epoch_duration_ns` (the materialization/parallelism grain + window-seal cadence). Int ns or a duration (`1s`/`250ms`/`1us`); sub-second is supported (a de-risked pure materialization grain); > 0, at most the maximum horizon (315 576 000 s); a value whose unit product overflows is refused |
 
 The whole world (agents, incidents, flows, environment, noise, personas, users, entity_pool,
 field_variations, timezone) nests under `time_axis` alongside these clock keys — see
