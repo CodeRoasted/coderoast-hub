@@ -272,7 +272,6 @@
         "use_intent": true,
         "payload": true,
         "field_distributions": {
-          "type": "object",
           "additionalProperties": { "$ref": "#/$defs/field_binding" }
         },
         "after": true,
@@ -306,20 +305,18 @@
     },
     "intent": {
       "description": "The scalar form names a generic-world intent; the mapping form is a structural quantum whose `kind:` is `job` or `step`, any case.",
-      "anyOf": [
-        { "$ref": "#/$defs/scalar" },
-        { "$ref": "#/$defs/intent_quantum" }
-      ]
+      "if": { "type": "object" },
+      "then": { "$ref": "#/$defs/intent_quantum" },
+      "else": { "$ref": "#/$defs/scalar" }
     },
     "intent_quantum": {
-      "type": "object",
       "x-logcraft-vocabulary": "kIntentKeys",
       "required": ["kind"],
       "properties": {
         "kind": {
-          "type": "string",
+          "$ref": "#/$defs/scalar",
           "x-logcraft-tokens": "intent_kind",
-          "pattern": "^(?:[Jj][Oo][Bb]|[Ss][Tt][Ee][Pp])$"
+          "pattern": "^(?:[Jj][Oo][Bb]|[Ss][Tt][Ee][Pp])(?![\\s\\S])"
         },
         "payload": true
       },
