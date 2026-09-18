@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "LogCraft scenario",
-  "description": "The LogCraft scenario DSL as a JSON Schema (draft 2020-12), for editors and for CodeRoast's `dsl` check. It judges the YAML the way the engine's parser (yaml-cpp) sees it: every scalar is untyped text, so a key's value is constrained only to a SCALAR, a SEQUENCE or a MAPPING where the engine refuses the other shapes, and a value token only where the engine refuses an unknown one. It carries every closed key vocabulary the engine's strict load enforces, at the positions the engine enforces it, and the value rules the engine refuses at load. It is WEAKER than the engine by construction: cross-references (an agent naming an unknown output, a duplicate name, a flow transition to an unknown state), rate and duration arithmetic, the world policies (a real-world-only knob under `deterministic_scenario:`), the intent library, and every rule inside an axis edge are the engine's alone. Every `x-logcraft-vocabulary` and `x-logcraft-tokens` annotation names the engine declaration the node mirrors; CodeRoast's CI compares each one with the engine source, and compares this schema's verdict with the engine validator's over every published scenario and a set of known-bad ones. The reference prose is scenario_reference.md beside this file.",
+  "description": "The LogCraft scenario DSL as a JSON Schema (draft 2020-12), for editors and for CodeRoast's `dsl` check. It judges the YAML the way the engine's parser (yaml-cpp) sees it: every scalar is untyped text, so a key's value is constrained only to a SCALAR, a SEQUENCE or a MAPPING where the engine refuses the other shapes, and a value token only where the engine refuses an unknown one. It carries every closed key vocabulary the engine's strict load enforces, at the positions the engine enforces it, and the value rules the engine refuses at load. It is WEAKER than the engine by construction: cross-references (an agent naming an unknown output, a duplicate name, a flow transition to an unknown state), rate and duration arithmetic, the world policies (a real-world-only knob under `deterministic_scenario:`), the intent library, and every rule inside an axis edge are the engine's alone. THIS FILE IS GENERATED — never edit it by hand: every closed key set and every token set is read from the engine's declarations, and every other rule restates a refusal the engine makes and is checked against it (CodeRoast, scripts/scenario_schema.py). Every `x-logcraft-vocabulary` and `x-logcraft-tokens` annotation names the engine declaration the node carries; CodeRoast's CI compares this schema's verdict with the engine validator's over every published scenario and a set of known-bad ones. The reference prose is scenario_reference.md beside this file.",
   "type": "object",
   "x-logcraft-vocabulary": "document_root",
   "properties": {
@@ -66,15 +66,27 @@
       },
       "additionalProperties": false,
       "anyOf": [
-        { "required": ["time_axis"], "properties": { "time_axis": { "type": "object" } } },
-        { "required": ["build_axis"], "properties": { "build_axis": { "type": "object" } } },
+        {
+          "required": ["time_axis"],
+          "properties": {
+            "time_axis": { "type": "object" }
+          }
+        },
+        {
+          "required": ["build_axis"],
+          "properties": {
+            "build_axis": { "type": "object" }
+          }
+        },
         {
           "required": ["causal_axis"],
           "properties": {
             "causal_axis": {
               "type": "object",
               "required": ["time_axis"],
-              "properties": { "time_axis": { "type": "object" } }
+              "properties": {
+                "time_axis": { "type": "object" }
+              }
             }
           }
         },
@@ -84,8 +96,18 @@
             "knob_axis": {
               "type": "object",
               "anyOf": [
-                { "required": ["time_axis"], "properties": { "time_axis": { "type": "object" } } },
-                { "required": ["build_axis"], "properties": { "build_axis": { "type": "object" } } }
+                {
+                  "required": ["time_axis"],
+                  "properties": {
+                    "time_axis": { "type": "object" }
+                  }
+                },
+                {
+                  "required": ["build_axis"],
+                  "properties": {
+                    "build_axis": { "type": "object" }
+                  }
+                }
               ]
             }
           }
@@ -154,7 +176,9 @@
       },
       "additionalProperties": false
     },
-    "outputs": { "items": { "$ref": "#/$defs/output" } },
+    "outputs": {
+      "items": { "$ref": "#/$defs/output" }
+    },
     "output": {
       "x-logcraft-vocabulary": "kOutputKeys",
       "properties": {
@@ -162,9 +186,15 @@
         "type": true,
         "format": true,
         "recording_format": true,
-        "formats": { "type": "array", "items": { "$ref": "#/$defs/scalar" } },
+        "formats": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scalar" }
+        },
         "transport": true,
-        "project_fields": { "type": "array", "items": { "$ref": "#/$defs/scalar" } },
+        "project_fields": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scalar" }
+        },
         "file_path": true,
         "max_size_bytes": true,
         "max_files": true,
@@ -187,18 +217,29 @@
       "allOf": [
         {
           "description": "A recording output takes `recording_format:`, never `format:`.",
-          "if": { "required": ["type"], "properties": { "type": { "const": "recording" } } },
-          "then": { "not": { "required": ["format"] } }
+          "if": {
+            "required": ["type"],
+            "properties": {
+              "type": { "const": "recording" }
+            }
+          },
+          "then": {
+            "not": { "required": ["format"] }
+          }
         },
         {
           "description": "A path-bearing sink names its path.",
           "if": {
             "required": ["type"],
-            "properties": { "type": { "enum": ["file", "recording", "prometheus"] } }
+            "properties": {
+              "type": { "enum": ["file", "recording", "prometheus"] }
+            }
           },
           "then": {
             "required": ["file_path"],
-            "properties": { "file_path": { "$ref": "#/$defs/scalar", "minLength": 1 } }
+            "properties": {
+              "file_path": { "$ref": "#/$defs/scalar", "minLength": 1 }
+            }
           }
         }
       ]
@@ -224,11 +265,7 @@
     "noise": {
       "description": "Both the world's `noise:` and an agent's.",
       "x-logcraft-vocabulary": "kNoiseKeys",
-      "properties": {
-        "log_duplication_rate": true,
-        "missing_fields_rate": true,
-        "random_delay_ms": true
-      },
+      "properties": { "log_duplication_rate": true, "missing_fields_rate": true, "random_delay_ms": true },
       "additionalProperties": false
     },
     "users": {
@@ -244,13 +281,17 @@
       "properties": { "duration_seconds": true, "requests_per_session": true },
       "additionalProperties": false
     },
-    "field_variations": { "items": { "$ref": "#/$defs/field_variation" } },
+    "field_variations": {
+      "items": { "$ref": "#/$defs/field_variation" }
+    },
     "field_variation": {
       "x-logcraft-vocabulary": "kFieldVariationKeys",
       "properties": { "field": true, "jitter_percent": true },
       "additionalProperties": false
     },
-    "incidents": { "items": { "$ref": "#/$defs/incident" } },
+    "incidents": {
+      "items": { "$ref": "#/$defs/incident" }
+    },
     "incident": {
       "x-logcraft-vocabulary": "kIncidentKeys",
       "properties": {
@@ -262,7 +303,9 @@
       },
       "additionalProperties": false
     },
-    "agents": { "items": { "$ref": "#/$defs/agent" } },
+    "agents": {
+      "items": { "$ref": "#/$defs/agent" }
+    },
     "agent": {
       "x-logcraft-vocabulary": "kAgentKeys",
       "required": ["name"],
@@ -285,8 +328,12 @@
         "seed": true,
         "instances_seed": true,
         "start_delay_seconds": true,
-        "fields": { "items": { "$ref": "#/$defs/field" } },
-        "phases": { "items": { "$ref": "#/$defs/phase" } },
+        "fields": {
+          "items": { "$ref": "#/$defs/field" }
+        },
+        "phases": {
+          "items": { "$ref": "#/$defs/phase" }
+        },
         "latency_ms": true,
         "state": true,
         "effects": true,
@@ -298,7 +345,10 @@
         "noise": { "$ref": "#/$defs/noise" },
         "health_state": true,
         "rate_modulation": true,
-        "outputs": { "type": "array", "items": { "$ref": "#/$defs/scalar" } }
+        "outputs": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/scalar" }
+        }
       },
       "additionalProperties": false,
       "dependentRequired": { "field_distributions": ["use_intent"] }
@@ -412,20 +462,15 @@
       "properties": {
         "generator": {
           "x-logcraft-tokens": "generator",
-          "enum": [
-            "choice",
-            "conditional",
-            "normal",
-            "percentile",
-            "range",
-            "sequence",
-            "static",
-            "timestamp",
-            "weighted_choice"
-          ]
+          "enum": ["choice", "conditional", "normal", "percentile", "range", "sequence", "static", "timestamp", "weighted_choice"]
         }
       },
-      "if": { "required": ["generator"], "properties": { "generator": { "const": "conditional" } } },
+      "if": {
+        "required": ["generator"],
+        "properties": {
+          "generator": { "const": "conditional" }
+        }
+      },
       "then": {
         "required": ["condition_field"],
         "properties": {
@@ -441,7 +486,9 @@
         }
       }
     },
-    "flows": { "items": { "$ref": "#/$defs/flow" } },
+    "flows": {
+      "items": { "$ref": "#/$defs/flow" }
+    },
     "flow": {
       "x-logcraft-vocabulary": "kFlowKeys",
       "required": ["name", "start_state"],
@@ -453,8 +500,12 @@
         "max_steps": true,
         "start_state": { "$ref": "#/$defs/scalar" },
         "correlation_field": true,
-        "states": { "additionalProperties": { "$ref": "#/$defs/flow_state" } },
-        "transitions": { "items": { "$ref": "#/$defs/flow_transition" } },
+        "states": {
+          "additionalProperties": { "$ref": "#/$defs/flow_state" }
+        },
+        "transitions": {
+          "items": { "$ref": "#/$defs/flow_transition" }
+        },
         "branch_weight_ramps": true,
         "field_weight_ramps": true
       },
@@ -468,7 +519,9 @@
         "message_template": true,
         "log_level": { "$ref": "#/$defs/log_level" },
         "error_rate": true,
-        "fields": { "items": { "$ref": "#/$defs/field_declaration" } },
+        "fields": {
+          "items": { "$ref": "#/$defs/field_declaration" }
+        },
         "span_duration_ms": true,
         "fan_out": true,
         "links_to": true
