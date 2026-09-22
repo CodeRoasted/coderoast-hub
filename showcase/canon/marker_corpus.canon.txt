@@ -1,5 +1,5 @@
 # canon public determinism proof -- v4
-# semantic_identity bf776af11aea469d5fb96c0438e495d4
+# semantic_identity 0f6081db9021a48c68c44cd103ee8e6e
 # semantic_packages github@1.4.0 gitlab@1.0.0 jenkins@1.1.0 test_frameworks@1.0.0
 ## file acme__widget__PR-7__build11.log declared=-
 ### templates (14)
@@ -634,7 +634,7 @@ Unknown	---	None	[EnvInject] - Loading node environment variables.
 Unknown	---	None	Checking out Revision <*> (refs/remotes/origin/master)
 Unknown	---	None	+ go build ./...
 Unknown	---	None	service/handler.go:<*>:<*>: undefined: parseToken
-Unknown	---	None	Build step 'Execute shell' marked build as failure
+Fatal	---	None	Build step 'Execute shell' marked build as failure
 Fatal	F--	None	Finished: FAILURE
 ### det_math total=8 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
@@ -655,7 +655,7 @@ Unknown	---	None	[EnvInject] - Loading node environment variables.
 Unknown	---	None	Checking out Revision <*> (refs/remotes/origin/master)
 Unknown	---	None	+ go build ./...
 Unknown	---	None	service/handler.go:<*>:<*>: undefined: parseToken
-Unknown	---	None	Build step 'Execute shell' marked build as failure
+Fatal	---	None	Build step 'Execute shell' marked build as failure
 Fatal	F--	None	Finished: FAILURE
 ### det_math total=8 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
@@ -676,7 +676,7 @@ Unknown	---	None	[EnvInject] - Loading node environment variables.
 Unknown	---	None	Checking out Revision <*> (refs/remotes/origin/master)
 Unknown	---	None	+ go build ./...
 Unknown	---	None	service/handler.go:<*>:<*>: undefined: parseToken
-Unknown	---	None	Build step 'Execute shell' marked build as failure
+Fatal	---	None	Build step 'Execute shell' marked build as failure
 Fatal	F--	None	Finished: FAILURE
 ### det_math total=8 sum_c_log2c_qk=0
 ### run_outcome marker=0 token=- resolved=UNKNOWN
@@ -697,7 +697,7 @@ Unknown	---	None	[EnvInject] - Loading node environment variables.
 Unknown	---	None	Checking out Revision <*> (refs/remotes/origin/master)
 Unknown	---	None	+ go build ./...
 Unknown	---	None	service/handler.go:<*>:<*>: undefined: parseToken
-Unknown	---	None	Build step 'Execute shell' marked build as failure
+Fatal	---	None	Build step 'Execute shell' marked build as failure
 Fatal	F--	None	Finished: FAILURE
 ### det_math total=8 sum_c_log2c_qk=0
 ### run_outcome marker=1 token=FAILURE resolved=FAILURE
