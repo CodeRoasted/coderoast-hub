@@ -1,5 +1,5 @@
 # canon public determinism proof -- v4
-# semantic_identity bf776af11aea469d5fb96c0438e495d4
+# semantic_identity 0f6081db9021a48c68c44cd103ee8e6e
 # semantic_packages github@1.4.0 gitlab@1.0.0 jenkins@1.1.0 test_frameworks@1.0.0
 ## file ci_build.log declared=-
 ### templates (14)
