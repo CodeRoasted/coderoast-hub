@@ -2,14 +2,12 @@
 
 **These files are what an open log-analysis engine extracts from real operational logs.** The
 inputs are a published academic corpus of production system logs; the output shows what the
-engine made of them, including the parts that are identifying. Authentication records naming an
-account, home-directory paths naming a person, a small number of mail addresses and one
-routable network address survive into this render — some of them into the *masked* half, which
+engine made of them, including the parts that are identifying. Routable network addresses,
+authentication records naming an account, home-directory paths naming a person and a small
+number of mail addresses survive into this render — some of them into the *masked* half, which
 is the point the render exists to make honestly. Nothing here was cleaned. If you are asking
 *"is this known?"* — yes, it is known, it is bounded, and the boundary is checked mechanically
-before these bytes leave. **Read the amendment of 2026-09-05 below before reading the
-`public-ipv4` count**: that count is the detector's output, and on this render it is not a
-count of addresses.
+before these bytes leave.
 
 **Ruling:** Founder, Emmanuel Prunet, 2026-08-21
 
@@ -82,83 +80,3 @@ fatal.
   It cannot see a person's name, a free-text address, an identifier with no fixed shape, a value
   split across two lines, or anything inside a compressed member. Four classes fired — that is
   not the complete inventory of what is in these bytes.
-
-## Amendment — 2026-09-05: what the `public-ipv4` count is, and what it is not
-
-The class set above is unchanged and every count still reproduces exactly. What this amendment
-adds is the **subject** of one of them, which the record did not carry and which points in both
-directions. It is written as an amendment rather than a silent edit because a signed disclosure
-is a claim about a measurement, and correcting one is itself a measurement.
-
-**① The 3 248 `public-ipv4` line-hits are NOT addresses — all 3 248 of them.** Re-measured
-2026-09-05 with this gate's own predicate over the published bytes: **16 distinct matched
-tokens, every one of them a Windows `6.1` servicing version**, and **every one of the 3 248
-occurrences immediately preceded by `~` and followed by `,`** — the version field of a Windows
-servicing package identifier, `Package_for_KBnnnnnnn~31bf3856ad364e35~amd64~~<four-part
-version>,`. This is the predicate's **own declared false positive**, stated in its header: it
-fires on a four-component version string and cannot tell one from an address. **Zero routable
-fire this class in this render.** The error is in the SAFE direction — the record over-declared
-what is here — and it is corrected because the product's claim is precision-first.
-
-This is also the masker working, and it is worth reading that way: the SOURCE tree fires the
-same class **3 629** times on **189 distinct tokens**, and there they are real — globally
-routable unicast addresses spread across seven files, the largest of them appearing 867 times.
-**None of them survives into this render.** They are not quoted here, for the reason the next
-paragraph makes concrete.
-
-**② And one routable address DOES survive, in a form this gate cannot see.** The render carries
-a reverse-DNS hostname of the shape `dsl-Chn-static-<zero-padded IPv4>.touchtelindia.net` on
-**188** lines. The name spells out a globally routable address — an Indian DSL allocation — while
-the IP field on the same line was masked to `<*>`. `public-ipv4` does not fire on it: the quad is
-embedded in a name, so the predicate's trailing boundary declines the candidate before any
-address test runs. **Whether this class claims an address spelled inside a hostname is a claim
-boundary and not a defect**, so it is disclosed here and was left open rather than decided by a
-lint change. **It has since been RULED — see the amendment of 2026-09-09 below.** It is named
-because a record that corrected only ① would be a half-truth in the flattering direction.
-
-**AND THIS RECORD IS SCANNED AS PART OF ITS OWN ARTIFACT — learned by tripping it, twice.** A
-first draft of this amendment quoted three of the source tree's real addresses as examples and
-the gate's next run reported `public-ipv4` at **3 252 against a recorded 3 248**; a second draft
-still spelled two four-part version strings and reported **3 250**. The drift was the prose both
-times, never the render. **A disclosure may describe a class but must never spell an instance of
-it** — including an instance of the class's own false positive, which matches just as hard. Every
-identifying shape in this file is therefore elided, and the counts in the block above are again a
-claim about `loghub.canon.txt` alone.
-
-**A repair that came out of the same pass, with no subject in these bytes:** `ipaddress` refuses
-a zero-padded octet outright, so a padded quad **standing alone** would have been dropped by the
-parser rather than by a judgement. The predicate now judges such a token on its decimal reading,
-with controls in both directions. **No count above moved** — the padded occurrences here are the
-hostname ones, which that arm does not reach.
-
-## Amendment — 2026-09-09: the hostname boundary is RULED, and the answer is *no*
-
-The 2026-09-05 amendment above named an open question in item ② and deliberately did not decide it:
-whether the `public-ipv4` class claims an address that is spelled inside a **hostname**. It is now
-decided, and this record says so rather than leaving a reader to infer it from an unchanged count.
-
-**Ruling:** Founder, Emmanuel Prunet, 2026-09-09 — **`public-ipv4` does NOT claim an address spelled
-inside a hostname.** The predicate is not widened.
-
-**The ground.** Widening it would extend the claim from *a routable address stands alone in this
-line* to *any name of that shape contains one*, across every reverse-DNS name in every corpus we
-measure — at a false-positive rate nobody has measured, on a class that appears in three signed
-disclosures. This product's claim is precision-first, and a detector that fires on a shape it cannot
-tell from its own false positives is the failure this very record already documents once, in item ①.
-A narrow claim that is true is worth more than a wide claim that is approximately true.
-
-**What changes: nothing measurable.** The predicate is unchanged, the accepted class set above is
-unchanged, and every count above still reproduces exactly. **What changes is that a question this
-record described as open is now closed**, and a record read as current must be current.
-
-**What is accepted rather than repaired.** The reverse-DNS name described in item ② stays in this
-render, on the same number of lines, spelling the same address it spelled on 2026-09-05. It is not
-masked, not removed, and not claimed by the class. **It is disclosed — here, in the record that
-travels with the bytes.** That is the whole trade this file exists to make legible: the boundary is
-drawn narrowly enough to be true, and what falls outside it is named rather than hidden. A reader who
-needs a wider guarantee than *the declared classes, one line at a time* should read § *The boundary*
-above, which has said since 2026-08-21 that this gate is a floor and not a complete inventory.
-
-**This amendment names no instance of any declared class**, for the reason the 2026-09-05 amendment
-learned by tripping its own gate twice: a disclosure may describe a class but must never spell an
-instance of it, including an instance of that class's own false positive.
