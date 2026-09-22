@@ -8,13 +8,13 @@ first — you are almost certainly not holding the same inputs or the same build
 
 ## Tool
 
-- `det_proof` sha256: `0acc686ba925ae465a1cfeec5331b25bda6fcfc17f23fdf6988da26e82710351`
-- canon ruleset: `semantic_identity bf776af11aea469d5fb96c0438e495d4`
+- `det_proof` sha256: `51547d49e35346b87c1d62a301e6b75ceccaa278be511145456877aff19722f0`
+- canon ruleset: `semantic_identity 0f6081db9021a48c68c44cd103ee8e6e`
 - canon packages: github@1.4.0 gitlab@1.0.0 jenkins@1.1.0 test_frameworks@1.0.0
 
 ## Inputs
 
-- source repository commit: `ef2f2a12efe2e0873fc9faafdf78d285328ff498`
+- source repository commit: `ba73f513da53e43a8182ad76bc6b29eb7a63a0b6`
 
 Per corpus, the SHA-256 of every input log actually read by this run, in the order it was
 read. A corpus anchor is the SHA-256 of that list, so one line identifies the whole input set.
