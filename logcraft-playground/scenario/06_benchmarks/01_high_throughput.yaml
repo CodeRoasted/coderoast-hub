@@ -9,7 +9,7 @@ scenario:
 
   # Pipeline tuning for maximum throughput
   pipeline:
-    num_shards: 0        # auto: one shard per CPU core
+    num_shards: 0        # auto: one shard per CPU core, at most 8
     ring_capacity: 65536
     min_batch: 64
     max_batch: 1024

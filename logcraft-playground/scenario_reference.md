@@ -2256,8 +2256,8 @@ High-performance sharded pipeline. Rarely needed unless tuning throughput.
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| `num_shards` | integer | `0` | Number of pipeline shards; `0` = auto (≤ hardware concurrency) |
-| `ring_capacity` | integer | `8192` | Ring buffer capacity per shard (round up to power of 2) |
+| `num_shards` | integer | `0` | Number of pipeline shard lanes: `0` = auto (min(hardware concurrency, 8)), or `1` to `8`. Any other value is **refused** at load, naming the key |
+| `ring_capacity` | integer | `8192` | Ring buffer capacity per shard lane, in records (slots, never bytes): `1` to `65536`, rounded up to a power of 2 and at least 16, allocated for every lane when the engine is built. `0` or any value above `65536` is **refused** at load, naming the key |
 | `low_watermark` | number | `0.5` | Low backpressure threshold fraction |
 | `high_watermark` | number | `0.8` | High backpressure threshold fraction |
 | `min_batch` | integer | `16` | Minimum batch size for emission |
