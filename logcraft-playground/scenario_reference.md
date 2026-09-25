@@ -418,7 +418,7 @@ All options are parsed per-sink and ignored when not applicable to the sink type
 | `metrics_prefix` | string | `"logcraft"` | `prometheus`, `statsd` | Metric name prefix |
 | `channel` | string | `"coderoast.default"` | `insight_shm` | Shared-memory channel base name |
 | `shm_slot_count` | integer | `256` | `insight_shm` | Number of fixed-size slots per shard; one slot is 4 168 B. `0` is **refused** at load, and so is a count whose bytes do not fit the host's address size. On the hosted server, a scenario whose `insight_shm` outputs together map more than 32 MiB of shared memory — each output counted as its slots × 4 168 B × `pipeline.num_shards`, or × 8 when `num_shards` is `0` or undeclared — is **refused** with a 400 |
-| `shm_window_seal_interval_seconds` | number | `25.0` | `insight_shm` | Window seal cadence in seconds |
+| `shm_window_seal_interval_seconds` | number | `25.0` | `insight_shm` | The InSight window length, in seconds: the producer seals a window every interval of simulated time, and the hosted server cuts each InSight window at that seal and reports it as `window_duration_seconds`. Finite, at least 1 ns once rounded to whole nanoseconds, and at most 315 576 000 s (10 Julian years, the longest deterministic horizon); `0`, a negative value, `1e-12` or anything past the maximum is **refused** at load, naming the output and the key. An interval longer than the run closes no window by seal |
 | `shm_backpressure_policy` | string | pipeline policy | `insight_shm` | `"block"` or `"drop"` (output-level override) |
 
 ---
