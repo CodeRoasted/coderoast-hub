@@ -723,6 +723,11 @@ Auto-incrementing counter with optional prefix.
 
 Generates: `"req-1000"`, `"req-1001"`, …
 
+On a stream InSight reads, a prefixed counter is a new template per record: canon masks a
+digit-leading value (`order=1000` → `order=<*>`) but keeps a word-prefixed id (`req-1000`) literal
+by design, since it has the same shape as a versioned keyword such as `arm64`. There, leave `prefix`
+empty and let the surrounding text name the value (`order={order_id}`).
+
 ---
 
 ### `static`

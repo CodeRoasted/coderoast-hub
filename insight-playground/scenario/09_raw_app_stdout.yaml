@@ -22,9 +22,11 @@ deterministic_scenario:
         intent: api_service
         message_template: "checkout completed order={order_id} amount={amount} in {dur}ms"
         fields:
+          # A bare counter, never a letter-prefixed one: canon masks the digit-leading `order=100000`,
+          # while it keeps a word-prefixed id such as `ORD-100000` literal by design, which minted one
+          # template per checkout line.
           - name: order_id
             generator: sequence
-            prefix: "ORD-"
             start_value: 100000
           - name: amount
             generator: range

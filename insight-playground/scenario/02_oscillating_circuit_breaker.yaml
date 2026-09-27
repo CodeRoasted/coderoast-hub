@@ -51,9 +51,11 @@ deterministic_scenario:
             generator: weighted_choice
             values: ["200", "202", "402", "503", "429"]
             weights: [84, 8, 3, 4, 1]
+          # A bare counter, never a letter-prefixed one: canon masks the digit-leading `pay=880000` to
+          # `pay=<*>`, while it keeps a word-prefixed id such as `PAY-880000` literal by design, which
+          # minted one template per payment line (about 2 000 per 25 s window).
           - name: payment_id
             generator: sequence
-            prefix: "PAY-"
             start_value: 880000
           - name: cb_state
             generator: weighted_choice
