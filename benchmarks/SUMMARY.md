@@ -1,4 +1,4 @@
-# benchmark summary — v1.10.4
+# benchmark summary — v1.10.5
 
 Per-stage measurements, taken fresh on the release runner at this tag. Each table lists the benchmark, its median `real_time`, and the domain counters the cost scales with (template / n-gram cardinality, throughput). **Read the shape, not the absolute time** — wall-time is machine-relative; the invariant we hold is the *ordering* (see METHODOLOGY.md).
 
@@ -8,11 +8,11 @@ _5 benchmark(s)._
 
 | benchmark | real_time | items_per_second | s_per_line |
 | --- | --- | --- | --- |
-| `BM_TokenizationThroughput/4` | 1831.116 us | 546149.555 | 1.831e-06 |
-| `BM_TokenizationThroughput/8` | 1737.881 us | 575388.304 | 1.738e-06 |
-| `BM_TokenizationThroughputDegenerate/4` | 1782.893 us | 560965.132 | 1.783e-06 |
-| `BM_TokenizationThroughputDegenerate/8` | 1679.561 us | 595414.568 | 1.680e-06 |
-| `BM_TokenizationThroughputNestedJson` | 2960.152 us | 337801.926 | 2.960e-06 |
+| `BM_TokenizationThroughput/4` | 1753.607 us | 570396.285 | 1.753e-06 |
+| `BM_TokenizationThroughput/8` | 1648.799 us | 606465.029 | 1.649e-06 |
+| `BM_TokenizationThroughputDegenerate/4` | 1706.11 us | 586090.26 | 1.706e-06 |
+| `BM_TokenizationThroughputDegenerate/8` | 1609.256 us | 621359.807 | 1.609e-06 |
+| `BM_TokenizationThroughputNestedJson` | 2711.186 us | 368801.261 | 2.711e-06 |
 
 ### `insight-metalog` — compression / MetaLog-document build
 
@@ -20,42 +20,42 @@ _36 benchmark(s)._
 
 | benchmark | real_time | base_rows | lhs_cells | prev_cells | cells | n | allocs_per_event | items_per_second | ns_per_event |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `BM_Compose` | 218.324 us |  |  |  |  |  |  |  |  |
-| `BM_Diff` | 332.351 us |  |  |  |  |  |  |  |  |
-| `BM_BuildClosedCube` | 59.484 us | 113 |  |  |  |  |  |  |  |
-| `BM_ComposeCubes` | 92.504 us |  | 253 |  |  |  |  |  |  |
-| `BM_CubeDiffOf` | 97.788 us |  |  | 253 |  |  |  |  |  |
-| `BM_CoordParse` | 7.139 us |  |  |  | 225 |  |  |  |  |
-| `BM_CoordStringify` | 6.491 us |  |  |  | 225 |  |  |  |  |
-| `BM_ShannonEntropy/64` | 6885.782 ns |  |  |  |  | 64 |  |  |  |
-| `BM_ShannonEntropy/128` | 13679.587 ns |  |  |  |  | 128 |  |  |  |
-| `BM_ShannonEntropy/192` | 20455.72 ns |  |  |  |  | 192 |  |  |  |
-| `BM_Divergences/64` | 41188.879 ns |  |  |  |  | 64 |  |  |  |
-| `BM_Divergences/128` | 83661.139 ns |  |  |  |  | 128 |  |  |  |
-| `BM_HistogramJs/64` | 28644.57 ns |  |  |  |  | 64 |  |  |  |
-| `BM_StageCube_Determinism/iterations:1` | 67.449 us |  |  |  |  |  |  |  |  |
-| `BM_CubeKeyAlloc_Empty` | 34.72 us |  |  |  |  |  | 0 | 2.886e+07 | 3.466e-08 |
-| `BM_CubeKeyAlloc_ShortSSO` | 47.889 us |  |  |  |  |  | 0 | 2.091e+07 | 4.782e-08 |
-| `BM_CubeKeyAlloc_MidBand` | 48.775 us |  |  |  |  |  | 0 | 2.053e+07 | 4.871e-08 |
-| `BM_CubeKeyAlloc_LongOverSSO` | 51.676 us |  |  |  |  |  | 0 | 1.937e+07 | 5.161e-08 |
-| `BM_MetaLogCompress/1000/16` | 0.951 ms |  |  |  |  |  |  | 1.051e+06 |  |
-| `BM_MetaLogCompress/10000/16` | 3.367 ms |  |  |  |  |  |  | 2.970e+06 |  |
-| `BM_MetaLogCompress/100000/16` | 15.919 ms |  |  |  |  |  |  | 6.282e+06 |  |
-| `BM_MetaLogCompress/1000/32` | 0.957 ms |  |  |  |  |  |  | 1.045e+06 |  |
-| `BM_MetaLogCompress/10000/32` | 3.372 ms |  |  |  |  |  |  | 2.966e+06 |  |
-| `BM_MetaLogCompress/100000/32` | 15.904 ms |  |  |  |  |  |  | 6.288e+06 |  |
-| `BM_MetaLogCompress/1000/64` | 0.96 ms |  |  |  |  |  |  | 1.042e+06 |  |
-| `BM_MetaLogCompress/10000/64` | 3.379 ms |  |  |  |  |  |  | 2.959e+06 |  |
-| `BM_MetaLogCompress/100000/64` | 15.917 ms |  |  |  |  |  |  | 6.283e+06 |  |
-| `BM_MetaLogIngest_FieldHistograms/0` | 32.457 us |  |  |  |  |  |  | 3.081e+07 | 3.246e-08 |
-| `BM_MetaLogIngest_FieldHistograms/1` | 78.465 us |  |  |  |  |  |  | 1.274e+07 | 7.846e-08 |
-| `BM_MetaLogIngest_FieldHistograms/3` | 165.908 us |  |  |  |  |  |  | 6.028e+06 | 1.659e-07 |
-| `BM_MetaLogIngest_Where` | 66.571 us |  |  |  |  |  |  | 1.502e+07 | 6.657e-08 |
-| `BM_OrdinalKeyAlloc_None` | 34.363 us |  |  |  |  |  | 0 | 2.915e+07 | 3.431e-08 |
-| `BM_OrdinalKeyAlloc_Key15Sso` | 51.003 us |  |  |  |  |  | 0 | 1.963e+07 | 5.093e-08 |
-| `BM_OrdinalKeyAlloc_Key16ShipLegOnly` | 49.518 us |  |  |  |  |  | 0 | 2.022e+07 | 4.945e-08 |
-| `BM_OrdinalKeyAlloc_Key16TraceMix` | 52.446 us |  |  |  |  |  | 0 | 1.909e+07 | 5.237e-08 |
-| `BM_OrdinalKeyAlloc_Key23OverBothSso` | 51.188 us |  |  |  |  |  | 0 | 1.956e+07 | 5.112e-08 |
+| `BM_Compose` | 278.668 us |  |  |  |  |  |  |  |  |
+| `BM_Diff` | 418.355 us |  |  |  |  |  |  |  |  |
+| `BM_BuildClosedCube` | 84.862 us | 113 |  |  |  |  |  |  |  |
+| `BM_ComposeCubes` | 131.889 us |  | 253 |  |  |  |  |  |  |
+| `BM_CubeDiffOf` | 157.587 us |  |  | 253 |  |  |  |  |  |
+| `BM_CoordParse` | 9.347 us |  |  |  | 225 |  |  |  |  |
+| `BM_CoordStringify` | 7.91 us |  |  |  | 225 |  |  |  |  |
+| `BM_ShannonEntropy/64` | 8119.705 ns |  |  |  |  | 64 |  |  |  |
+| `BM_ShannonEntropy/128` | 16140.664 ns |  |  |  |  | 128 |  |  |  |
+| `BM_ShannonEntropy/192` | 24141.285 ns |  |  |  |  | 192 |  |  |  |
+| `BM_Divergences/64` | 48248.009 ns |  |  |  |  | 64 |  |  |  |
+| `BM_Divergences/128` | 135607.609 ns |  |  |  |  | 128 |  |  |  |
+| `BM_HistogramJs/64` | 34034.597 ns |  |  |  |  | 64 |  |  |  |
+| `BM_StageCube_Determinism/iterations:1` | 96.199 us |  |  |  |  |  |  |  |  |
+| `BM_CubeKeyAlloc_Empty` | 48.742 us |  |  |  |  |  | 0 | 2.056e+07 | 4.864e-08 |
+| `BM_CubeKeyAlloc_ShortSSO` | 64.448 us |  |  |  |  |  | 0 | 1.554e+07 | 6.434e-08 |
+| `BM_CubeKeyAlloc_MidBand` | 66.264 us |  |  |  |  |  | 0 | 1.511e+07 | 6.616e-08 |
+| `BM_CubeKeyAlloc_LongOverSSO` | 72.103 us |  |  |  |  |  | 0 | 1.389e+07 | 7.198e-08 |
+| `BM_MetaLogCompress/1000/16` | 1.322 ms |  |  |  |  |  |  | 756510.86 |  |
+| `BM_MetaLogCompress/10000/16` | 4.302 ms |  |  |  |  |  |  | 2.325e+06 |  |
+| `BM_MetaLogCompress/100000/16` | 19.17 ms |  |  |  |  |  |  | 5.217e+06 |  |
+| `BM_MetaLogCompress/1000/32` | 1.346 ms |  |  |  |  |  |  | 743213.087 |  |
+| `BM_MetaLogCompress/10000/32` | 4.325 ms |  |  |  |  |  |  | 2.312e+06 |  |
+| `BM_MetaLogCompress/100000/32` | 19.201 ms |  |  |  |  |  |  | 5.208e+06 |  |
+| `BM_MetaLogCompress/1000/64` | 1.39 ms |  |  |  |  |  |  | 719500.51 |  |
+| `BM_MetaLogCompress/10000/64` | 4.379 ms |  |  |  |  |  |  | 2.284e+06 |  |
+| `BM_MetaLogCompress/100000/64` | 19.324 ms |  |  |  |  |  |  | 5.175e+06 |  |
+| `BM_MetaLogIngest_FieldHistograms/0` | 45.716 us |  |  |  |  |  |  | 2.187e+07 | 4.572e-08 |
+| `BM_MetaLogIngest_FieldHistograms/1` | 103.782 us |  |  |  |  |  |  | 9.637e+06 | 1.038e-07 |
+| `BM_MetaLogIngest_FieldHistograms/3` | 221.725 us |  |  |  |  |  |  | 4.510e+06 | 2.217e-07 |
+| `BM_MetaLogIngest_Where` | 95.473 us |  |  |  |  |  |  | 1.047e+07 | 9.547e-08 |
+| `BM_OrdinalKeyAlloc_None` | 47.332 us |  |  |  |  |  | 0 | 2.117e+07 | 4.724e-08 |
+| `BM_OrdinalKeyAlloc_Key15Sso` | 69.55 us |  |  |  |  |  | 0 | 1.440e+07 | 6.945e-08 |
+| `BM_OrdinalKeyAlloc_Key16ShipLegOnly` | 66.776 us |  |  |  |  |  | 0 | 1.500e+07 | 6.667e-08 |
+| `BM_OrdinalKeyAlloc_Key16TraceMix` | 77.206 us |  |  |  |  |  | 0 | 1.297e+07 | 7.710e-08 |
+| `BM_OrdinalKeyAlloc_Key23OverBothSso` | 70.404 us |  |  |  |  |  | 0 | 1.423e+07 | 7.030e-08 |
 
 ### `insight-eidos-detection` — eidos detection stage
 
@@ -63,23 +63,23 @@ _17 benchmark(s)._
 
 | benchmark | real_time | components | composes_per_tick | cube_cells | diffs_per_tick | window_size | avg_composes/adv | disjoint | items_per_second | max_composes/adv | raw_strides | ring_capacity | scales | windows_per_iter |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `BM_CubeTick/2000/16` | 2084.293 us | 16 | 0.917 | 269 | 5 | 2000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick/8000/16` | 2550.874 us | 16 | 0.917 | 392 | 5 | 8000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick/8000/64` | 6537.247 us | 64 | 0.917 | 965 | 5 | 8000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick/8000/256` | 16925.603 us | 256 | 0.917 | 2198 | 5 | 8000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick_AdvancePhase/2000/16` | 260.066 us | 16 | 0.917 | 269 | 5 | 2000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick_AdvancePhase/8000/16` | 310.311 us | 16 | 0.917 | 392 | 5 | 8000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick_DiffPhase/2000/16` | 1887.177 us | 16 | 0.917 | 269 | 5 | 2000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick_DiffPhase/8000/16` | 2242.659 us | 16 | 0.917 | 392 | 5 | 8000 |  |  |  |  |  |  |  |  |
-| `BM_CubeTick_Determinism/iterations:1` | 6356.014 us |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_PyramidAdvanceAndDiff/16/1/1/0` | 832.392 us |  |  |  |  |  | 0.609 | 0 | 27631.794 | 1 | 1 | 7 | 3 | 23 |
-| `BM_PyramidAdvanceAndDiff/16/3/1/0` | 1610.55 us |  |  |  |  |  | 0.857 | 0 | 17387.565 | 3 | 1 | 7 | 5 | 28 |
-| `BM_PyramidAdvanceAndDiff/64/3/1/0` | 6381.912 us |  |  |  |  |  | 0.857 | 0 | 4387.578 | 3 | 1 | 7 | 5 | 28 |
-| `BM_PyramidAdvanceAndDiff/64/3/3/0` | 6386.2 us |  |  |  |  |  | 0.857 | 0 | 4384.888 | 3 | 1 | 7 | 5 | 28 |
-| `BM_PyramidAdvanceAndDiff/64/6/3/0` | 77092.573 us |  |  |  |  |  | 0.98 | 0 | 2542.394 | 6 | 1 | 7 | 8 | 196 |
-| `BM_PyramidAdvanceAndDiff/64/6/4/0` | 76488.747 us |  |  |  |  |  | 0.98 | 0 | 2562.465 | 6 | 1 | 7 | 8 | 196 |
-| `BM_PyramidAdvanceAndDiff/64/6/4/6` | 176104.305 us |  |  |  |  |  | 0.971 | 6 | 1186.793 | 6 | 7 | 193 | 20 | 209 |
-| `BM_PyramidAdvanceAndDiff/256/6/4/0` | 341567.45 us |  |  |  |  |  | 0.98 | 0 | 573.835 | 6 | 1 | 7 | 8 | 196 |
+| `BM_CubeTick/2000/16` | 1961.217 us | 16 | 0.917 | 269 | 5 | 2000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick/8000/16` | 2375.463 us | 16 | 0.917 | 392 | 5 | 8000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick/8000/64` | 6145.715 us | 64 | 0.917 | 965 | 5 | 8000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick/8000/256` | 15735 us | 256 | 0.917 | 2198 | 5 | 8000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick_AdvancePhase/2000/16` | 230.917 us | 16 | 0.917 | 269 | 5 | 2000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick_AdvancePhase/8000/16` | 289.926 us | 16 | 0.917 | 392 | 5 | 8000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick_DiffPhase/2000/16` | 1715.016 us | 16 | 0.917 | 269 | 5 | 2000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick_DiffPhase/8000/16` | 2098.373 us | 16 | 0.917 | 392 | 5 | 8000 |  |  |  |  |  |  |  |  |
+| `BM_CubeTick_Determinism/iterations:1` | 5393.048 us |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_PyramidAdvanceAndDiff/16/1/1/0` | 771 us |  |  |  |  |  | 0.609 | 0 | 29832.213 | 1 | 1 | 7 | 3 | 23 |
+| `BM_PyramidAdvanceAndDiff/16/3/1/0` | 1478.497 us |  |  |  |  |  | 0.857 | 0 | 18938.33 | 3 | 1 | 7 | 5 | 28 |
+| `BM_PyramidAdvanceAndDiff/64/3/1/0` | 5958.947 us |  |  |  |  |  | 0.857 | 0 | 4698.807 | 3 | 1 | 7 | 5 | 28 |
+| `BM_PyramidAdvanceAndDiff/64/3/3/0` | 6053.692 us |  |  |  |  |  | 0.857 | 0 | 4625.416 | 3 | 1 | 7 | 5 | 28 |
+| `BM_PyramidAdvanceAndDiff/64/6/3/0` | 70468.38 us |  |  |  |  |  | 0.98 | 0 | 2781.459 | 6 | 1 | 7 | 8 | 196 |
+| `BM_PyramidAdvanceAndDiff/64/6/4/0` | 71147.294 us |  |  |  |  |  | 0.98 | 0 | 2754.916 | 6 | 1 | 7 | 8 | 196 |
+| `BM_PyramidAdvanceAndDiff/64/6/4/6` | 162805.032 us |  |  |  |  |  | 0.971 | 6 | 1283.756 | 6 | 7 | 193 | 20 | 209 |
+| `BM_PyramidAdvanceAndDiff/256/6/4/0` | 320631.922 us |  |  |  |  |  | 0.98 | 0 | 611.299 | 6 | 1 | 7 | 8 | 196 |
 
 ### `insight-eidos-engine` — eidos engine / diff stage
 
@@ -87,94 +87,91 @@ _7 benchmark(s)._
 
 | benchmark | real_time | items_per_second |
 | --- | --- | --- |
-| `BM_Pipeline_IngestLine` | 365.565 ns | 2.733e+06 |
-| `BM_Pipeline_IngestBatch/64` | 29731.664 ns | 2.151e+06 |
-| `BM_Pipeline_IngestBatch/1024` | 377785.084 ns | 2.709e+06 |
-| `BM_Pipeline_CloseWindow/1000` | 21195.337 ns | 47720.911 |
-| `BM_Pipeline_CloseWindow/10000` | 36016.57 ns | 28786.189 |
-| `BM_Pipeline_FullWindow/1000` | 410728.916 ns | 2.435e+06 |
-| `BM_Pipeline_FullWindow/10000` | 3.817e+06 ns | 2.620e+06 |
+| `BM_Pipeline_IngestLine` | 336.854 ns | 2.968e+06 |
+| `BM_Pipeline_IngestBatch/64` | 27832.42 ns | 2.300e+06 |
+| `BM_Pipeline_IngestBatch/1024` | 355469.468 ns | 2.880e+06 |
+| `BM_Pipeline_CloseWindow/1000` | 16632.296 ns | 60654.725 |
+| `BM_Pipeline_CloseWindow/10000` | 29592.189 ns | 34600.219 |
+| `BM_Pipeline_FullWindow/1000` | 369789.74 ns | 2.704e+06 |
+| `BM_Pipeline_FullWindow/10000` | 3.388e+06 ns | 2.952e+06 |
 
 ### `logcraft-core` — the deterministic log simulator core
 
-_74 benchmark(s)._
+_71 benchmark(s)._
 
 | benchmark | real_time | agents | items_per_second | records_per_iter | shards | bytes_per_second | emit_ms | materialize_ms | capacity | ns_per_record | coordinates | ns_per_coordinate | discovered_knob_cap | build_coordinates | discovered_tower_cap | blocked_events | dropped | producers | wait_ns_total | epochs_per_reunfold | records_per_reunfold |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `BM_DeterministicReplay_AgentScaling/1/real_time` | 10.038 ms | 1 | 597706.15 | 6000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_DeterministicReplay_AgentScaling/4/real_time` | 16.172 ms | 4 | 1.484e+06 | 24000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_DeterministicReplay_AgentScaling/16/real_time` | 45.694 ms | 16 | 2.101e+06 | 96000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_DeterministicReplay_RuntimeTimerBarriers/4/real_time` | 16.374 ms | 4 | 1.466e+06 | 24000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_DeterministicReplay_RuntimeTimerBarriers/16/real_time` | 45.205 ms | 16 | 2.124e+06 | 96000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_AgentScaling/1/real_time` | 0.568 ms | 1 | 880513.278 | 500 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_AgentScaling/4/real_time` | 0.715 ms | 4 | 2.798e+06 | 2000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_AgentScaling/16/real_time` | 1.648 ms | 16 | 4.853e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_AgentScaling/64/real_time` | 5.501 ms | 64 | 5.817e+06 | 32000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_AgentScaling/256/real_time` | 18.828 ms | 256 | 6.799e+06 | 128000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_ShardScaling/1/real_time` | 4.72 ms | 32 | 3.390e+06 | 16000 | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_ShardScaling/2/real_time` | 2.992 ms | 32 | 5.348e+06 | 16000 | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_ShardScaling/4/real_time` | 2.776 ms | 32 | 5.763e+06 | 16000 | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_ShardScaling/8/real_time` | 2.922 ms | 32 | 5.476e+06 | 16000 | 8 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_ShardScaling/16/real_time` | 3.664 ms | 32 | 4.367e+06 | 16000 | 16 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_FieldScaling/0/real_time` | 1.298 ms | 16 | 6.163e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_FieldScaling/2/real_time` | 1.767 ms | 16 | 4.528e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_FieldScaling/4/real_time` | 1.659 ms | 16 | 4.824e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_FieldScaling/8/real_time` | 2.049 ms | 16 | 3.904e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_FieldScaling/16/real_time` | 2.834 ms | 16 | 2.823e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_EngineThroughput_FieldScaling/32/real_time` | 4.124 ms | 16 | 1.940e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Generator_Range` | 11.426 ns |  | 8.752e+07 |  |  | 2.529e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Generator_Choice` | 9.625 ns |  | 1.039e+08 |  |  | 5.402e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Generator_WeightedChoice` | 18.19 ns |  | 5.498e+07 |  |  | 5.498e+07 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Generator_Sequence` | 15.318 ns |  | 6.528e+07 |  |  | 7.665e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Generator_StaticValue` | 4.579 ns |  | 2.184e+08 |  |  | 1.747e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Generator_Timestamp` | 89.851 ns |  | 1.113e+07 |  |  | 2.115e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Generator_Normal` | 84.574 ns |  | 1.182e+07 |  |  | 6.503e+07 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Json` | 404.574 ns |  | 2.472e+06 |  |  | 6.501e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Text` | 182.836 ns |  | 5.469e+06 |  |  | 9.954e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Clf` | 255.663 ns |  | 3.911e+06 |  |  | 2.894e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Syslog` | 92.184 ns |  | 1.085e+07 |  |  | 5.858e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Rfc5424` | 129.88 ns |  | 7.699e+06 |  |  | 5.467e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Kv` | 305.623 ns |  | 3.272e+06 |  |  | 6.544e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Ecs` | 445.489 ns |  | 2.245e+06 |  |  | 7.228e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_OtelJson` | 451.188 ns |  | 2.216e+06 |  |  | 1.543e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Json_Into` | 370.024 ns |  | 2.703e+06 |  |  | 7.108e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Text_Into` | 130.238 ns |  | 7.678e+06 |  |  | 1.397e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Clf_Into` | 231.881 ns |  | 4.313e+06 |  |  | 3.191e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Syslog_Into` | 68.716 ns |  | 1.455e+07 |  |  | 7.859e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Rfc5424_Into` | 97.86 ns |  | 1.022e+07 |  |  | 7.255e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Kv_Into` | 268.047 ns |  | 3.731e+06 |  |  | 7.461e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_Ecs_Into` | 384.124 ns |  | 2.603e+06 |  |  | 8.383e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_Formatter_OtelJson_Into` | 361.198 ns |  | 2.769e+06 |  |  | 1.927e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_PlayToTarget_PhaseSplit/1/real_time` | 9.844 ms | 1 |  | 6000 |  |  | 6.465 | 1.988 |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_PlayToTarget_PhaseSplit/4/real_time` | 16.221 ms | 4 |  | 24000 |  |  | 7.823 | 6.006 |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_PlayToTarget_PhaseSplit/16/real_time` | 43.036 ms | 16 |  | 96000 |  |  | 20.084 | 12.272 |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_RingSteadyState_SingleProducer/8192` | 2787.693 us |  | 3.640e+06 |  |  |  |  |  | 8192 | 2.747e-07 |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_RingSteadyState_SingleProducer/32768` | 2578.299 us |  | 3.941e+06 |  |  |  |  |  | 32768 | 2.538e-07 |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_RingBulkPop/8192` | 215.967 us |  | 3.795e+07 |  |  |  |  |  | 8192 |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_RingBulkPop/32768` | 857.977 us |  | 3.820e+07 |  |  |  |  |  | 32768 |  |  |  |  |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_SingleCoordinate/real_time` | 154.064 us |  |  |  |  |  |  |  |  |  | 1 | 1.541e-04 |  |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_SingleCoordinate_CiWorld/real_time` | 316.135 us |  |  |  |  |  |  |  |  |  | 1 | 3.161e-04 |  |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_KnobAxisAtCap/real_time` | 29.968 ms |  |  |  |  |  |  |  |  |  | 64 | 4.683e-04 | 64 |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_TowerAtProductCap/real_time` | 174.026 ms |  |  |  |  |  |  |  |  |  | 256 | 6.798e-04 | 64 | 4 | 256 |  |  |  |  |  |  |
-| `BM_ScenarioLoad_KnobAxisLadder/2/real_time` | 402.314 us |  |  |  |  |  |  |  |  |  | 2 | 2.012e-04 | 64 |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_KnobAxisLadder/4/real_time` | 860.451 us |  |  |  |  |  |  |  |  |  | 4 | 2.151e-04 | 64 |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_KnobAxisLadder/8/real_time` | 1847.661 us |  |  |  |  |  |  |  |  |  | 8 | 2.310e-04 | 64 |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_KnobAxisLadder/16/real_time` | 4209.03 us |  |  |  |  |  |  |  |  |  | 16 | 2.631e-04 | 64 |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_KnobAxisLadder/32/real_time` | 10875.997 us |  |  |  |  |  |  |  |  |  | 32 | 3.399e-04 | 64 |  |  |  |  |  |  |  |  |
-| `BM_ScenarioLoad_KnobAxisLadder/64/real_time` | 29748.874 us |  |  |  |  |  |  |  |  |  | 64 | 4.648e-04 | 64 |  |  |  |  |  |  |  |  |
-| `BM_Pipeline_Drop/1/1/real_time` | 5.886 ms |  | 3.398e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 0 | 141284 | 1 | 0 |  |  |
-| `BM_Pipeline_Drop/4/1/real_time` | 16.622 ms |  | 4.813e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 0 | 156454 | 4 | 0 |  |  |
-| `BM_Pipeline_Drop/4/4/real_time` | 25.77 ms |  | 3.104e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 0 | 65929 | 4 | 0 |  |  |
-| `BM_Pipeline_Drop/16/4/real_time` | 51.598 ms |  | 6.202e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 0 | 424150 | 16 | 0 |  |  |
-| `BM_Pipeline_Drop/16/16/real_time` | 71.127 ms |  | 4.499e+06 |  | 16 |  |  |  |  |  |  |  |  |  |  | 0 | 381115 | 16 | 0 |  |  |
-| `BM_Pipeline_Block/1/1/real_time` | 7.298 ms |  | 2.740e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 1252 | 0 | 1 | 1.686e+07 |  |  |
-| `BM_Pipeline_Block/4/1/real_time` | 18.841 ms |  | 4.246e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 732 | 0 | 4 | 6.189e+07 |  |  |
-| `BM_Pipeline_Block/4/4/real_time` | 59.52 ms |  | 1.344e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 439 | 0 | 4 | 3.761e+07 |  |  |
-| `BM_Pipeline_Block/16/4/real_time` | 58.365 ms |  | 5.483e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 4749 | 0 | 16 | 1.924e+09 |  |  |
-| `BM_Pipeline_Block/16/16/real_time` | 74.633 ms |  | 4.288e+06 |  | 16 |  |  |  |  |  |  |  |  |  |  | 1672 | 0 | 16 | 1.127e+09 |  |  |
-| `BM_TimelineSeek_EvictedColdWindow/real_time` | 5.096 ms |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 30 | 24000 |
-| `BM_TimelineReunfoldOneInterval/real_time` | 5.228 ms |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 30 | 24000 |
-| `BM_TimelineSeek_Resident/real_time` | 0.004 us |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_DeterministicReplay_AgentScaling/1/real_time` | 9.61 ms | 1 | 624332.409 | 6000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_DeterministicReplay_AgentScaling/4/real_time` | 14.836 ms | 4 | 1.618e+06 | 24000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_DeterministicReplay_AgentScaling/16/real_time` | 36.22 ms | 16 | 2.650e+06 | 96000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_DeterministicReplay_RuntimeTimerBarriers/4/real_time` | 14.834 ms | 4 | 1.618e+06 | 24000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_DeterministicReplay_RuntimeTimerBarriers/16/real_time` | 36.394 ms | 16 | 2.638e+06 | 96000 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_AgentScaling/1/real_time` | 0.505 ms | 1 | 990397.985 | 500 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_AgentScaling/4/real_time` | 0.643 ms | 4 | 3.110e+06 | 2000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_AgentScaling/16/real_time` | 1.489 ms | 16 | 5.374e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_AgentScaling/64/real_time` | 5.075 ms | 64 | 6.306e+06 | 32000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_AgentScaling/256/real_time` | 16.403 ms | 256 | 7.804e+06 | 128000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_ShardScaling/1/real_time` | 4.397 ms | 32 | 3.639e+06 | 16000 | 1 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_ShardScaling/2/real_time` | 2.75 ms | 32 | 5.818e+06 | 16000 | 2 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_ShardScaling/4/real_time` | 2.654 ms | 32 | 6.028e+06 | 16000 | 4 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_ShardScaling/8/real_time` | 2.737 ms | 32 | 5.845e+06 | 16000 | 8 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_FieldScaling/0/real_time` | 1.132 ms | 16 | 7.067e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_FieldScaling/2/real_time` | 1.429 ms | 16 | 5.596e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_FieldScaling/4/real_time` | 1.435 ms | 16 | 5.574e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_FieldScaling/8/real_time` | 1.859 ms | 16 | 4.304e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_FieldScaling/16/real_time` | 2.721 ms | 16 | 2.940e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_EngineThroughput_FieldScaling/32/real_time` | 3.872 ms | 16 | 2.066e+06 | 8000 | 0 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Generator_Range` | 10.887 ns |  | 9.185e+07 |  |  | 2.655e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Generator_Choice` | 9.121 ns |  | 1.096e+08 |  |  | 5.701e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Generator_WeightedChoice` | 17.341 ns |  | 5.767e+07 |  |  | 5.767e+07 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Generator_Sequence` | 14.314 ns |  | 6.986e+07 |  |  | 8.227e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Generator_StaticValue` | 4.514 ns |  | 2.216e+08 |  |  | 1.772e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Generator_Timestamp` | 85.683 ns |  | 1.167e+07 |  |  | 2.217e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Generator_Normal` | 80.409 ns |  | 1.244e+07 |  |  | 6.840e+07 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Json` | 386.326 ns |  | 2.589e+06 |  |  | 6.808e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Text` | 172.945 ns |  | 5.782e+06 |  |  | 1.052e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Clf` | 240.836 ns |  | 4.152e+06 |  |  | 3.073e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Syslog` | 84.4 ns |  | 1.185e+07 |  |  | 6.398e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Rfc5424` | 125.975 ns |  | 7.938e+06 |  |  | 5.636e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Kv` | 285.179 ns |  | 3.507e+06 |  |  | 7.013e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Ecs` | 430.936 ns |  | 2.321e+06 |  |  | 7.472e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_OtelJson` | 430.129 ns |  | 2.325e+06 |  |  | 1.618e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Json_Into` | 341.293 ns |  | 2.930e+06 |  |  | 7.706e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Text_Into` | 123.182 ns |  | 8.118e+06 |  |  | 1.478e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Clf_Into` | 214.158 ns |  | 4.669e+06 |  |  | 3.455e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Syslog_Into` | 65.29 ns |  | 1.532e+07 |  |  | 8.271e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Rfc5424_Into` | 90.235 ns |  | 1.108e+07 |  |  | 7.868e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Kv_Into` | 249.804 ns |  | 4.003e+06 |  |  | 8.006e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_Ecs_Into` | 352.558 ns |  | 2.836e+06 |  |  | 9.133e+08 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_Formatter_OtelJson_Into` | 354.148 ns |  | 2.824e+06 |  |  | 1.965e+09 |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_PlayToTarget_PhaseSplit/1/real_time` | 8.994 ms | 1 |  | 6000 |  |  | 6.028 | 1.777 |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_PlayToTarget_PhaseSplit/4/real_time` | 14.514 ms | 4 |  | 24000 |  |  | 7.025 | 5.342 |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_PlayToTarget_PhaseSplit/16/real_time` | 34.028 ms | 16 |  | 96000 |  |  | 15.588 | 11.124 |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_RingSteadyState_SingleProducer/8192` | 2678.643 us |  | 3.761e+06 |  |  |  |  |  | 8192 | 2.659e-07 |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_RingSteadyState_SingleProducer/32768` | 2522.784 us |  | 4.002e+06 |  |  |  |  |  | 32768 | 2.499e-07 |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_RingBulkPop/8192` | 210.844 us |  | 3.886e+07 |  |  |  |  |  | 8192 |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_RingBulkPop/32768` | 842.979 us |  | 3.888e+07 |  |  |  |  |  | 32768 |  |  |  |  |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_SingleCoordinate/real_time` | 142.727 us |  |  |  |  |  |  |  |  |  | 1 | 1.427e-04 |  |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_SingleCoordinate_CiWorld/real_time` | 285.047 us |  |  |  |  |  |  |  |  |  | 1 | 2.850e-04 |  |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_KnobAxisAtCap/real_time` | 27.754 ms |  |  |  |  |  |  |  |  |  | 64 | 4.337e-04 | 64 |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_TowerAtProductCap/real_time` | 156.967 ms |  |  |  |  |  |  |  |  |  | 256 | 6.132e-04 | 64 | 4 | 256 |  |  |  |  |  |  |
+| `BM_ScenarioLoad_KnobAxisLadder/2/real_time` | 378.619 us |  |  |  |  |  |  |  |  |  | 2 | 1.893e-04 | 64 |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_KnobAxisLadder/4/real_time` | 782.024 us |  |  |  |  |  |  |  |  |  | 4 | 1.955e-04 | 64 |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_KnobAxisLadder/8/real_time` | 1674.212 us |  |  |  |  |  |  |  |  |  | 8 | 2.093e-04 | 64 |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_KnobAxisLadder/16/real_time` | 3920.966 us |  |  |  |  |  |  |  |  |  | 16 | 2.451e-04 | 64 |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_KnobAxisLadder/32/real_time` | 9848.847 us |  |  |  |  |  |  |  |  |  | 32 | 3.078e-04 | 64 |  |  |  |  |  |  |  |  |
+| `BM_ScenarioLoad_KnobAxisLadder/64/real_time` | 27735.261 us |  |  |  |  |  |  |  |  |  | 64 | 4.334e-04 | 64 |  |  |  |  |  |  |  |  |
+| `BM_Pipeline_Drop/1/1/real_time` | 5.889 ms |  | 3.396e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 0 | 118654 | 1 | 0 |  |  |
+| `BM_Pipeline_Drop/4/1/real_time` | 16.285 ms |  | 4.913e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 0 | 39396 | 4 | 0 |  |  |
+| `BM_Pipeline_Drop/4/4/real_time` | 18.004 ms |  | 4.443e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 0 | 26146 | 4 | 0 |  |  |
+| `BM_Pipeline_Drop/16/4/real_time` | 41.066 ms |  | 7.792e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 0 | 196251 | 16 | 0 |  |  |
+| `BM_Pipeline_Block/1/1/real_time` | 6.627 ms |  | 3.018e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 72 | 0 | 1 | 7.538e+06 |  |  |
+| `BM_Pipeline_Block/4/1/real_time` | 17.49 ms |  | 4.574e+06 |  | 1 |  |  |  |  |  |  |  |  |  |  | 252 | 0 | 4 | 1.487e+07 |  |  |
+| `BM_Pipeline_Block/4/4/real_time` | 45.165 ms |  | 1.771e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 93 | 0 | 4 | 4.451e+06 |  |  |
+| `BM_Pipeline_Block/16/4/real_time` | 45.251 ms |  | 7.072e+06 |  | 4 |  |  |  |  |  |  |  |  |  |  | 5415 | 0 | 16 | 6.443e+08 |  |  |
+| `BM_TimelineSeek_EvictedColdWindow/real_time` | 4.665 ms |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 30 | 24000 |
+| `BM_TimelineReunfoldOneInterval/real_time` | 4.777 ms |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  | 30 | 24000 |
+| `BM_TimelineSeek_Resident/real_time` | 0.005 us |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 ### `coderoast-ipc-core` — the shared-memory transport core
 
@@ -182,6 +179,6 @@ _3 benchmark(s)._
 
 | benchmark | real_time | slots |
 | --- | --- | --- |
-| `BM_SharedMemoryPushPop/1024` | 17.96 ns | 1024 |
-| `BM_SharedMemoryPushPop/8192` | 17.71 ns | 8192 |
-| `BM_SharedMemoryPushPop/65536` | 28.875 ns | 65536 |
+| `BM_SharedMemoryPushPop/1024` | 35.689 ns | 1024 |
+| `BM_SharedMemoryPushPop/8192` | 36.633 ns | 8192 |
+| `BM_SharedMemoryPushPop/65536` | 36.782 ns | 65536 |
