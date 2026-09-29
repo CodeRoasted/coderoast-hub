@@ -12,4 +12,4 @@
 1. **[HIGH]** Value-distribution shift: "Sent <*> of <*> (0.0%), <*> MBs/sec" param[1] JSD 0.81  _(in phase "ci / ci / build ▸ set -euo pipefail")_
    - 1.5% of stream; 23 → 46 observations
 
-_940 changes suppressed as noise (proportional / low-frequency). Per-unit structural deltas in JSON `raw`._
+_940 of 941 observed changes not listed. Per-unit structural deltas in JSON `raw`._

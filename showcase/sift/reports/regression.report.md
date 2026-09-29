@@ -40,4 +40,4 @@
 11. **[MEDIUM]** Vanished salient line: ": WARN: deprecated: CMakeConfigDeps does not support module find mode in gtest/<*>" — retained by its level  _(in phase "ci / ci / build ▸ set -euo pipefail")_
    - was retained by its log level on baseline; not in the changed side's salience memory
 
-_1055 changes suppressed as noise (proportional / low-frequency). Per-unit structural deltas in JSON `raw`._
+_1055 of 1066 observed changes not listed. Per-unit structural deltas in JSON `raw`._
