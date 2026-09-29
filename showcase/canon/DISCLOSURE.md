@@ -50,10 +50,10 @@ Measured by `_shared/samples_safety_lint.py` in artifact mode over the rendered 
 **2026-08-21**. **5 916** line-hits over four classes, all of them in `loghub.canon.txt`:
 
 ```disclosed-classes
-email 32
-home-path 308
-public-ipv4 3248
-ssh-authlog 2328
+email lines=32 distinct=3
+home-path lines=308 distinct=12
+public-ipv4 lines=3248 distinct=16
+ssh-authlog lines=2328 distinct=60
 ```
 
 The other rendered corpora — `marker_corpus.canon.txt` and `revert_corpus.canon.txt` — fired
@@ -162,3 +162,25 @@ above, which has said since 2026-08-21 that this gate is a floor and not a compl
 **This amendment names no instance of any declared class**, for the reason the 2026-09-05 amendment
 learned by tripping its own gate twice: a disclosure may describe a class but must never spell an
 instance of it, including an instance of that class's own false positive.
+
+## Amendment — 2026-09-29: each class now carries the number of distinct identities it names, and that number is asserted
+
+Ruled by the Founder, Emmanuel Prunet, on 2026-09-29. The class set above is unchanged,
+and so is every line-hit count. What this amendment adds is a second number per class,
+`distinct=`: how many **different** identities the class names in this render — different network
+addresses, mailboxes, home-directory users, accounts — never how many lines repeat them. For
+`ssh-authlog` the identity is the account an authentication record names; where the engine masked
+the account, the mask counts as one value.
+
+**The two numbers are treated differently, and the paragraph above about counts now speaks of the
+first one only.** Line-hits stay a record: they move with repetition — this render prints every
+source line once per arm — and the gate prints them beside a fresh measurement without refusing on
+them. Distinct identities are **asserted**: the gate refuses this render when the number it
+measures under a class differs from the number written here, in either direction.
+
+This is what makes the amendment of 2026-09-05 checkable rather than merely true when it was
+written. It says the `public-ipv4` population here is a Windows servicing-version false positive
+and not addresses; the asserted count is that population's size, so an address added to this
+render under the same class moves it and re-refuses the render, however the class set looks. The
+numbers were measured by the gate itself over the render standing on the public hub, published at
+`c9e3151`. Like the rest of this record, this amendment names no instance of any class.

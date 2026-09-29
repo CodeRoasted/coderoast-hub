@@ -37,12 +37,12 @@ measured are those committed at `f9ea7e6` (2026-07-09) and unchanged since. **4 
 over six classes:
 
 ```disclosed-classes
-email 4
-home-path 45
-mac-addr 60
-public-ipv4 3629
-public-ipv6 20
-ssh-authlog 521
+email lines=4 distinct=3
+home-path lines=45 distinct=12
+mac-addr lines=60 distinct=10
+public-ipv4 lines=3629 distinct=189
+public-ipv6 lines=20 distinct=8
+ssh-authlog lines=521 distinct=64
 ```
 
 The counts above are a **record, not a threshold**. The gate compares the class *set* and
@@ -69,3 +69,24 @@ being fatal — a pinned count would be a golden that gets bumped without though
   It cannot see a person's name, a free-text address, an identifier with no fixed shape, a value
   split across two lines, or anything inside a compressed member. The six classes above are what
   *fired* — they are not the complete inventory of what is in these logs.
+
+## Amendment — 2026-09-29: each class now carries the number of distinct identities it names, and that number is asserted
+
+Ruled by the Founder, Emmanuel Prunet, on 2026-09-29. The class set above is unchanged,
+and so is every line-hit count. What this amendment adds is a second number per class,
+`distinct=`: how many **different** identities the class names in this tree — different network
+addresses, mailboxes, home-directory users, hardware addresses, accounts — never how many lines
+repeat them. For `ssh-authlog` the identity is the account an authentication record names.
+
+**The two numbers are treated differently, and the paragraph above about counts now speaks of the
+first one only.** Line-hits stay a record: they move with repetition, and the gate prints them
+beside a fresh measurement without refusing on them. Distinct identities are **asserted**: the
+gate refuses this tree when the number it measures under a class differs from the number written
+here, in either direction. One more is an exposure nobody accepted, even under a class that was
+accepted; one fewer is a claim that is no longer true.
+
+This closes a blindness the class set alone had. A class binds the SHAPE of what is exposed, never
+its SUBJECT: new people or hosts could appear under a class this record already accepts, and until
+this amendment nothing here would have refused them. The numbers were measured by the gate itself
+over the bytes committed at `f9ea7e6`, unchanged since. Like the rest of this record, this
+amendment names no instance of any class.
