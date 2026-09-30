@@ -92,8 +92,12 @@ A file starts with **one** world root: `scenario:` (the REAL, wall-clock world) 
 `deterministic_scenario:`, and two optional bundled siblings LogCraft ignores — `contract_scenario:`
 (read by the InSight contract harness) and `insight:` (the InSight pipeline config); any other
 document root is a **hard reject** (a typo'd root
-must fail loudly, never parse as an empty scenario). *Scenario-level* unrecognized keys warn but do
-not fail parsing.
+must fail loudly, never parse as an empty scenario). **Every level below the root is closed too**: an
+unknown key anywhere (the scenario root, an output, an agent, its intent, fields and phases, a flow,
+its states and transitions, `pipeline`, `environment`, `noise`, `users`) is a **hard reject**, in an
+included file as well. The refusal names the file, the key's path from the document root (for
+example `deterministic_scenario.outputs[insight-stream]`), the key, and the valid keys at that level,
+and one load reports every unknown key it finds. A misspelled key never silently takes its default.
 
 The worlds differ in **shape**: the real world is **flat**; the deterministic world nests its world
 under an **axis block**, keeping scenario **config** at the root. Which axis you declare says what the
