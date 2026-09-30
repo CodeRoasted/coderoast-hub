@@ -289,7 +289,7 @@ outputs:
 | `http` | *(real world only)* Batched HTTP POST (e.g. Elasticsearch, Loki, any webhook) |
 | `prometheus` | *(real world only)* Expose `/metrics` scrape endpoint |
 | `statsd` | *(real world only)* Push metrics over UDP |
-| `insight_shm` | *(deterministic world only)* Shared-memory IPC channel for InSight integration |
+| `insight_shm` | *(deterministic world only)* Shared-memory IPC channel for InSight integration; a line longer than 4 096 bytes is cut (see below the table) |
 
 **On the hosted CodeRoast server, a named output is redirected to the engine's drain, whatever its
 host.** Every output that carries a `name:` — an `insight_shm` output excepted — is rewritten into
@@ -297,6 +297,19 @@ an `http` output pointed at the engine's own drain endpoint, whatever `url` it n
 intended: the hosted server never posts to a destination a scenario supplies. If a real sink of
 yours receives nothing while the scenario runs there, read what reached the drain with
 `GET /api/v1/engines/{id}/drain`. A `logcraft` run on your own machine rewrites nothing.
+
+**An `insight_shm` output carries each log line in one frame whose payload holds at most 4 096 bytes,
+and that is its line limit.** The limit is fixed: it is not a scenario key. A line is measured as
+formatted, without its newline, and a line longer than 4 096 bytes is never split across frames.
+LogCraft cuts it at the producer to its first 4 096 bytes, a byte cut that can split a multi-byte UTF-8
+character, and marks the frame as truncated; the frame carries that mark to the analysis side with the
+cut line. LogCraft counts every cut line in the output's sink telemetry: `error_count` includes it, and
+`last_error` reads `shared_memory truncated=<lines cut> dropped=<frames dropped>`. On the hosted server
+both fields are in the output's entry under `sinks` in `GET /api/v1/engines/{id}`; a `logcraft` run on
+your own machine logs them when the stream ends. A plain-text line is analysed as its first 4 096 bytes,
+but a line in a JSON format (`json`, `otel`, `otel_span` and the other JSON rows of the format table)
+cut mid-record may no longer parse and can then drop out of the analysis whole, so keep such records
+under the limit.
 
 The three push sinks carry a wall-clock flush thread, so their emission cadence is not reproducible:
 all three are hard-rejected under `deterministic_scenario:` (see
