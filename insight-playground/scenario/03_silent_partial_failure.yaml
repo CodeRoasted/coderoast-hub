@@ -6,6 +6,7 @@
 deterministic_scenario:
   name: "silent-partial-failure-instance-freeze"
   seed: 42
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

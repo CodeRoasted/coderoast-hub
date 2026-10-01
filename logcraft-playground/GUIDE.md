@@ -569,7 +569,10 @@ That holds within one **coordinatization version**: the engine's map from a scen
 seed to every value the run draws. A seeded scenario reproduces exactly under one
 coordinatization version. A LogCraft release that changes the map moves to a new version, and
 from that release on the same scenario and seed yield a different stream — itself reproducible
-under the new version.
+under the new version. The current version is 2. A scenario that pins what it realized (a
+contract, a frozen expectation) declares it with `coordinatization: 2` beside its `seed:`; the
+key asserts the version and never selects one, so a scenario stamped with any other version is
+refused at load, naming both.
 
 ```yaml
 deterministic_scenario:

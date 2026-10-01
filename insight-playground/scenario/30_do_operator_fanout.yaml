@@ -9,6 +9,7 @@
 deterministic_scenario:
   name: insight-do-operator-fanout
   seed: 3030
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

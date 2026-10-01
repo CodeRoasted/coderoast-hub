@@ -56,6 +56,7 @@
 deterministic_scenario:
   name: "planted-identity-naming"
   seed: 4242
+  coordinatization: 2
   outputs:
     - name: insight-stream
       type: insight_shm

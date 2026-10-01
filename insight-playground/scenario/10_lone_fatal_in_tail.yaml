@@ -6,6 +6,7 @@
 deterministic_scenario:
   name: insight-lone-fatal-in-tail
   seed: 1010
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

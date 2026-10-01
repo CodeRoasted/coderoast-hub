@@ -6,6 +6,7 @@
 deterministic_scenario:
   name: insight-late-emerging-benign
   seed: 1616
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

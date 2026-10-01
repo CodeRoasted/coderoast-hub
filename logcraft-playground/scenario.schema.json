@@ -54,6 +54,7 @@
       "properties": {
         "name": true,
         "seed": true,
+        "coordinatization": true,
         "outputs": { "$ref": "#/$defs/outputs" },
         "registry": true,
         "templates": true,

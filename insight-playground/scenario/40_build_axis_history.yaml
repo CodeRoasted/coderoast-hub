@@ -20,6 +20,7 @@
 deterministic_scenario:
   name: insight-build-axis-history
   seed: 4040
+  coordinatization: 2
 
   outputs:
     - name: insight

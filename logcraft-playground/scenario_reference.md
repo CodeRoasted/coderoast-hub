@@ -135,6 +135,7 @@ deterministic_scenario:
 |-----|------|---------|-------------|
 | `name` | string | `"unnamed"` | Human-readable scenario name |
 | `seed` | uint64 | 42 (det) | The RNG root under `deterministic_scenario:` — absent, it is `42` and the load prints a notice saying so; **rejected** under `scenario:`. See [Engine Modes](#engine-modes) |
+| `coordinatization` | uint32 | absent | *(deterministic)* asserts the coordinatization version the scenario's pinned expectations were realized under (currently `2`); any other value is refused at load, naming both, and the key never selects a realization. A `contract_scenario:` bundle requires it. **Rejected** under `scenario:` |
 | `outputs` | sequence | `[{type: console, format: json}]` | Output sink definitions |
 | `pipeline` | map | absent | Sharded pipeline config |
 | `templates` | map | absent | Named reusable agent presets |

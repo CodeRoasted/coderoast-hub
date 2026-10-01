@@ -41,6 +41,7 @@
 deterministic_scenario:
   name: insight-build-axis-intent-grain
   seed: 4141
+  coordinatization: 2
 
   outputs:
     - name: insight

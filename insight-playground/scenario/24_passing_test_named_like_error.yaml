@@ -42,6 +42,7 @@
 deterministic_scenario:
   name: insight-passing-test-named-like-error
   seed: 2424
+  coordinatization: 2
 
   outputs:
     - name: insight

@@ -53,6 +53,7 @@
 deterministic_scenario:
   name: "tail-takeover"
   seed: 4848
+  coordinatization: 2
   outputs:
     - name: insight-stream
       type: insight_shm

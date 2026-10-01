@@ -21,6 +21,7 @@
 deterministic_scenario:
   name: "spike-corroborant-admission"
   seed: 3838
+  coordinatization: 2
   outputs:
     - name: insight-stream
       type: insight_shm

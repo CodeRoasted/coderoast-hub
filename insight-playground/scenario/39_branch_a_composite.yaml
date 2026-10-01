@@ -30,6 +30,7 @@
 deterministic_scenario:
   name: "branch-a-composite"
   seed: 3939
+  coordinatization: 2
   outputs:
     - name: insight-stream
       type: insight_shm

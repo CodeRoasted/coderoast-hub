@@ -39,6 +39,7 @@
 deterministic_scenario:
   name: "carrier-coverage"
   seed: 4343
+  coordinatization: 2
   outputs:
     - name: insight-stream
       type: insight_shm

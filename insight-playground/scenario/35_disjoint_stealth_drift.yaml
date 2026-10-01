@@ -34,6 +34,7 @@
 deterministic_scenario:
   name: "disjoint-stealth-drift"
   seed: 3535
+  coordinatization: 2
   outputs:
     - name: insight-stream
       type: insight_shm

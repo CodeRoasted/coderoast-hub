@@ -44,6 +44,7 @@
 deterministic_scenario:
   name: insight-absence-severity-bump
   seed: 2323
+  coordinatization: 2
 
   outputs:
     - name: insight

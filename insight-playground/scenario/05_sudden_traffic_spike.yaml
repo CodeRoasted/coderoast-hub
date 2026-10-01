@@ -6,6 +6,7 @@
 deterministic_scenario:
   name: insight-sudden-traffic-spike
   seed: 42
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

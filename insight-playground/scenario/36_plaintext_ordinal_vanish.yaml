@@ -65,6 +65,7 @@
 deterministic_scenario:
   name: insight-plaintext-ordinal-vanish
   seed: 3636
+  coordinatization: 2
 
   outputs:
     - name: insight

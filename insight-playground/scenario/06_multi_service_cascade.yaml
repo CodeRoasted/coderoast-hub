@@ -9,6 +9,7 @@
 deterministic_scenario:
   name: insight-multi-service-cascade
   seed: 606
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

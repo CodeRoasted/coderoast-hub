@@ -9,6 +9,7 @@
 deterministic_scenario:
   name: insight-do-operator-noise
   seed: 3131
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

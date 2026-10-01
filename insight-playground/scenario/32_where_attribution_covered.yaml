@@ -26,6 +26,7 @@
 deterministic_scenario:
   name: insight-where-attribution-covered
   seed: 3232
+  coordinatization: 2
 
   outputs:
     - name: insight

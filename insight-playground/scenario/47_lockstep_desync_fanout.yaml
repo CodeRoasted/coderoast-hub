@@ -28,6 +28,7 @@
 deterministic_scenario:
   name: lockstep-desync-fanout
   seed: 4747
+  coordinatization: 2
 
   outputs:
     - name: insight-stream

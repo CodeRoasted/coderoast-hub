@@ -28,6 +28,7 @@
 deterministic_scenario:
   name: insight-recurrence-floor-edge
   seed: 2324
+  coordinatization: 2
 
   outputs:
     - name: insight

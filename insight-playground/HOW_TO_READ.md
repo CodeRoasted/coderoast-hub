@@ -14,7 +14,9 @@ Each case is **ONE file**, `NN_name.yaml`, carrying two document roots:
 
 They are bundled so a contract can never point at the wrong scenario: `reference_scenario:` is a
 **checked label** and must equal the bundled scenario's `name:`. Agents shared across scenarios live
-in `agents/`.
+in `agents/`. A contract pins what its scenario realized, so the scenario declares the LogCraft
+coordinatization it was realized under, `coordinatization: 2` beside its `seed:`; the harness refuses
+a contract over an unstamped scenario, and LogCraft refuses a stamp other than its own.
 
 **A transition case uses the same bundle**: the
 `deterministic_scenario` declares the world **and** the intervention — an axis edge — and the

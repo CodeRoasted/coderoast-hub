@@ -34,6 +34,7 @@
 deterministic_scenario:
   name: "same-side-refusal"
   seed: 4545
+  coordinatization: 2
   outputs:
     - name: insight-stream
       type: insight_shm

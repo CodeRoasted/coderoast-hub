@@ -48,6 +48,7 @@
 deterministic_scenario:
   name: insight-where-attribution-stray-floor
   seed: 3333
+  coordinatization: 2
 
   outputs:
     - name: insight

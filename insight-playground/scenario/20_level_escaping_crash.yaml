@@ -31,6 +31,7 @@
 deterministic_scenario:
   name: insight-level-escaping-crash
   seed: 2020
+  coordinatization: 2
 
   outputs:
     - name: insight

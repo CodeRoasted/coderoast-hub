@@ -28,6 +28,7 @@
 deterministic_scenario:
   name: insight-ordinal-drift-w1
   seed: 3535
+  coordinatization: 2
 
   outputs:
     - name: insight

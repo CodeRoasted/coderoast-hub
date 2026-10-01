@@ -28,6 +28,7 @@
 deterministic_scenario:
   name: insight-field-cardinality-gate
   seed: 2222
+  coordinatization: 2
 
   outputs:
     - name: insight
