@@ -24,7 +24,7 @@ code lives here or ever will.
   excerpt or rendering, whatever its licence — third-party corpora live in the
   private `coderoast-corpora`. The LogHub samples and the canon render over them
   were withdrawn on that ruling, history unrewritten, and a dated correction
-  note signed by the Founder records it.
+  note signed by the Founder records it (`CORRECTIONS.md`).
 - **A redistribution licence decides WHERE bytes may live, never WHAT IS IN
   THEM.** Two independent axes; publishing needs both. A licensed tree still owes
   a content pass on identifying bytes — routable addresses, authentication
