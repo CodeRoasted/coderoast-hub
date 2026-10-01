@@ -19,11 +19,12 @@ code lives here or ever will.
 ## Constraints & traps
 
 - PUBLIC repo: everything committed must be publishable as-is — no secrets,
-  nothing unscrubbed. Third-party corpus bytes are **private-only absent a clear
-  redistribution licence**; with one they may live here, and the licence is
-  declared *in the tree*. `samples/loghub/samples/ATTRIBUTION.md` is the one such
-  case — source, licence, and the verbatim-copy claim. Undeclared or unlicensed
-  corpora live in `coderoast-corpora`.
+  nothing unscrubbed. **Every log here is our own** (the Founder, 2026-10-01): one
+  our instruments generated, or one of our own systems. No third-party log byte,
+  excerpt or rendering, whatever its licence — third-party corpora live in the
+  private `coderoast-corpora`. The LogHub samples and the canon render over them
+  were withdrawn on that ruling, history unrewritten, and a dated correction
+  note signed by the Founder records it.
 - **A redistribution licence decides WHERE bytes may live, never WHAT IS IN
   THEM.** Two independent axes; publishing needs both. A licensed tree still owes
   a content pass on identifying bytes — routable addresses, authentication
