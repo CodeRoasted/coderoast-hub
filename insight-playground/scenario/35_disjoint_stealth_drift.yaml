@@ -119,7 +119,8 @@ contract_scenario:
           # absorb the sub-δ creep and must stay silent. The wide carriers h12/h24 are OUTSIDE
           # this floor by design — a wide-span raw-vs-raw diff exists precisely to see what the
           # contiguous comparators absorb (measured 2026-08-20 on the pre-repair grid and again
-          # at the Cube-B (ADR-32) landing: h12 fires ~ten windows before DISJOINT.s3), and the
+          # at the Cube-B (ADR-32) landing, both under LogCraft coordinatization 1: h12 fired
+          # before DISJOINT.s3; the lead is not re-measured under coordinatization 2), and the
           # coincidence fold embargoes each carrier's confidence against its own comparison
           # (ADR-32.D2 case 5), so their firing corroborates cross-wise, never manufactures.
           - RAW.acute . Fld.dist . field_jsd

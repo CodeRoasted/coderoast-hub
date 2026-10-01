@@ -5,7 +5,8 @@
 #   • THE COMPOSITE — a branching change (`RAW.acute . Dps . dominant_path`: the flow fans from one
 #     step to sixteen) AND a field drift (`DISJOINT.L2.s3 . Fld.dist`) occur in the same world, and
 #     the envelope must CLASSIFY their conjunction as branch A.
-#   • CLASSIFICATION, NOT PAGING — confidence sits ~0.20, well under the explain floor, so the
+#   • CLASSIFICATION, NOT PAGING — confidence sits ~0.20–0.25 (measured under coordinatization 2:
+#     0.202 for one window, then 0.247 for six), well under the 0.75 explain floor, so the
 #     contract deliberately asserts NO `band=surfacing`. A weak stealth-drift voice cannot lift the
 #     full product, and pretending otherwise would be the fixture over-claiming.
 #   • NO BRANCHING, NO BRANCH-A — with the fan-out removed, the drift still fires on its own and no

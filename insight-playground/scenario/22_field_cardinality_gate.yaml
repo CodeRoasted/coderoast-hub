@@ -4,9 +4,9 @@
 # WHAT IT PINS, as one inseparable pair:
 #   • RECALL — `lb route tier` is a genuine categorical (3 values over 70 records, uniqueness ratio
 #     0.04). Its distribution really moves (60/6/4 -> 30/12/28), so a FieldShift MUST fire.
-#   • PRECISION — `db query latency N ms` is a measurement, not a category (~50 distinct values over
-#     70 records, ratio ~0.7+). Its values also really move, and a FieldShift must NOT fire. This is
-#     the FLAW-2 precision bug the 4A.2 gate closed.
+#   • PRECISION — `db query latency N ms` is a measurement, not a category (an 883-value integer band
+#     drawn once per record, so nearly every one of the 70 values is distinct). Its values also really
+#     move, and a FieldShift must NOT fire. This is the FLAW-2 precision bug the 4A.2 gate closed.
 #
 # BOTH PARAMS GENUINELY MOVE, which is the point: the gate must separate them on WHAT THEY ARE, not
 # on whether anything changed. A gate that keyed on movement would fire on both.
@@ -18,12 +18,13 @@
 # `emit: false` (FLAW-23) precisely so they stay template inputs and no `k=v` tail appears, which is what
 # keeps the vehicle identical to the retired pair's.
 #
-# ITS RELATION TO FIXTURE 36, and why both must exist. Both carry a bare-integer measurement param.
-# Here the latency slot runs card ~50 >= the 4A.2 `max_card` gate, so the uniqueness-ratio test is
-# ASKED and correctly answers "not a categorical" -> suppressed. In 36 the per-endpoint latency slots
-# run card 12-14, UNDER that gate, so the ratio test is never asked and the same kind of value floods
-# (flaws.md FLAW-14). The two fixtures sit on opposite sides of one threshold; keeping them apart is what
-# makes the threshold visible.
+# ITS RELATION TO FIXTURE 36, and why both must exist. Both carry an integer latency param. Here
+# the latency slot's cardinality is far above the 4A.2 `max_card` gate, so the uniqueness-ratio test
+# is ASKED and correctly answers "not a categorical" -> suppressed. In 36 the per-endpoint latency
+# slots run card 11-14 (measured 2026-10-01 on 36's bare-integer variant), UNDER that gate, so the
+# ratio test is never asked: as a bare integer the same kind of value floods (flaws.md FLAW-14), and
+# 36 as authored escapes only because its `{latency}ms` token is unit-suffixed (see 36's header). The
+# two fixtures sit on opposite sides of one threshold; keeping them apart is what makes it visible.
 
 deterministic_scenario:
   name: insight-field-cardinality-gate

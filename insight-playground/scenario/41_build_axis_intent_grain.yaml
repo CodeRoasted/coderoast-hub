@@ -160,7 +160,8 @@ contract_scenario:
           must_fire:
             # ⚠ THE RECOVERY POLE DID NOT MOVE, and the asymmetry is the finding. ADR-20.D11 folds a
             # unit that CHANGED OUTCOME — a failing unit. A recovering one yields resolved_pattern
-            # rows naming the errors that cleared (measured: two, at 36.6% and 29.3% of baseline).
+            # rows naming the errors that cleared (measured under coordinatization 2: two, at
+            # 36.6% and 24.4% of baseline, beside an outcome-flip row for the third file).
             # So the grain move is one-directional, and repointing this pole "for symmetry" would
             # assert a row the engine does not emit.
             - { kind: ResolvedPattern, polarity: recovery, template: "linting" }
