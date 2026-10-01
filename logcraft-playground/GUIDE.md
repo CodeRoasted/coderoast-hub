@@ -5,11 +5,11 @@ scenario *means* — the building blocks you'll see in the `scenario/` YAML file
 [scenario reference](scenario_reference.md) (the complete, key-by-key API listing). Read
 this for the *why*; read the reference for the *what exactly*.
 
-The scenarios here are openly published (CC-BY-4.0) so you can see precisely how a
-**deterministic** log simulation is authored. The LogCraft **engine** is part of
-[CodeRoast](https://coderoast.fr) — you run these scenarios in the hosted **Lab**, where the
-same scenario produces the same logs every time. This guide is about reading and
-understanding them.
+The scenarios here are openly published (CC-BY-4.0) so you can see precisely how a log
+simulation is authored, in both of LogCraft's worlds: the real, wall-clock one and the
+**deterministic** one. The LogCraft **engine** is part of [CodeRoast](https://coderoast.fr) —
+you run these scenarios in the hosted **Lab**, where a deterministic scenario produces the same
+logs every time. This guide is about reading and understanding them.
 
 ---
 
@@ -17,7 +17,8 @@ understanding them.
 
 A scenario is a small YAML description of a system — which services you have, how busy they
 are, what their logs look like. From it, LogCraft produces a continuous stream of realistic
-log records, **deterministically**: the same scenario yields the same logs on every run.
+log records. Under a `deterministic_scenario:` root the stream is **deterministic**: the same
+scenario yields the same logs on every run (see [Deterministic mode](#deterministic-mode)).
 
 The logs look like real application output:
 
@@ -411,10 +412,10 @@ flows:
       - { from: charge,  to: done,   network_latency_ms: 5 }
 ```
 
-Flows require deterministic mode (a scenario `seed:`); branch selection and step content
-are seeded per instance, so the same scenario replays bit-identically. The services a flow
-logs through are ordinary agents — set them to `rate_per_second: 0` if they should only
-speak through the flow.
+Flows require deterministic mode (a `deterministic_scenario:` root); branch selection and
+step content are seeded per instance, so the same scenario replays bit-identically. The
+services a flow logs through are ordinary agents — set them to `rate_per_second: 0` if they
+should only speak through the flow.
 
 → [Causal Flows](scenario_reference.md#causal-flows)
 
@@ -564,6 +565,12 @@ another, and you get the exact same stream. Not "statistically similar". Byte-id
 weighted choice, every range sample, every distribution draw, every incident trigger, every
 phase transition — all locked.
 
+That holds within one **coordinatization version**: the engine's map from a scenario and its
+seed to every value the run draws. A seeded scenario reproduces exactly under one
+coordinatization version. A LogCraft release that changes the map moves to a new version, and
+from that release on the same scenario and seed yield a different stream — itself reproducible
+under the new version.
+
 ```yaml
 deterministic_scenario:
   seed: 42
@@ -578,7 +585,9 @@ The root key is what picks the world: `deterministic_scenario:` is the reproduci
 clock-bearing knobs (`duration_seconds`, `agents`, …) sit under `time_axis:`. A plain `scenario:`
 root is the real, wall-clock world — it randomizes every run, the right default for open-ended
 exploration, and it takes no `seed:` (writing one there is refused, not silently ignored). The
-scenarios published here are seeded, so they reproduce exactly.
+scenarios published in `scenario/07_spans/` are seeded, so they reproduce exactly. Those in
+`scenario/01_starter/` through `scenario/06_benchmarks/` are written under `scenario:` and
+produce a different stream on every run: read them for the DSL, not as reproducible fixtures.
 
 ### Why does this matter?
 
