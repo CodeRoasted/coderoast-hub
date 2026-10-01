@@ -20,3 +20,9 @@
 *.exe binary
 *.dll binary
 *.ninja binary
+
+# The published samples are stored exactly as the warehouse's Sample Release delivers them: never
+# eol-normalized. It is the LAST line because the last matching line wins over the extension rules
+# above. Without it the hub would strip CRLF from a verbatim upstream file on its way in, as the
+# warehouse's own global rule did to 15 of the 16 LogHub `_2k` samples (measured 2026-10-01).
+samples/** -text
