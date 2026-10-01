@@ -23,10 +23,12 @@
 # (Volume) has nothing to see and the measurement stays inside the diff×diff scope D15 set.
 # Values are digit-leading (maskable — MEM:logcraft-precision-scenario-must-be-maskable).
 #
-# MEASURED AT AUTHORING (2026-08-21, carrier-era instrument {6,12,24}/ring 25): the flip is
-# seen by every shallow opposite-side sharer — the acute, the w3 ANCHORED block, the h6
-# stride (Fld.dist, one firing each) — and the L2 composed-side echo stays BELOW every
-# integrator's PH — no DISJOINT firing, no fold. The residual channel measures ZERO at the
+# MEASURED AT AUTHORING (2026-08-21, carrier-era instrument {6,12,24}/ring 25, LogCraft
+# coordinatization 1): the flip is seen by every shallow opposite-side sharer — the acute, the w3
+# ANCHORED block, the h6 stride (Fld.dist, one firing each) — and the L2 composed-side echo stays
+# BELOW every integrator's PH — no DISJOINT firing, no fold. Re-measured under coordinatization 2:
+# the same, plus one Fld.dist firing each at ANCHORED.w6 and RAW.h12, and still no DISJOINT firing
+# and no fold. The residual channel measures ZERO at the
 # largest single-window distributional magnitude this world can produce. The borders pin that measured state: a future red on this
 # fixture's `Cmp` guard IS the residual channel appearing, loudly, with the fixture name
 # saying what it means — the measurement standing as a tripwire, not a hope.

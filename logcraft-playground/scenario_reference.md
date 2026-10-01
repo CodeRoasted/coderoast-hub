@@ -135,7 +135,7 @@ deterministic_scenario:
 |-----|------|---------|-------------|
 | `name` | string | `"unnamed"` | Human-readable scenario name |
 | `seed` | uint64 | 42 (det) | The RNG root under `deterministic_scenario:` — absent, it is `42` and the load prints a notice saying so; **rejected** under `scenario:`. See [Engine Modes](#engine-modes) |
-| `coordinatization` | uint32 | absent | *(deterministic)* asserts the coordinatization version the scenario's pinned expectations were realized under (currently `2`); any other value is refused at load, naming both, and the key never selects a realization. A `contract_scenario:` bundle requires it. **Rejected** under `scenario:` |
+| `coordinatization` | uint32 | absent | *(deterministic)* asserts the coordinatization version — the engine's map from scenario and seed to every drawn value — that the scenario's pinned expectations were realized under (currently `2`); any other value is refused at load, naming both, and the key never selects a realization: the engine realizes exactly one. Absent, nothing is asserted and the scenario loads. The InSight contract harness refuses a bundled `contract_scenario:` whose scenario omits it. **Rejected** under `scenario:`, as an unknown key. See [Engine Modes](#engine-modes) |
 | `outputs` | sequence | `[{type: console, format: json}]` | Output sink definitions |
 | `pipeline` | map | absent | Sharded pipeline config |
 | `templates` | map | absent | Named reusable agent presets |
@@ -230,7 +230,7 @@ phase that **omits** the key keeps the current rate. The per-field default (agen
 | Mode | Selected by | Clock | Notes |
 |------|-------------|-------|-------|
 | **Real** | `scenario:` root (no `seed:`) | real wall-clock (structural) | Default. Randomized each run. Flat — no axis. |
-| **Deterministic** | `deterministic_scenario:` root (`seed:`, default `42`) | virtual (structural; no `clock:`/`mode:`) | Same logs every run. The clock + world nest under `time_axis`; `epoch_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
+| **Deterministic** | `deterministic_scenario:` root (`seed:`, default `42`) | virtual (structural; no `clock:`/`mode:`) | Same logs every run under one coordinatization version (currently `2`); a release that changes it changes the stream, and the `coordinatization` key lets a scenario assert the version its pins were realized under. The clock + world nest under `time_axis`; `epoch_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
 
 In deterministic mode the clock is **virtual by construction** (the `deterministic_scenario:` root
 types the world — there is no `clock:`/`mode:`); the loader forces `pipeline.policy: block` when the

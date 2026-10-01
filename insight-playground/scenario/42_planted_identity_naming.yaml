@@ -5,7 +5,8 @@
 # matched control has nothing to name.
 #
 # THE WORLD (every number below is MEASURED, 2026-08-21, six calibration runs recorded in the
-# G-B2b authoring pass):
+# G-B2b authoring pass; re-measured unchanged under coordinatization 2 — 10 Composites, Dps n=2,
+# zero `Seq` BranchingShift at any span, the DISJOINT.L2.s3 Dft firing, n=41 at RAW.h24):
 #   * hb 80/s and api-svc 30/s are the steady floor; deploy-svc's template and edges exist from
 #     t=0 (a 0.2/s trickle), so template/edge MEMBERSHIP never changes after warm-up — the
 #     deployment moves WEIGHTS only, and no novelty rides it.

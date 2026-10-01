@@ -8,8 +8,10 @@
 # exact can't-FAIL shape the arm's exit criterion must be checked against
 # (MEM:synthetic-gate-vacuity-vs-judgment; the rule the density census behind ADR-25.D7 minted). This fixture closes that
 # hole by declaring L2.s2 ALONE: its far block spans lookbacks [13+q..18+q], and the ONE deep
-# stride this creep class wakes — h13 (measured: the only stride Fld.dist that fires on the
-# slow walk; h8 stays silent) — reads that SAME epoch, same side (13 ∈ [13..23]). Under the
+# stride this creep class wakes — h13 (measured at the 2026-08-21 scaffold census, under LogCraft
+# coordinatization 1: the only stride Fld.dist fired on the slow walk; h8 stayed silent; not
+# re-measured under coordinatization 2, whose dense capture still holds this fixture's fold with
+# no admissible pair, w44..48) — reads that SAME epoch, same side (13 ∈ [13..23]). Under the
 # dense scaffold every cross-role pair this world can form is same-side-dependent, and the
 # model MUST refuse the fold the shipped gate manufactures. (An s1 draft measured hollow: the
 # adjacent-block contrast this slow ramp offers never trips s1's PH, and any drift fast enough
