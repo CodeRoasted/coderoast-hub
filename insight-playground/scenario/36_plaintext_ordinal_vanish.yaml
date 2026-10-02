@@ -1,7 +1,7 @@
 # 36 plaintext_ordinal_vanish — the PLAIN-TEXT demo path (§4A.5 `LSRC-15` + `LSRC-18`): a vanished
 # recurrence LEADS, a real categorical move SURVIVES, and a bare re-run emits no FieldShift at all.
 #
-# WHAT IT PINS, across four arms sharing one vehicle:
+# WHAT IT PINS, across five arms sharing one vehicle:
 #   • THE RE-RUN BOUNDARY (precision) — do(nothing changed; the job simply ran again): every route's
 #     latency stream is re-based onto a fresh seed, so the draws are uncorrelated but the generator,
 #     the band and the per-endpoint n are identical. Nothing may vanish, nothing may read as a new
@@ -14,6 +14,9 @@
 #     must fire and must be attributed to the STATUS param, not to the latency param sitting beside
 #     it on the same template. Without this arm the precision claims are a blind spot: "no FieldShift
 #     off latency" reads green just as well if the channel were dead.
+#   • THE DISCLOSED REGRESSION (the boundary, said aloud) — a real 5x regression on `/api/orders`
+#     emits no row, because the slot is not judged, and the report says it declined that slot: its
+#     `summary.not_judged` lists the `/api/orders` template (DN-128.D4).
 #
 # ── WHAT DECIDES THE RE-RUN ARM: THE UNIT SUFFIX, AND IT HAS SINCE 2026-06-26 ───────────────────
 # Canon masks a digit-leading token wholesale, so `200 23ms` masks to `<*> <*>` and the value kept
@@ -51,7 +54,10 @@
 # latency regression is a shift in location. Plain-text latency is a declared blind spot (FLAW-14);
 # a latency regression is detected on a named JSON field the ordinal channel reads, never here.
 # Recorded in-fixture so nobody reads this arm's green as "a latency regression would have been
-# caught" — it would not have been.
+# caught" — it would not have been. The REGRESSION arm pins exactly that, with the disclosure beside
+# it: measured 2026-10-02 through the `sift` CLI (insight-eidos 2800b515) on the two rendered
+# coordinates, 0 rows and 1 slot declined for measurement syntax, `INFO request GET /api/orders <*>
+# <*>`; on a copy written `{latency} ms`, 1 Low FieldShift and no declined slot, so the arm goes red.
 
 # ── WHY THE ARMS ARE ORDERED THE WAY THEY ARE ───────────────────────────────────────────────────
 # The RNG is position-stable, so an untouched agent emits bit-identical values at every coordinate —
@@ -131,6 +137,20 @@ deterministic_scenario:
               generator: weighted_choice
               values: ["200", "500"]
               weights: [10, 14]
+              emit: false
+
+      # ── REGRESSION. do(the orders route slows 5x): `/api/orders` draws 200..400ms instead of
+      #    4..80ms, disjoint supports, and nothing else moves. Last on the axis, so it reads FROM
+      #    `search-degraded` and no earlier arm sees it.
+      - name: orders-regressed
+        upsert:
+          - path: agents.route-orders.fields.latency
+            value:
+              name: latency
+              generator: range
+              min: 200
+              max: 400
+              integer: true
               emit: false
 
     time_axis:
@@ -226,6 +246,8 @@ contract_scenario:
       coordinates: { causal_axis: search-online,                  time_axis: 20s }
     - name: search-failing
       coordinates: { causal_axis: search-degraded,       time_axis: 20s }
+    - name: orders-slow
+      coordinates: { causal_axis: orders-regressed,      time_axis: 20s }
 
   transitions:
     # THE RE-RUN BOUNDARY — see the header. A pure re-run is not an incident: nothing may vanish,
@@ -293,3 +315,21 @@ contract_scenario:
         untouched_projection:
           exclude_rows:
             - { template: "search" }
+
+    # REGRESSION — the 5x latency regression on `/api/orders` emits no row, because the unit-suffixed
+    # slot is not judged (`LSRC-15`), and the report SAYS so: the declined slot is disclosed under
+    # `summary.not_judged`, naming the `/api/orders` template. Without the disclosure this arm
+    # would publish the blind spot as a contract (DN-128.D4).
+    - from: search-failing
+      to: orders-slow
+      compare: RAW.run
+      expect:
+        ranked_changes:
+          must_not_emit:
+            - { kind: FieldShift }
+        untouched_projection:
+          exclude_rows:
+            - { template: "/api/orders" }
+        not_judged:
+          measurement_syntax_slots:
+            must_name: ["/api/orders"]
