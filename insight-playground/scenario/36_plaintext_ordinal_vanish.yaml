@@ -1,11 +1,11 @@
 # 36 plaintext_ordinal_vanish — the PLAIN-TEXT demo path (§4A.5 `LSRC-15` + `LSRC-18`): a vanished
-# recurrence LEADS, a real categorical move SURVIVES, and a bare re-run stays under the page band.
+# recurrence LEADS, a real categorical move SURVIVES, and a bare re-run emits no FieldShift at all.
 #
 # WHAT IT PINS, across four arms sharing one vehicle:
 #   • THE RE-RUN BOUNDARY (precision) — do(nothing changed; the job simply ran again): every route's
 #     latency stream is re-based onto a fresh seed, so the draws are uncorrelated but the generator,
 #     the band and the per-endpoint n are identical. Nothing may vanish, nothing may read as a new
-#     error, and nothing may reach Medium or High. This is the FLAW-14 surface, PINNED.
+#     error, nothing may reach Medium or High, and no FieldShift may form on any template.
 #   • THE VANISH (recall) — `order completed total=<*>` stops. VanishedTemplate / High, and it must
 #     TOP-RANK the report.
 #   • THE DOLLAR VANISH — the same claim on a currency-prefixed ordinal (`total=$<*>`), which masks
@@ -15,57 +15,43 @@
 #     it on the same template. Without this arm the precision claims are a blind spot: "no FieldShift
 #     off latency" reads green just as well if the channel were dead.
 #
-# ── WHAT WAS MEASURED, AND WHAT IT COST TO GET RIGHT (2026-07-19; re-measured 2026-10-01) ─────────
-# The Founder's read was that the earlier generated attempt had simply lost the `ms` unit suffix —
-# `LSRC-15`'s suppression being lexical, a bare integer is exactly the token that floods — and that
-# restoring `{latency}ms` would dissolve the blocker. The first half is confirmed: `format_message`
-# substring-replaces `{name}` with no delimiter requirement, so `{latency}ms` renders `23ms` and the
-# generated payload is byte-identical to the retired `.log`.
+# ── WHAT DECIDES THE RE-RUN ARM: THE UNIT SUFFIX, AND IT HAS SINCE 2026-06-26 ───────────────────
+# Canon masks a digit-leading token wholesale, so `200 23ms` masks to `<*> <*>` and the value kept
+# for the latency slot is the raw token `23ms`. Before a value slot becomes a FieldShift row, Sift's
+# measurement-syntax rule (`LSRC-15`, in insight-eidos since 2026-06-26) DROPS it when values
+# written as a number with a decimal point or a catalog unit (`ms`, `s`, `kb`, `%`, ...) make up at
+# least half of its mass. The drop leaves no row and no count. No plain-text format feeds the
+# order-aware ordinal channel, so on this vehicle nothing else reads the latency at all.
 #
-# **On 2026-07-19 the suffix did not govern this, and the flood was real.** Two measurements, one
-# variable each:
-#   ① Suffix, under IDENTICAL value movement: `{latency}ms` and `{latency} ms` produced the SAME four
-#     rows. The token masked wholesale to `<*>` either way, so the FieldShift channel never saw the
-#     suffix and `LSRC-15` was not what decided.
-#   ② A genuine RE-RUN — same generator, same band 4..80, same n≈14/endpoint, fresh seed — flooded
-#     ALL SEVEN routes (JSD 0.07–0.11, every one Low). The vanish still led at High.
+# Measured 2026-10-01, one variable at a time, in this fixture's own harness (all three also hold on
+# a generated pair of the same shape through the `sift` CLI, and ① and ② on released sift 1.10.5):
+#   ① `{latency}ms` (catalog unit, the authored form): the re-run arm emits ZERO rows.
+#   ② `{latency} ms` (a bare integer), everything else unchanged: the re-run floods all seven
+#     routes — seven FieldShift rows on `param[1]`, every one Low, JSD 0.07–0.09.
+#   ③ `{latency}msec` (a unit outside the catalog): the same seven rows as ②, figure for figure, so
+#     the catalog decides.
 #
-# **Re-measured 2026-10-01, the suffix NOW governs it, and the Founder's read holds.** With the
-# authored `{latency}ms` the re-run arm produces ZERO rows — under LogCraft coordinatization 2 and on
-# a coordinatization-1 build of 2026-09-29 alike, so what moved is InSight's suppression, not the
-# draws. With the unit split off (`{latency} ms`, a bare integer) the same re-run floods all seven
-# routes again: seven FieldShift rows, JSD 0.07–0.09, every one Low, slot cardinality 11–14. The
-# one-character contrast points at the unit-suffix rule (`LSRC-15`) now dropping the token before a
-# row forms; that attribution is inferred from the contrast, not read from the code.
+# The 2026-07-19 record this header used to carry — "`{latency}ms` and `{latency} ms` give the same
+# rows" and "a re-run floods all seven routes" — is CONTRADICTED by every binary measurable today
+# and by the rule's logic, which has not changed since it landed. Whether that run used a vehicle
+# whose token had lost its suffix cannot be checked without a build of that date.
 #
-# The bare-integer flood is a property of sampling, not of these bytes: two independent samples of ~14
-# from a 77-value uniform genuinely do differ by that much, and what is missing is a null model for
-# sampling noise at small n — FLAW-14's "uncalibrated significance", with a DECLARED intervention
-# behind it, so the ground truth ("nothing moved distributionally") is known rather than assumed.
+# So the re-run arm asserts ZERO FieldShift rows, on any template. That is robust, not a knife-edge:
+# the rule decides lexically, every latency value here is `<n>ms`, and no seed can move the verdict.
+# It is not vacuous: the SURVIVOR arm, on the same vehicle, must fire a FieldShift on the status
+# param. And it was shown red first: on a scratch copy written `{latency} ms` it fails with the
+# seven rows of ②.
 #
-# So this fixture does NOT assert "a re-run emits nothing". It asserts what is true and what actually
-# protects a user: a re-run never vanishes anything, never reads as a new error, and never reaches
-# the page band. That is a stronger contract than the retired pair's, because the retired pair's
-# stronger-looking claim held only for its own bytes. The zero rows read today come from the lexical
-# suppression, not from a recalibrated significance, so the bound stays as wide as FLAW-14 requires.
-#
-# ── THE RE-RUN ARM'S STATED LIMIT — it is NOT a latency-regression gate (measured) ───────────────
-# Mutating the re-run edge to carry a REAL 5x regression on one route (`/api/orders` 4..80ms ->
-# 200..400ms, disjoint supports) does NOT trip this arm. On 2026-07-19 that route read JSD 0.09 / Low
-# and ranked BELOW `/api/user/profile` at 0.11, which changed nothing but its seed: at n≈14 per
-# endpoint the JS divergence is already saturated by sampling sparsity — 14 draws from 77 values
-# barely overlap whatever you do — so a genuine regression cannot push it higher than noise does.
-# Re-measured 2026-10-01 under coordinatization 2, the regression produces NO row at all: it is
-# suppressed with the rest of the unit-suffixed churn.
-#
-# This is the same uncalibrated statistic FLAW-14 names (③: raw JS, no null normalization by support
-# size or sample count), showing its RECALL face rather than its precision one, and it is the more
-# serious of the two: FLAW-14's ruling ⑤ fenced the suppression arm precisely to avoid converting a
-# false-positive flood into "a silent false negative on the wedge's headline signal class". On
-# 2026-07-19 that false negative was already present in the un-suppressed detector; on 2026-10-01 it
-# is total on this vehicle, because the regression never reaches the detector at all. Routed to
-# Daidalos as evidence, not ruled on here. Recorded in-fixture so nobody reads this arm's green as
-# "a latency regression would have been caught" — it would not have been.
+# ── THE RE-RUN ARM'S STATED LIMIT — it is NOT a latency-regression gate ──────────────────────────
+# The conclusion is old; the reason is new. The unit-suffixed latency slot is not JUDGED at all, so
+# a real 5x regression on one route (`/api/orders` 4..80ms -> 200..400ms, disjoint supports) emits
+# no row (measured 2026-10-01 on the generated pair), exactly as a re-run does. Without the rule the
+# bare-integer form would not catch it either: on that pair the route reads JSD 0.09, third of seven,
+# inside the re-run's own noise band, because a categorical statistic discards value order and a
+# latency regression is a shift in location. Plain-text latency is a declared blind spot (FLAW-14);
+# a latency regression is detected on a named JSON field the ordinal channel reads, never here.
+# Recorded in-fixture so nobody reads this arm's green as "a latency regression would have been
+# caught" — it would not have been.
 
 # ── WHY THE ARMS ARE ORDERED THE WAY THEY ARE ───────────────────────────────────────────────────
 # The RNG is position-stable, so an untouched agent emits bit-identical values at every coordinate —
@@ -243,8 +229,9 @@ contract_scenario:
 
   transitions:
     # THE RE-RUN BOUNDARY — see the header. A pure re-run is not an incident: nothing may vanish,
-    # nothing may reach the page band, and the ONLY thing allowed to rank at all is weak churn on the
-    # latency param. This arm PINS FLAW-14's blast radius instead of pretending it is absent.
+    # nothing may read as a new error or reach the page band, and no FieldShift may form on ANY
+    # template — the unit-suffixed latency slot is never judged (`LSRC-15`), so the re-based draws
+    # cannot move it. The edge re-bases the route bed and nothing else, so a row off that bed fails.
     - from: orders-flowing
       to: reran
       compare: RAW.run
@@ -253,11 +240,12 @@ contract_scenario:
           must_not_emit:
             - { kind: VanishedTemplate }
             - { kind: NewErrorPattern }
+            - { kind: FieldShift }
             - { severity: High }
             - { severity: Medium }
         untouched_projection:
           exclude_rows:
-            - { kind: FieldShift, template: "param[1]" }
+            - { template: "request" }
 
     # MAIN — the vanish leads, and nothing else moves at all.
     - from: reran
