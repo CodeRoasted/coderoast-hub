@@ -1,15 +1,23 @@
-# 22 field_cardinality_gate — the 4A.2 cardinality gate: a categorical shift SURVIVES, a
-# high-cardinality measurement reshuffle is SUPPRESSED.
+# 22 field_cardinality_gate — Sift's value-slot gates: a categorical shift SURVIVES; a measurement
+# and a small-sample, many-valued integer column are DECLINED, each under its own reason.
 #
-# WHAT IT PINS, as one inseparable pair:
-#   • RECALL — `lb route tier` is a genuine categorical (3 values over 70 records, uniqueness ratio
-#     0.04). Its distribution really moves (60/6/4 -> 30/12/28), so a FieldShift MUST fire.
-#   • PRECISION — `db query latency N ms` is a measurement, not a category (an 883-value integer band
-#     drawn once per record, so nearly every one of the 70 values is distinct). Its values also really
-#     move, and a FieldShift must NOT fire. This is the FLAW-2 precision bug the 4A.2 gate closed.
+# WHAT IT PINS, as one inseparable set of three:
+#   • RECALL — `lb route tier` is a genuine categorical (3 values over 70 records, 3/70 well inside
+#     the 2/5 distinct-per-sample ratio). Its distribution really moves (60/6/4 -> 30/12/28), so a
+#     FieldShift MUST fire.
+#   • PRECISION, BY SYNTAX — `db query latency N ms` is a measurement: the token after the slot is the
+#     catalog unit `ms` (DN-128.D5), so value syntax declines it, and value syntax is asked BEFORE
+#     uniqueness (DN-128.D9). The report must NAME it under `summary.not_judged.measurement_syntax`,
+#     never under `high_uniqueness`, although its 883-value band also fails the ratio: the reason a
+#     reader is given has to be the true one. Its values really move, and no FieldShift may fire.
+#   • PRECISION, BY UNIQUENESS — `pool worker slot N leased` is a bare integer with no unit: 15
+#     distinct values in 19 records on each side (bands 1..45 then 50..90, disjoint), so 15 x 5 > 19 x 2
+#     fails the ratio. Until DN-128.D8 the ratio was asked only from 16 distinct values up, so this
+#     cell was judged and minted a FieldShift on a move its own 19-draw sample cannot resolve. It is
+#     declined now and named under `summary.not_judged.high_uniqueness`, and no FieldShift may fire.
 #
-# BOTH PARAMS GENUINELY MOVE, which is the point: the gate must separate them on WHAT THEY ARE, not
-# on whether anything changed. A gate that keyed on movement would fire on both.
+# ALL THREE PARAMS GENUINELY MOVE, which is the point: the gates must separate them on WHAT THEY
+# ARE, not on whether anything changed. A gate that keyed on movement would fire on all three.
 #
 # ON FLAW-22, AND A CORRECTION. This fixture was listed as FLAW-22-blocked (JSON fields nested and
 # string-quoted). That was WRONG, and re-measuring it is what showed why: 22's values live in the
@@ -18,13 +26,14 @@
 # `emit: false` (FLAW-23) precisely so they stay template inputs and no `k=v` tail appears, which is what
 # keeps the vehicle identical to the retired pair's.
 #
-# ITS RELATION TO FIXTURE 36, and why both must exist. Both carry an integer latency param. Here
-# the latency slot's cardinality is far above the 4A.2 `max_card` gate, so the uniqueness-ratio test
-# is ASKED and correctly answers "not a categorical" -> suppressed. In 36 the per-endpoint latency
-# slots run card 11-14 (measured 2026-10-01 on 36's bare-integer variant), UNDER that gate, so the
-# ratio test is never asked: as a bare integer the same kind of value floods (flaws.md FLAW-14), and
-# 36 as authored escapes only because its `{latency}ms` token is unit-suffixed (see 36's header). The
-# two fixtures sit on opposite sides of one threshold; keeping them apart is what makes it visible.
+# ITS RELATION TO FIXTURE 36. Both carry a latency the value-syntax gate declines: 36's `{latency}ms`
+# carries its unit in the value, 22's `{latency} ms` in the template. 36 pins the disclosure on a
+# re-run and a 5x regression; 22 pins that the syntax reason wins over uniqueness on a slot both
+# would decline, and that the uniqueness ratio holds below 16 distinct values.
+#
+# The 15-in-19 cell was measured on this seed (2222) from the engine's own cardinality, read off the
+# `FieldShift` row the pre-DN-128.D8 engine minted (insight-eidos 853c0b66). A 1..50 band reaches 16
+# distinct and was rejected: it would sit above the retired floor and witness nothing new.
 
 deterministic_scenario:
   name: insight-field-cardinality-gate
@@ -41,10 +50,10 @@ deterministic_scenario:
 
   causal_axis:
     edges:
-      # ONE compound edge moving BOTH params at once — deliberately, because the claim is a
+      # ONE compound edge moving ALL THREE params at once — deliberately, because the claim is a
       # SEPARATION. Moving them in different transitions would let each be judged alone and would
-      # never test that the gate tells them apart in the same report.
-      - name: shift-both-params
+      # never test that the gates tell them apart in the same report.
+      - name: shift-all-params
         upsert:
           # The categorical really moves: tier 1 loses half its mass to tier 3.
           - path: agents.lb.fields.tier
@@ -57,6 +66,9 @@ deterministic_scenario:
           # The measurement really moves too: the whole latency band lifts by 9 ms.
           - path: agents.db.fields.latency
             value: { name: latency, generator: range, min: 109, max: 991, integer: true, emit: false }
+          # The small-sample column really moves too: a disjoint band of the same width class.
+          - path: agents.pool.fields.slot
+            value: { name: slot, generator: range, min: 50, max: 90, integer: true, emit: false }
 
     time_axis:
       duration_seconds: 20
@@ -75,14 +87,21 @@ deterministic_scenario:
               weights: [60, 6, 4]
               emit: false                # a TEMPLATE INPUT (FLAW-23) — no `k=v` tail, as the retired pair
 
-        # THE MEASUREMENT — a wide band, so cardinality clears the 4A.2 gate and the ratio test is
-        # asked. `100 ms` is space-separated, so the token is a BARE INTEGER: the suppression here is
-        # 4A.2 cardinality, NOT the `LSRC-15` lexical unit-suffix rule (flaws.md FLAW-14).
+        # THE MEASUREMENT — `100 ms` is space-separated, so the VALUE is a bare integer and the unit is
+        # a token of the TEMPLATE (`<*> ms`): value syntax declines it through the template (DN-128.D5),
+        # before the ratio is asked (DN-128.D9).
         - name: db
           rate_per_second: 3.45          # -> 70 records
           message_template: "db query latency {latency} ms"
           fields:
             - { name: latency, generator: range, min: 100, max: 982, integer: true, emit: false }
+
+        # THE SMALL-SAMPLE MANY-VALUED COLUMN — a bare integer, no unit anywhere, 15 distinct in 19.
+        - name: pool
+          rate_per_second: 0.9           # -> 19 records
+          message_template: "pool worker slot {slot} leased"
+          fields:
+            - { name: slot, generator: range, min: 1, max: 45, integer: true, emit: false }
 
 # ── The bundled contract ─────────────────────────────────────────────────────────────────────────
 contract_scenario:
@@ -92,7 +111,7 @@ contract_scenario:
     - name: before
       coordinates: { causal_axis: null,              time_axis: 20s }
     - name: after
-      coordinates: { causal_axis: shift-both-params, time_axis: 20s }
+      coordinates: { causal_axis: shift-all-params,  time_axis: 20s }
 
   transitions:
     - from: before
@@ -104,6 +123,16 @@ contract_scenario:
             - { kind: FieldShift, template: "lb route tier" }
           must_not_emit:
             - { kind: FieldShift, template: "db query latency" }
+            - { kind: FieldShift, template: "pool worker slot" }
+        not_judged:
+          # The reason is a claim: the latency is declined because it is a measurement, so it is named
+          # under measurement syntax even though its band also fails the uniqueness ratio (DN-128.D9).
+          measurement_syntax_slots:
+            must_name: ["db query latency"]
+          # The small-sample column is declined by the uniqueness ratio, and named under it: every
+          # declined slot is named, whichever gate declines it (DN-128.D9).
+          high_uniqueness_slots:
+            must_name: ["pool worker slot"]
         untouched_projection:
           exclude_rows:
             # The categorical is the ONLY thing allowed to surface. The retired pair could forbid a
