@@ -18,32 +18,37 @@
 #     emits no row, because the slot is not judged, and the report says it declined that slot: its
 #     `summary.not_judged` lists the `/api/orders` template (DN-128.D4).
 #
-# ── WHAT DECIDES THE RE-RUN ARM: THE UNIT SUFFIX, AND IT HAS SINCE 2026-06-26 ───────────────────
+# ── WHAT DECIDES THE RE-RUN ARM: A CATALOG UNIT, IN THE VALUE OR IN THE TEMPLATE ────────────────
 # Canon masks a digit-leading token wholesale, so `200 23ms` masks to `<*> <*>` and the value kept
 # for the latency slot is the raw token `23ms`. Before a value slot becomes a FieldShift row, Sift's
 # measurement-syntax rule (`LSRC-15`, in insight-eidos since 2026-06-26) DROPS it when values
 # written as a number with a decimal point or a catalog unit (`ms`, `s`, `kb`, `%`, ...) make up at
-# least half of its mass. The drop leaves no row and no count. No plain-text format feeds the
-# order-aware ordinal channel, so on this vehicle nothing else reads the latency at all.
+# least half of its mass, OR, since 2026-10-04, when the template names the unit right after the
+# slot: `200 23 ms` masks to `<*> <*> ms`, and the token after the latency's wildcard is `ms`. The
+# drop leaves no row; the slot is counted and listed in the report's `not_judged` disclosure. No
+# plain-text format feeds the order-aware ordinal channel, so on this vehicle nothing else reads
+# the latency at all.
 #
-# Measured 2026-10-01, one variable at a time, in this fixture's own harness (all three also hold on
-# a generated pair of the same shape through the `sift` CLI, and ① and ② on released sift 1.10.5):
-#   ① `{latency}ms` (catalog unit, the authored form): the re-run arm emits ZERO rows.
-#   ② `{latency} ms` (a bare integer), everything else unchanged: the re-run floods all seven
-#     routes — seven FieldShift rows on `param[1]`, every one Low, JSD 0.07–0.09.
-#   ③ `{latency}msec` (a unit outside the catalog): the same seven rows as ②, figure for figure, so
+# Measured 2026-10-04, one variable at a time, in this fixture's own harness:
+#   ① `{latency}ms` (a catalog unit in the value, the authored form): the re-run arm emits ZERO rows.
+#   ② `{latency} ms` (a catalog unit in the template): ZERO rows, the whole fixture green, as ①.
+#   ③ `{latency}` (a bare integer, no unit anywhere), everything else unchanged: the re-run floods
+#     all seven routes — seven FieldShift rows on `param[1]`, every one Low, JSD 0.07–0.09.
+#   ④ `{latency}msec` (a unit outside the catalog): the same seven rows as ③, figure for figure, so
 #     the catalog decides.
+# (On 2026-10-01, before the template reading, ② flooded exactly as ③ does now.)
 #
 # The 2026-07-19 record this header used to carry — "`{latency}ms` and `{latency} ms` give the same
-# rows" and "a re-run floods all seven routes" — is CONTRADICTED by every binary measurable today
-# and by the rule's logic, which has not changed since it landed. Whether that run used a vehicle
+# rows" and "a re-run floods all seven routes" — is CONTRADICTED by every binary measurable since
+# 2026-10-01, on which `{latency}ms` never floods, and by the rule's logic, which reads the value's
+# suffix exactly as it did when it landed. Whether that run used a vehicle
 # whose token had lost its suffix cannot be checked without a build of that date.
 #
 # So the re-run arm asserts ZERO FieldShift rows, on any template. That is robust, not a knife-edge:
 # the rule decides lexically, every latency value here is `<n>ms`, and no seed can move the verdict.
 # It is not vacuous: the SURVIVOR arm, on the same vehicle, must fire a FieldShift on the status
-# param. And it was shown red first: on a scratch copy written `{latency} ms` it fails with the
-# seven rows of ②.
+# param. And it was shown red first: on a scratch copy written with a bare `{latency}` it fails
+# with the seven rows of ③.
 #
 # ── THE RE-RUN ARM'S STATED LIMIT — it is NOT a latency-regression gate ──────────────────────────
 # The conclusion is old; the reason is new. The unit-suffixed latency slot is not JUDGED at all, so
@@ -57,7 +62,9 @@
 # caught" — it would not have been. The REGRESSION arm pins exactly that, with the disclosure beside
 # it: measured 2026-10-02 through the `sift` CLI (insight-eidos 2800b515) on the two rendered
 # coordinates, 0 rows and 1 slot declined for measurement syntax, `INFO request GET /api/orders <*>
-# <*>`; on a copy written `{latency} ms`, 1 Low FieldShift and no declined slot, so the arm goes red.
+# <*>`. Red first, measured 2026-10-04 in this fixture's harness: on a bare-integer `{latency}` copy,
+# 1 Low FieldShift (JSD 0.11) and no declined slot, so the arm goes red; a `{latency} ms` copy names
+# its unit in the template, is declined like the authored form, and the arm stays green.
 
 # ── WHY THE ARMS ARE ORDERED THE WAY THEY ARE ───────────────────────────────────────────────────
 # The RNG is position-stable, so an untouched agent emits bit-identical values at every coordinate —
