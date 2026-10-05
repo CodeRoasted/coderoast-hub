@@ -170,7 +170,7 @@ contract_scenario:
   metalog_config:
     top_k_size: 128
     # Tier-2 salience retention — the shipped streaming tuple (`G-R1` arm C, profile
-    # `salience-1/k128-m64-c0-e16`). All FOUR members are spelled, the cap included at the value it
+    # `salience-1/k128-m64-c0-e16-n3`). All FOUR members are spelled, the cap included at the value it
     # would also inherit: a precision fixture mirrors `default_insight_pipeline_config()`
     # field-for-field (§9 PREC-PYR), and an unstated member is how the gate ends up measuring an
     # instrument nobody ships.
