@@ -342,7 +342,7 @@ Every output except `prometheus` and `statsd` requires a `format:` (or `formats:
 | `proxifier` | — | Proxifier bracket format |
 | `cloudwatch` | — | AWS CloudWatch JSON |
 | `systemd_journal` | — | systemd journal JSON export |
-| `hpc` | `bgl` | HPC / Blue Gene/L |
+| `bgl` | — | Blue Gene/L RAS line: epoch, dotted date, node, the full `YYYY-MM-DD-HH.MM.SS.ffffff` stamp, the node again, `RAS KERNEL` and the level (`WARNING` for warn) |
 | `iis_w3c` | `iis` | IIS W3C Extended log |
 | `ecs` | — | Elastic Common Schema 8.x |
 | `otel` | `opentelemetry`, `otlp` | OpenTelemetry OTLP JSON **log record** |
