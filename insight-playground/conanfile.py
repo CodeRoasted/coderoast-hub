@@ -1,6 +1,8 @@
+import os
+import runpy
+
 from conan import ConanFile
 from conan.tools.files import copy
-import os
 
 
 required_conan_version = ">=2.28"
@@ -26,7 +28,11 @@ class InsightScenariosConan(ConanFile):
     no_copy_source = True
 
     def export_sources(self):
-        copy(self, "scenario/*", self.recipe_folder, self.export_sources_folder)
+        # The corpus is exported through malf's tracked-files helper (DN-142.D4 (b)): a file git
+        # does not track under scenario/ is never exported, so the recipe revision is a function
+        # of the commit, never of the disk it was exported from.
+        export_tracked = runpy.run_path(self.conf.get("user.malf:recipe_exports"))["export_tracked"]
+        export_tracked(self, "scenario", "scenario")
 
     def layout(self):
         # The corpus lives under `scenario/` in both source (editable) and package
