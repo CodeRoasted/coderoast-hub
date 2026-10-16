@@ -31,14 +31,17 @@ rests on, from source, with no access to the closed core.
 
 ## The release gate — how a cut ships
 
-Every release chains **Lint → CI → Determinism Golden (gate) → Release**, and the **benchmark gates the
-release** — measured *before* the release is created, not attached after. The shape is mutualised as
-public reusable workflows, so each engine's own workflow is a thin caller over the shared one:
+Every gate runs **before** any release tag exists: one run lints, builds, tests and benchmarks the
+whole released set at a fixed candidate, and stores the bytes it judged. Each repository's tag then
+**attests** that it names the commit that run verified, and publishes those stored bytes by digest —
+a release compiles nothing. The shape is mutualised as public reusable workflows, so each engine's own
+workflow is a thin caller over the shared one:
 
 - **[`coderoast-lint.yml`](https://github.com/CodeRoasted/malf-toolchain/blob/main/.github/workflows/coderoast-lint.yml)**
   · **[`coderoast-ci.yml`](https://github.com/CodeRoasted/malf-toolchain/blob/main/.github/workflows/coderoast-ci.yml)**
-  · **[`coderoast-release.yml`](https://github.com/CodeRoasted/malf-toolchain/blob/main/.github/workflows/coderoast-release.yml)**
-  — the reusable build / lint / release workflows in malf-toolchain.
+  · **[`coderoast-attest.yml`](https://github.com/CodeRoasted/malf-toolchain/blob/main/.github/workflows/coderoast-attest.yml)**
+  · **[`coderoast-publish.yml`](https://github.com/CodeRoasted/malf-toolchain/blob/main/.github/workflows/coderoast-publish.yml)**
+  — the reusable lint / build / attest / publish workflows in malf-toolchain.
 - A real caller, end to end:
   **[insight-canon `ci.yml`](https://github.com/CodeRoasted/insight-canon/blob/main/.github/workflows/ci.yml)**
   + **[`release.yaml`](https://github.com/CodeRoasted/insight-canon/blob/main/.github/workflows/release.yaml)**
