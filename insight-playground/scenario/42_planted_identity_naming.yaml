@@ -1,7 +1,7 @@
 # 42 planted_identity_naming — G-B2b NAMING arm (ADR-32.D7 arm 1): a deployment whose branching
 # identity is PERSISTENT AT BLOCK TIMESCALE and sub-threshold at every shipped raw-x-raw span —
 # authored so that, when Cube B lands and declares the L2.s3 identity carrier (RAW.h24 —
-# ADR-32.D6/D7), the carrier's structural readout has a KNOWN planted identity to name, and the
+# ADR-32.D6, ADR-32.D7), the carrier's structural readout has a KNOWN planted identity to name, and the
 # matched control has nothing to name.
 #
 # THE WORLD (every number below is MEASURED, 2026-08-21, six calibration runs recorded in the
