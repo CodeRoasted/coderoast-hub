@@ -473,7 +473,7 @@ agents:
 | `field_distributions` | map | `{}` | *(with `use_intent:` only)* distributions over the bound entry's **declared** field domains (see [Binding a declared intent](#binding-a-declared-intent-use_intent)) |
 | `rate_per_second` | string/number | `1.0` / `0` | Records/s as a number or `"200/s"` string. Unbound default depends on the intent: `1.0` for a generic-world agent, `0` (banner-only) for a structural quantum — see [Intent](#intent) |
 | `log_level` | string | `"info"` | Default severity: `trace`, `debug`, `info`, `warn`, `error`, `fatal` |
-| `level_weights` | map | `{}` | Explicit level distribution weights (auto-normalized) |
+| `level_weights` | map | `{}` | Explicit level distribution weights (auto-normalized); each key is a level name (`trace`, `debug`, `info`, `warn`, `error`, `fatal`), and any other key is a load error naming it |
 | `error_rate` | number | `0.0` | Global ERROR probability (0.0–1.0) |
 | `message_template` | string | `""` | Message string with `{field_name}` placeholders |
 | `use_template` | string | `""` | Template name to inherit from |
@@ -991,7 +991,7 @@ agents:
 | `field_weight_ramps[].field` | string | required | Name of a `weighted_choice` field on this agent |
 | `field_weight_ramps[].target_weights` | sequence | required | Target weights (`w_end`); length must equal the field's `values` |
 | `field_weight_ramps[].window_seconds` | number | `60.0` | Quantum the ramp advances in (align with the consuming window) |
-| `level_weight_ramp.target_weights` | map | required | Target level mix; keys must match the agent's `level_weights` keys |
+| `level_weight_ramp.target_weights` | map | required | Target level mix; each key is a level name (an unknown one is a load error naming it) and must match the agent's `level_weights` keys |
 | `level_weight_ramp.window_seconds` | number | `60.0` | Quantum the ramp advances in |
 
 ---
