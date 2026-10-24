@@ -184,10 +184,14 @@ contract_scenario:
   sequence:
     branching_delta_threshold_bits: 3.5
   explain_min_confidence: 0.75
+  # The one position reads the HEALTHY phase's steady state past the pyramid's warm-up: the 3-level
+  # ladder (top block 12 windows) matures after 13 of the engine's 25 s windows, 325 s, so 540 s reads
+  # 21 closed windows, the last 8 past that point, and stays 60 s clear of the 600 s incident
+  # onset. Read inside warm-up, the silence would prove the acute layer only (RUL-193).
   positions:
-  - name: recovered
+  - name: healthy
     coordinates:
-      time_axis: 120s
+      time_axis: 540s
     signal:
       must_fire: []
       must_not_fire:
