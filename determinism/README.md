@@ -7,16 +7,16 @@ levels**. This folder holds the
 committed *goldens* (the expected output) and their SHA-256 digests. Rebuild the
 engines from source at this release and you get these exact digests back.
 
-> Evidence snapshot for **v1.10.7**. Regenerated on every cut; the digests below move
+> Evidence snapshot for **v1.10.8**. Regenerated on every cut; the digests below move
 > only when the deterministic output legitimately changes.
 
 ## The goldens
 
 | file | sha256 | what it pins |
 | --- | --- | --- |
-| `canon.det_proof.txt` | `5e4fb383d61b7cad2be65f638fe67d302ada226a02b62c516e97905b86872beb` | canon public determinism proof — tokenization + event extraction over a fixed corpus |
-| `metalog.determinism_golden.txt` | `3b78a398aad89e14dfc3f82a8d53a86cbb34e5f9764994d07778f7ea5c071ce0` | the serialized MetaLog document — the cross-toolchain bit-identity anchor |
-| `eidos.parse_replay_golden.txt` | `7afb726f3d194878a4b5b8d0e9e1c78795f73b72ebcd6f15c87d5e07d5de7b10` | eidos parse -> replay classification golden over the fuzz corpus |
+| `canon.det_proof.txt` | `ca5441617b1cde7dbeb3c5c80ab6cc7c0757ed212e215fdd47c51fb05bbe0c06` | canon public determinism proof — tokenization + event extraction over a fixed corpus |
+| `metalog.determinism_golden.txt` | `3ce524741fa0219aed0623e7b5a4d98442eee84bbd1dd9b8c1138860a2e04321` | the serialized MetaLog document — the cross-toolchain bit-identity anchor |
+| `eidos.parse_replay_golden.txt` | `dd9367ab5abf9ad9228c5f8a254890ea1110d85d396725808c7ae780d2b78744` | eidos parse -> replay classification golden over the fuzz corpus |
 
 Each `.sha256` is a `sha256sum`-compatible line, so a reader can verify a copy with:
 

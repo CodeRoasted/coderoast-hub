@@ -2,7 +2,7 @@
 # view whole
 # arms no-packages - github+api-rfc3339-line-prefix gitlab jenkins
 # columns cues id timestamp_ns declared_timestamp level declared_level format component host template_str params structural_role trace ordinals linked_span_ids echoed_source no_role_witness_key
-# semantic_identity 0b66a45a497ec364b66f85db35065025
+# semantic_identity 0e4b904363c27b2baab7b3c474617fe6
 # semantic_packages github@1.10.0 gitlab@1.0.0 jenkins@1.1.0 package_managers@1.0.0 test_frameworks@1.0.0
 ## file ci_build.log declared=no-packages
 ### templates (14)
