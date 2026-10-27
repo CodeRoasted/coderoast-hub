@@ -1,0 +1,14 @@
+deterministic_scenario:
+  name: engine-rule-agent-fields
+  time_axis:
+    duration_seconds: 1
+    agents:
+      - name: other
+        intent: service
+        fields:
+          - {name: twice_named, generator: range, min: 0, max: 9, integer: true}
+      - name: subject
+        intent: service
+        fields:
+          - {name: twice_named, generator: range, min: 0, max: 9, integer: true}
+          - {name: once_named, generator: range, min: 0, max: 9, integer: true}

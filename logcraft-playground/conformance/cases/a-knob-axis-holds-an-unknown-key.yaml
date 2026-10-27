@@ -1,0 +1,21 @@
+deterministic_scenario:
+  name: parity-knob
+  seed: 4
+  outputs:
+  - name: out
+    type: console
+    format: json
+  knob_axis:
+    path: noise.log_duplication_rate
+    increment: 0.01
+    cardinality: 3
+    time_axis:
+      duration_seconds: 10
+      noise:
+        log_duplication_rate: 0.0
+      agents:
+      - name: app
+        intent: service
+        rate_per_second: 1
+        message_template: x
+    bogus: 1

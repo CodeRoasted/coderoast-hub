@@ -1,0 +1,13 @@
+deterministic_scenario:
+  name: engine-rule-variations
+  time_axis:
+    duration_seconds: 1
+    field_variations:
+      - {field: jittered_twice, jitter_percent: 5}
+      - {field: jittered_twice, jitter_percent: 10}
+    agents:
+      - name: subject
+        intent: service
+        fields:
+          - {name: jittered_twice, generator: range, min: 1, max: 9}
+          - {name: jittered_once, generator: range, min: 1, max: 9}

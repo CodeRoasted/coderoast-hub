@@ -1,0 +1,52 @@
+# Starter 08 — Log Levels
+# Every level the language declares, set two ways: an agent's base `log_level:`, and a field's
+# `level_overrides:` that raise the level of the records carrying a given value.
+# Concepts: log_level (trace, debug, info, warn, error, fatal), level_overrides
+scenario:
+  name: log-levels
+  duration_seconds: 2m
+
+  outputs:
+    - name: console
+      type: console
+      format: json
+
+  agents:
+    - name: tracer
+      intent: service
+      rate_per_second: 2/s
+      log_level: trace
+      message_template: "span {step} entered"
+      fields:
+        - name: step
+          generator: choice
+          values: [parse, plan, execute]
+
+    - name: worker
+      intent: service
+      rate_per_second: 2/s
+      log_level: debug
+      message_template: "job {job_state}"
+      fields:
+        - name: job_state
+          generator: weighted_choice
+          values: [queued, running, done, retrying, lost]
+          weights: [30, 40, 25, 4, 1]
+          level_overrides:
+            done: info
+            retrying: warn
+            lost: fatal
+
+    - name: storage
+      intent: database
+      rate_per_second: 1/s
+      log_level: info
+      message_template: "write {outcome}"
+      fields:
+        - name: outcome
+          generator: weighted_choice
+          values: [ok, slow, failed]
+          weights: [90, 8, 2]
+          level_overrides:
+            slow: warn
+            failed: error

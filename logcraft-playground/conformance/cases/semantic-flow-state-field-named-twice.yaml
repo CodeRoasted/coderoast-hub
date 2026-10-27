@@ -1,0 +1,23 @@
+deterministic_scenario:
+  name: engine-rule-flow-state-fields
+  time_axis:
+    duration_seconds: 1
+    agents:
+      - name: svc
+        intent: service
+        rate_per_second: 0
+    flows:
+      - name: order
+        start_state: receive
+        transitions:
+          - {from: receive, to: settle}
+        states:
+          receive:
+            agent: svc
+            fields:
+              - {name: twice_named, generator: range, min: 0, max: 9, integer: true}
+          settle:
+            agent: svc
+            fields:
+              - {name: twice_named, generator: range, min: 0, max: 9, integer: true}
+              - {name: twice_named, generator: range, min: 0, max: 9, integer: true}

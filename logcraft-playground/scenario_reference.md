@@ -1,10 +1,21 @@
 # LogCraft Scenario Reference
 
-Complete, source-derived reference for every configuration key in a LogCraft scenario
-file. Generated from direct source-code audit of the scenario parsers
-(`scenario_loader.cpp`, `scenario_*_parsing.cpp`, `scenario_validation.cpp`), the config
-and capability modules (`core.api-agent.cppm`, `core.api-scenario.cppm`), and
-`field_generator.cpp`. This is the single source of truth;
+The LogCraft scenario language, defined. **This directory is the DSL's contract, and the
+contract leads: the engine complies.** Three artefacts make it, and a DSL change edits them
+first:
+
+* this reference — what every key MEANS;
+* [`scenario.schema.json`](scenario.schema.json) — a JSON Schema (draft 2020-12, using only
+  keywords draft 7 also reads) of every key set, shape and value token the language admits;
+  an editor checks a scenario against it as you type;
+* [`conformance/`](conformance/) — every case an implementation must judge as stated
+  (`conformance/cases.yaml`): each refuse case proves one rule, beside a control that differs
+  by that one mutation and is accepted.
+
+The LogCraft engine takes this contract as a build dependency and proves, in its own tests,
+that it accepts what the schema accepts, refuses every refuse case and accepts every control.
+A rule a JSON Schema cannot state — a name unique across a list, a value range the schema
+leaves open — is listed under [Semantic rules](#semantic-rules), each with its own case.
 `logcraft/technical_docs/reference/scenario_reference.md` redirects here.
 
 A scenario is a YAML file under **exactly one world root**: `scenario:` — the real,
@@ -15,12 +26,6 @@ and is rejected under `scenario:`, so the root key alone tells you which world a
 [Engine Modes](#engine-modes)). These scenarios are openly published (CC-BY-4.0); the
 LogCraft **engine** that runs them is part of [CodeRoast](https://coderoast.fr), where you
 run a scenario in the hosted **Lab**.
-
-**A machine-readable schema sits beside this file:** [`scenario.schema.json`](scenario.schema.json),
-a JSON Schema (draft 2020-12) an editor can check a scenario against as you type. It states every
-closed key set the engine's strict load enforces, the shapes it refuses and the value tokens it
-refuses — and nothing the engine decides by cross-reference, arithmetic or world policy, so a file
-the schema accepts can still fail to load. This reference stays the authority on what each key means.
 
 ---
 
@@ -81,6 +86,7 @@ the schema accepts can still fail to load. This reference stays the authority on
 - [Pipeline](#pipeline)
 - [Time Context](#time-context)
 - [Environment](#environment)
+- [Semantic rules](#semantic-rules)
 
 ---
 
@@ -291,7 +297,7 @@ outputs:
 | `console` | Print to stdout |
 | `file` | Write to disk with optional rotation |
 | `recording` | Write JSONL for later replay |
-| `http` | *(real world only)* Batched HTTP POST (e.g. Elasticsearch, Loki, any webhook) |
+| `http` | *(real world only)* Batched HTTP POST (e.g. Elasticsearch, Loki, any webhook); `url:` is required |
 | `prometheus` | *(real world only)* Expose `/metrics` scrape endpoint |
 | `statsd` | *(real world only)* Push metrics over UDP |
 | `insight_shm` | *(deterministic world only)* Shared-memory IPC channel for InSight integration; a line longer than 4 096 bytes is cut (see below the table) |
@@ -324,36 +330,37 @@ all three are hard-rejected under `deterministic_scenario:` (see
 
 Every output except `prometheus` and `statsd` requires a `format:` (or `formats:`) field.
 
-| Value | Alias | Description |
-|-------|-------|-------------|
-| `json` | — | Structured JSON, newline-delimited |
-| `text` | — | Human-readable key=value |
-| `clf` | — | Apache/Nginx Combined Log Format |
-| `apache_error` | — | Apache error log |
-| `log4j` | — | Log4j / Python logging format |
-| `syslog` | — | BSD syslog (RFC 3164) |
-| `rfc5424` | — | IETF syslog (RFC 5424) |
-| `nginx_error` | — | Nginx error log |
-| `kv` | `logfmt` | Key=value / logfmt |
-| `android_logcat` | — | Android logcat |
-| `windows_cbs` | — | Windows CBS/CSI log |
-| `spark_hdfs` | `spark` | Apache Spark / HDFS |
-| `health_app` | — | Health app pipe-delimited |
-| `proxifier` | — | Proxifier bracket format |
-| `cloudwatch` | — | AWS CloudWatch JSON |
-| `systemd_journal` | — | systemd journal JSON export |
-| `bgl` | — | Blue Gene/L RAS line: epoch, dotted date, node, the full `YYYY-MM-DD-HH.MM.SS.ffffff` stamp, the node again, `RAS KERNEL` and the level (`WARNING` for warn) |
-| `iis_w3c` | `iis` | IIS W3C Extended log |
-| `ecs` | — | Elastic Common Schema 8.x |
-| `otel` | `opentelemetry`, `otlp` | OpenTelemetry OTLP JSON **log record** |
-| `otel_span` | `otlp_span`, `otel_trace` | OpenTelemetry OTLP JSON **span** — one flat span object per line (`traceId` / `spanId` / `parentSpanId` / `name` / `startTimeUnixNano` / `endTimeUnixNano` / `status` / `service.name`). Renders a [causal flow](#causal-flows)'s trace/span context + `span_duration_ms`; a non-flow record becomes a valid synthesised root span. This is the span-native surface (see [Span output](#span-output-otel_span)) |
-| `github_actions` | `gha` | Timestamped line with a GitHub Actions workflow-command prefix (`::error::` / `::warning::`; empty for info/trace) — the surface Sift annotates from |
-| `jenkins` | — | Jenkins console log — bare untimestamped body text with `[Pipeline] ` intent banners (`[Pipeline] { (Build)` for a `kind: job` container, `[Pipeline] sh` for a `kind: step`). The second marker-rendering dialect format (with `github_actions`), single materialization — `intent_channel` is ignored. When the build axis declares [`outcome:`](#the-ci-world-build_axis), this is the format that renders the terminal `Finished: <RESULT>` epilogue, once, at end-of-stream |
-| `raw` | `messy`, `stdout` | Unstructured `LEVEL message field=value` line — CI/app-stdout "dirty logs" the structured formats never exercise |
+| Value | Description |
+|-------|-------------|
+| `json` | Structured JSON, newline-delimited |
+| `text` | Human-readable key=value |
+| `clf` | Apache/Nginx Combined Log Format |
+| `apache_error` | Apache error log |
+| `log4j` | Log4j / Python logging format |
+| `syslog` | BSD syslog (RFC 3164) |
+| `rfc5424` | IETF syslog (RFC 5424) |
+| `nginx_error` | Nginx error log |
+| `kv` | Key=value / logfmt |
+| `android_logcat` | Android logcat |
+| `windows_cbs` | Windows CBS/CSI log |
+| `spark_hdfs` | Apache Spark / HDFS |
+| `health_app` | Health app pipe-delimited |
+| `proxifier` | Proxifier bracket format |
+| `cloudwatch` | AWS CloudWatch JSON |
+| `systemd_journal` | systemd journal JSON export |
+| `bgl` | Blue Gene/L RAS line: epoch, dotted date, node, the full `YYYY-MM-DD-HH.MM.SS.ffffff` stamp, the node again, `RAS KERNEL` and the level (`WARNING` for warn) |
+| `iis_w3c` | IIS W3C Extended log |
+| `ecs` | Elastic Common Schema 8.x |
+| `otel` | OpenTelemetry OTLP JSON **log record** |
+| `otel_span` | OpenTelemetry OTLP JSON **span** — one flat span object per line (`traceId` / `spanId` / `parentSpanId` / `name` / `startTimeUnixNano` / `endTimeUnixNano` / `status` / `service.name`). Renders a [causal flow](#causal-flows)'s trace/span context + `span_duration_ms`; a non-flow record becomes a valid synthesised root span. This is the span-native surface (see [Span output](#span-output-otel_span)) |
+| `github_actions` | Timestamped line with a GitHub Actions workflow-command prefix (`::error::` / `::warning::`; empty for info/trace) — the surface Sift annotates from |
+| `jenkins` | Jenkins console log — bare untimestamped body text with `[Pipeline] ` intent banners (`[Pipeline] { (Build)` for a `kind: job` container, `[Pipeline] sh` for a `kind: step`). The second marker-rendering dialect format (with `github_actions`), single materialization — `intent_channel` is ignored. When the build axis declares [`outcome:`](#the-ci-world-build_axis), this is the format that renders the terminal `Finished: <RESULT>` epilogue, once, at end-of-stream |
+| `raw` | Unstructured `LEVEL message field=value` line — CI/app-stdout "dirty logs" the structured formats never exercise |
 
-An **unrecognized `format:` value is not a parse error**: the loader falls back to `json`. This is
-the one silent fallback on this table's axis — contrast `intent_channel:`, where a typo is a hard
-error — so a misspelled format token produces a valid JSON stream rather than a load failure.
+An **unrecognized `format:` or `formats:` value refuses the load**: the values in this table, one
+spelling per format, are the whole set (`#/$defs/format_token` in the schema). A misspelled format token is a
+load failure, never a stream in some other format. The same holds for an unrecognized output
+`type:` (the table above), which no sink would ever render.
 
 When `formats:` (sequence) is set it overrides `format:` (single string), allowing one
 sink to write multiple formats to the same path prefix.
@@ -472,7 +479,7 @@ agents:
 | `payload` | string | absent | *(with `use_intent:`)* this quantum's payload — **required** when the bound entry declares `payload: Declared`, **refused** when it declares `payload: None`. An inline quantum declares it inside `intent: { payload: … }` instead |
 | `field_distributions` | map | `{}` | *(with `use_intent:` only)* distributions over the bound entry's **declared** field domains (see [Binding a declared intent](#binding-a-declared-intent-use_intent)) |
 | `rate_per_second` | string/number | `1.0` / `0` | Records/s as a number or `"200/s"` string. Unbound default depends on the intent: `1.0` for a generic-world agent, `0` (banner-only) for a structural quantum — see [Intent](#intent) |
-| `log_level` | string | `"info"` | Default severity: `trace`, `debug`, `info`, `warn`, `error`, `fatal` |
+| `log_level` | string | `"info"` | Default severity: `trace`, `debug`, `info`, `warn`, `error`, `fatal`; an empty value is refused |
 | `level_weights` | map | `{}` | Explicit level distribution weights (auto-normalized); each key is a level name (`trace`, `debug`, `info`, `warn`, `error`, `fatal`), and any other key is a load error naming it |
 | `error_rate` | number | `0.0` | Global ERROR probability (0.0–1.0) |
 | `message_template` | string | `""` | Message string with `{field_name}` placeholders |
@@ -2315,3 +2322,28 @@ environment:
 ```
 
 Only `region`, `cluster`, and `version` are parsed. All appear in every output record.
+
+---
+
+## Semantic rules
+
+The rules below hold for every scenario and a JSON Schema cannot state them; the schema accepts
+each case and the engine refuses it. Each has a refuse case and its control in `conformance/`
+(`rule: semantic:<id>` in `conformance/cases.yaml`).
+
+The schema judges the document a YAML reader builds, and that reading has to be fixed for the
+schema to judge anything: every scalar is untyped text and a null is a null, the FIRST value of a
+duplicated key is the one judged, and a key that is null, a sequence or a mapping is set aside
+(at the document root it reads as `<non-scalar>`, which no root admits). The first two rules below
+then refuse what that reading sets aside, so nothing it hides reaches the engine.
+
+| Id | Rule |
+|----|------|
+| `duplicate-key` | A mapping never names one key twice — YAML forbids it, and no reader may pick a copy. |
+| `non-scalar-key` | Every key is a plain scalar: never null (`~:`), a sequence or a mapping. |
+| `agent-field-named-twice` | Two fields of one agent never share a `name:`. |
+| `flow-state-field-named-twice` | Two fields of one flow state never share a `name:`. |
+| `health-transition-declared-twice` | One health transition is declared once. |
+| `field-variation-targets-one-field-twice` | Two `field_variations:` entries never target the same field. |
+| `flow-transition-declared-twice` | One flow transition (`from:`, `to:`) is declared once per flow. |
+| `health-state-outside-the-four` | A health state is one of the engine's four; the schema leaves `health_state` open. |

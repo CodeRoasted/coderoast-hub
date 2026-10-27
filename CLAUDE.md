@@ -6,12 +6,13 @@ code lives here or ever will.
 
 ## Arrival
 
-- No build system. One Conan package exists: `insight_scenarios`
+- No build system. Two content-only Conan packages exist: `insight_scenarios`
   (`insight-playground/`, content-only, never released — consumed as an
   editable by insight-eidos's `insight_e2e` and served read-only by
-  `coderoast-server`).
-- Layout: `logcraft-playground/` (THE LogCraft DSL reference + starter
-  scenarios + agent library), `insight-playground/` (detection scenarios +
+  `coderoast-server`), and `logcraft_dsl` (`logcraft-playground/`, the
+  LogCraft DSL contract, never released — `logcraft_core` test_requires it).
+- Layout: `logcraft-playground/` (THE LogCraft DSL contract: the schema, the
+  reference, the conformance set, starter scenarios + agent library), `insight-playground/` (detection scenarios +
   declarative contracts), `determinism/` (per-engine reproducibility goldens +
   digests), `benchmarks/`, `showcase/sift/` (Sift over real CI logs),
   `workflows/` (pointers to the public CI).
@@ -38,4 +39,8 @@ code lives here or ever will.
   contract tests in the superproject checkout's `insight-eidos/insight-e2e/` — this folder is the single
   source of truth those gates read.
 - The LogCraft DSL reference here is the one reference — the bible shelf points
-  at it; never duplicate it elsewhere.
+  at it; never duplicate it elsewhere. The schema is HAND-AUTHORED and leads:
+  a DSL change edits `scenario.schema.json`, `scenario_reference.md` and
+  `conformance/` first, and `logcraft_core`'s own tests red until the engine
+  complies. A rule a JSON Schema cannot state is a § Semantic rules entry with
+  a `semantic:<id>` refuse case and its control.

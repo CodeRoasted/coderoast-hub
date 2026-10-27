@@ -1,0 +1,31 @@
+scenario:
+  name: parity-real
+  duration_seconds: 10
+  outputs:
+  - name: out
+    type: http
+    url: http://127.0.0.1:9/ingest
+  pipeline:
+    num_shards: 1
+    policy: drop
+  environment:
+    region: eu-west-1
+  noise:
+    log_duplication_rate: 0.0
+  users:
+    count: 10
+  field_variations:
+  - field: size
+    jitter_percent: 5.0
+  incidents:
+  - name: spike
+    trigger: time > 5s
+    duration_seconds: 2
+    effects:
+    - target: app
+      error_rate: 0.5
+  agents:
+  - name: app
+    intent: web_server
+    rate_per_second: 1
+    message_template: x

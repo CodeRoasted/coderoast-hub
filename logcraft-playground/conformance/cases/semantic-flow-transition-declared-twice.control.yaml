@@ -1,0 +1,18 @@
+deterministic_scenario:
+  name: engine-rule-flow-transitions
+  time_axis:
+    duration_seconds: 1
+    agents:
+      - name: svc
+        intent: service
+        rate_per_second: 0
+    flows:
+      - name: order
+        start_state: hop_a
+        transitions:
+          - {from: hop_a, to: hop_b, weight: 1}
+          - {from: hop_b, to: hop_c, weight: 2}
+        states:
+          hop_a: {agent: svc}
+          hop_b: {agent: svc}
+          hop_c: {agent: svc}

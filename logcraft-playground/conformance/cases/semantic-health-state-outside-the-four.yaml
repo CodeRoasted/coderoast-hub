@@ -1,0 +1,7 @@
+scenario:
+  agents:
+    - name: subject
+      intent: service
+      health_state:
+        transitions:
+          - {from: 1, to: 4, probability: 0.1}

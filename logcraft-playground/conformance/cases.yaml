@@ -1,0 +1,517 @@
+# The LogCraft DSL conformance set: every case an implementation of the DSL must judge as stated.
+# A `refuse` case proves one rule: a schema site (`#/$defs/<def>:<keyword>`), a closed position
+# (`position:<where>`) or a semantic rule (`semantic:<id>`, scenario_reference.md § Semantic rules).
+# Its `control` differs from it by that one mutation and must be accepted, so the refusal can only
+# be the rule's. An `accept` case must load.
+cases:
+- file: cases/the-document-root-holds-an-unknown-key.yaml
+  label: the document root holds an unknown key
+  verdict: refuse
+  rule: position:#
+  control: bases/det.yaml
+- file: cases/the-real-root-holds-an-unknown-key.yaml
+  label: the real root holds an unknown key
+  verdict: refuse
+  rule: position:#.scenario
+  control: bases/real.yaml
+- file: cases/the-deterministic-root-holds-an-unknown-key.yaml
+  label: the deterministic root holds an unknown key
+  verdict: refuse
+  rule: position:#.deterministic_scenario
+  control: bases/det.yaml
+- file: cases/a-real-world-output-holds-an-unknown-key.yaml
+  label: a real-world output holds an unknown key
+  verdict: refuse
+  rule: position:real_root.outputs
+  control: bases/real.yaml
+- file: cases/a-real-world-pipeline-holds-an-unknown-key.yaml
+  label: a real-world pipeline holds an unknown key
+  verdict: refuse
+  rule: position:real_root.pipeline
+  control: bases/real.yaml
+- file: cases/a-real-world-agent-holds-an-unknown-key.yaml
+  label: a real-world agent holds an unknown key
+  verdict: refuse
+  rule: position:real_root.agents
+  control: bases/real.yaml
+- file: cases/a-real-world-environment-holds-an-unknown-key.yaml
+  label: a real-world environment holds an unknown key
+  verdict: refuse
+  rule: position:real_root.environment
+  control: bases/real.yaml
+- file: cases/a-real-world-noise-holds-an-unknown-key.yaml
+  label: a real-world noise holds an unknown key
+  verdict: refuse
+  rule: position:real_root.noise
+  control: bases/real.yaml
+- file: cases/real-world-users-hold-an-unknown-key.yaml
+  label: real-world users hold an unknown key
+  verdict: refuse
+  rule: position:real_root.users
+  control: bases/real.yaml
+- file: cases/a-real-world-field-variation-holds-an-unknown-key.yaml
+  label: a real-world field variation holds an unknown key
+  verdict: refuse
+  rule: position:real_root.field_variations
+  control: bases/real.yaml
+- file: cases/a-real-world-incident-holds-an-unknown-key.yaml
+  label: a real-world incident holds an unknown key
+  verdict: refuse
+  rule: position:real_root.incidents
+  control: bases/real.yaml
+- file: cases/a-deterministic-output-holds-an-unknown-key.yaml
+  label: a deterministic output holds an unknown key
+  verdict: refuse
+  rule: position:deterministic_root.outputs
+  control: bases/det.yaml
+- file: cases/a-deterministic-pipeline-holds-an-unknown-key.yaml
+  label: a deterministic pipeline holds an unknown key
+  verdict: refuse
+  rule: position:deterministic_root.pipeline
+  control: bases/det.yaml
+- file: cases/a-root-time-axis-holds-an-unknown-key.yaml
+  label: a root time_axis holds an unknown key
+  verdict: refuse
+  rule: position:deterministic_root.time_axis
+  control: bases/det.yaml
+- file: cases/a-causal-axis-holds-an-unknown-key.yaml
+  label: a causal_axis holds an unknown key
+  verdict: refuse
+  rule: position:deterministic_root.causal_axis
+  control: bases/causal.yaml
+- file: cases/a-root-build-axis-holds-an-unknown-key.yaml
+  label: a root build_axis holds an unknown key
+  verdict: refuse
+  rule: position:deterministic_root.build_axis
+  control: bases/ci.yaml
+- file: cases/a-knob-axis-holds-an-unknown-key.yaml
+  label: a knob_axis holds an unknown key
+  verdict: refuse
+  rule: position:deterministic_root.knob_axis
+  control: bases/knob.yaml
+- file: cases/a-time-axis-under-a-causal-axis-holds-an-unknown-key.yaml
+  label: a time_axis under a causal_axis holds an unknown key
+  verdict: refuse
+  rule: position:causal_axis.time_axis
+  control: bases/causal.yaml
+- file: cases/a-time-axis-under-a-knob-axis-holds-an-unknown-key.yaml
+  label: a time_axis under a knob_axis holds an unknown key
+  verdict: refuse
+  rule: position:knob_axis.time_axis
+  control: bases/knob.yaml
+- file: cases/a-build-axis-under-a-knob-axis-holds-an-unknown-key.yaml
+  label: a build_axis under a knob_axis holds an unknown key
+  verdict: refuse
+  rule: position:knob_axis.build_axis
+  control: bases/tower.yaml
+- file: cases/a-time-world-s-environment-holds-an-unknown-key.yaml
+  label: a time world's environment holds an unknown key
+  verdict: refuse
+  rule: position:time_world.environment
+  control: bases/det.yaml
+- file: cases/a-time-world-s-noise-holds-an-unknown-key.yaml
+  label: a time world's noise holds an unknown key
+  verdict: refuse
+  rule: position:time_world.noise
+  control: bases/det.yaml
+- file: cases/a-time-world-s-users-hold-an-unknown-key.yaml
+  label: a time world's users hold an unknown key
+  verdict: refuse
+  rule: position:time_world.users
+  control: bases/det.yaml
+- file: cases/a-time-world-s-field-variation-holds-an-unknown-key.yaml
+  label: a time world's field variation holds an unknown key
+  verdict: refuse
+  rule: position:time_world.field_variations
+  control: bases/det.yaml
+- file: cases/a-time-world-s-agent-holds-an-unknown-key.yaml
+  label: a time world's agent holds an unknown key
+  verdict: refuse
+  rule: position:time_world.agents
+  control: bases/det.yaml
+- file: cases/a-time-world-s-incident-holds-an-unknown-key.yaml
+  label: a time world's incident holds an unknown key
+  verdict: refuse
+  rule: position:time_world.incidents
+  control: bases/det.yaml
+- file: cases/a-time-world-s-flow-holds-an-unknown-key.yaml
+  label: a time world's flow holds an unknown key
+  verdict: refuse
+  rule: position:time_world.flows
+  control: bases/det.yaml
+- file: cases/a-build-world-s-environment-holds-an-unknown-key.yaml
+  label: a build world's environment holds an unknown key
+  verdict: refuse
+  rule: position:build_world.environment
+  control: bases/ci.yaml
+- file: cases/a-build-world-s-noise-holds-an-unknown-key.yaml
+  label: a build world's noise holds an unknown key
+  verdict: refuse
+  rule: position:build_world.noise
+  control: bases/ci.yaml
+- file: cases/a-build-world-s-users-hold-an-unknown-key.yaml
+  label: a build world's users hold an unknown key
+  verdict: refuse
+  rule: position:build_world.users
+  control: bases/ci.yaml
+- file: cases/a-build-world-s-field-variation-holds-an-unknown-key.yaml
+  label: a build world's field variation holds an unknown key
+  verdict: refuse
+  rule: position:build_world.field_variations
+  control: bases/ci.yaml
+- file: cases/a-build-world-s-agent-holds-an-unknown-key.yaml
+  label: a build world's agent holds an unknown key
+  verdict: refuse
+  rule: position:build_world.agents
+  control: bases/ci.yaml
+- file: cases/a-build-world-s-flow-holds-an-unknown-key.yaml
+  label: a build world's flow holds an unknown key
+  verdict: refuse
+  rule: position:build_world.flows
+  control: bases/ci.yaml
+- file: cases/user-sessions-hold-an-unknown-key.yaml
+  label: user sessions hold an unknown key
+  verdict: refuse
+  rule: position:users.sessions
+  control: bases/det.yaml
+- file: cases/an-intent-quantum-holds-an-unknown-key.yaml
+  label: an intent quantum holds an unknown key
+  verdict: refuse
+  rule: position:agent.intent
+  control: bases/ci.yaml
+- file: cases/a-field-distribution-binding-holds-an-unknown-key.yaml
+  label: a field distribution binding holds an unknown key
+  verdict: refuse
+  rule: position:agent.field_distributions
+  control: bases/ci.yaml
+- file: cases/a-field-holds-an-unknown-key.yaml
+  label: a field holds an unknown key
+  verdict: refuse
+  rule: position:agent.fields
+  control: bases/det.yaml
+- file: cases/a-phase-holds-an-unknown-key.yaml
+  label: a phase holds an unknown key
+  verdict: refuse
+  rule: position:agent.phases
+  control: bases/det.yaml
+- file: cases/an-agent-s-noise-holds-an-unknown-key.yaml
+  label: an agent's noise holds an unknown key
+  verdict: refuse
+  rule: position:agent.noise
+  control: bases/det.yaml
+- file: cases/a-flow-state-holds-an-unknown-key.yaml
+  label: a flow state holds an unknown key
+  verdict: refuse
+  rule: position:flow.states
+  control: bases/det.yaml
+- file: cases/a-flow-transition-holds-an-unknown-key.yaml
+  label: a flow transition holds an unknown key
+  verdict: refuse
+  rule: position:flow.transitions
+  control: bases/det.yaml
+- file: cases/the-real-root-declares-a-seed.yaml
+  label: the real root declares a seed
+  verdict: refuse
+  rule: '#/$defs/real_root:additionalProperties'
+  control: bases/real.yaml
+- file: cases/an-agent-declares-the-removed-type.yaml
+  label: an agent declares the removed `type:`
+  verdict: refuse
+  rule: '#/$defs/agent:additionalProperties'
+  control: bases/det.yaml
+- file: cases/the-document-is-a-sequence.yaml
+  label: the document is a sequence
+  verdict: refuse
+  rule: '#:type'
+  control: bases/det.yaml
+- file: cases/both-world-roots.yaml
+  label: both world roots
+  verdict: refuse
+  rule: '#:oneOf'
+  control: bases/det.yaml
+- file: cases/no-world-root.yaml
+  label: no world root
+  verdict: refuse
+  rule: '#:oneOf'
+  control: bases/det.yaml
+- file: cases/a-deterministic-root-that-is-a-scalar.yaml
+  label: a deterministic root that is a scalar
+  verdict: refuse
+  rule: '#/$defs/deterministic_root:type'
+  control: bases/det.yaml
+- file: cases/a-deterministic-root-with-no-world.yaml
+  label: a deterministic root with no world
+  verdict: refuse
+  rule: '#/$defs/deterministic_root:anyOf'
+  control: bases/det.yaml
+- file: cases/a-time-axis-that-is-a-sequence.yaml
+  label: a time_axis that is a sequence
+  verdict: refuse
+  rule: '#/$defs/deterministic_root:anyOf'
+  control: bases/det.yaml
+- file: cases/a-deterministic-time-world-with-no-horizon.yaml
+  label: a deterministic time world with no horizon
+  verdict: refuse
+  rule: '#/$defs/time_world:required'
+  control: bases/det.yaml
+- file: cases/a-ci-build-world-with-no-horizon.yaml
+  label: a CI build world with no horizon
+  verdict: refuse
+  rule: '#/$defs/build_world:required'
+  control: bases/ci.yaml
+- file: cases/an-agent-name-that-is-a-mapping.yaml
+  label: an agent name that is a mapping
+  verdict: refuse
+  rule: '#/$defs/scalar:type'
+  control: bases/det.yaml
+- file: cases/an-intent-that-is-a-sequence.yaml
+  label: an intent that is a sequence
+  verdict: refuse
+  rule: '#/$defs/scalar:type'
+  control: bases/det.yaml
+- file: cases/an-agent-with-no-name.yaml
+  label: an agent with no name
+  verdict: refuse
+  rule: '#/$defs/agent:required'
+  control: bases/det.yaml
+- file: cases/an-agent-log-level-that-is-no-level.yaml
+  label: an agent log_level that is no level
+  verdict: refuse
+  rule: '#/$defs/log_level/then:enum'
+  control: bases/det.yaml
+- file: cases/an-agent-s-outputs-that-are-not-a-sequence.yaml
+  label: an agent's outputs that are not a sequence
+  verdict: refuse
+  rule: '#/$defs/agent/properties/outputs:type'
+  control: bases/det.yaml
+- file: cases/field-distributions-without-use-intent.yaml
+  label: field_distributions without use_intent
+  verdict: refuse
+  rule: '#/$defs/agent/then:required'
+  control: bases/det.yaml
+- file: cases/an-intent-quantum-with-no-kind.yaml
+  label: an intent quantum with no kind
+  verdict: refuse
+  rule: '#/$defs/intent_quantum:required'
+  control: bases/ci.yaml
+- file: cases/an-intent-quantum-of-kind-none.yaml
+  label: an intent quantum of kind none
+  verdict: refuse
+  rule: '#/$defs/intent_quantum/properties/kind:pattern'
+  control: bases/ci.yaml
+- file: cases/a-phase-with-no-name.yaml
+  label: a phase with no name
+  verdict: refuse
+  rule: '#/$defs/phase:required'
+  control: bases/det.yaml
+- file: cases/a-field-with-no-name.yaml
+  label: a field with no name
+  verdict: refuse
+  rule: '#/$defs/field_declaration:required'
+  control: bases/det.yaml
+- file: cases/a-field-named-after-an-envelope-key.yaml
+  label: a field named after an envelope key
+  verdict: refuse
+  rule: '#/$defs/field_declaration/properties/name:not'
+  control: bases/det.yaml
+- file: cases/a-flow-state-field-named-after-an-envelope-key.yaml
+  label: a flow state field named after an envelope key
+  verdict: refuse
+  rule: '#/$defs/field_declaration/properties/name:not'
+  control: bases/det.yaml
+- file: cases/a-level-override-to-no-level.yaml
+  label: a level override to no level
+  verdict: refuse
+  rule: '#/$defs/field_declaration/properties/level_overrides/additionalProperties/then:enum'
+  control: bases/det.yaml
+- file: cases/a-field-with-no-generator.yaml
+  label: a field with no generator
+  verdict: refuse
+  rule: '#/$defs/generator:required'
+  control: bases/det.yaml
+- file: cases/a-field-with-an-unknown-generator.yaml
+  label: a field with an unknown generator
+  verdict: refuse
+  rule: '#/$defs/generator/properties/generator:enum'
+  control: bases/det.yaml
+- file: cases/a-conditional-branch-with-an-unknown-generator.yaml
+  label: a conditional branch with an unknown generator
+  verdict: refuse
+  rule: '#/$defs/generator/properties/generator:enum'
+  control: bases/det.yaml
+- file: cases/a-conditional-with-no-condition-field.yaml
+  label: a conditional with no condition_field
+  verdict: refuse
+  rule: '#/$defs/generator/then:required'
+  control: bases/det.yaml
+- file: cases/conditional-branches-that-are-a-sequence.yaml
+  label: conditional branches that are a sequence
+  verdict: refuse
+  rule: '#/$defs/generator/then/properties/branches:type'
+  control: bases/det.yaml
+- file: cases/a-conditional-default-that-is-a-scalar.yaml
+  label: a conditional default that is a scalar
+  verdict: refuse
+  rule: '#/$defs/generator/then/properties/default:type'
+  control: bases/det.yaml
+- file: cases/a-file-sink-with-no-file-path.yaml
+  label: a file sink with no file_path
+  verdict: refuse
+  rule: '#/$defs/output/allOf/1/then:required'
+  control: bases/det.yaml
+- file: cases/a-file-sink-with-an-empty-file-path.yaml
+  label: a file sink with an empty file_path
+  verdict: refuse
+  rule: '#/$defs/output/allOf/1/then/properties/file_path:minLength'
+  control: bases/det.yaml
+- file: cases/a-recording-that-names-a-format.yaml
+  label: a recording that names a format
+  verdict: refuse
+  rule: '#/$defs/output/allOf/0/then:not'
+  control: bases/det.yaml
+- file: cases/output-formats-that-are-not-a-sequence.yaml
+  label: output formats that are not a sequence
+  verdict: refuse
+  rule: '#/$defs/output/properties/formats:type'
+  control: bases/det.yaml
+- file: cases/output-project-fields-that-are-not-a-sequence.yaml
+  label: output project_fields that are not a sequence
+  verdict: refuse
+  rule: '#/$defs/output/properties/project_fields:type'
+  control: bases/det.yaml
+- file: cases/a-flow-with-no-start-state.yaml
+  label: a flow with no start_state
+  verdict: refuse
+  rule: '#/$defs/flow:required'
+  control: bases/det.yaml
+- file: cases/a-flow-with-no-name.yaml
+  label: a flow with no name
+  verdict: refuse
+  rule: '#/$defs/flow:required'
+  control: bases/det.yaml
+- file: cases/a-flow-state-with-no-agent.yaml
+  label: a flow state with no agent
+  verdict: refuse
+  rule: '#/$defs/flow_state:required'
+  control: bases/det.yaml
+- file: cases/a-flow-state-log-level-that-is-no-level.yaml
+  label: a flow state log_level that is no level
+  verdict: refuse
+  rule: '#/$defs/log_level/then:enum'
+  control: bases/det.yaml
+- file: cases/a-flow-transition-with-no-target.yaml
+  label: a flow transition with no target
+  verdict: refuse
+  rule: '#/$defs/flow_transition:required'
+  control: bases/det.yaml
+- file: cases/a-duplicated-key-whose-first-value-is-a-level.yaml
+  label: a duplicated key whose FIRST value is a level
+  verdict: refuse
+  rule: semantic:duplicate-key
+  control: bases/det.yaml
+- file: cases/a-tab-after-a-key-s-colon.yaml
+  label: a tab after a key's colon
+  verdict: accept
+- file: cases/a-tab-inside-a-plain-scalar.yaml
+  label: a tab inside a plain scalar
+  verdict: accept
+- file: cases/an-ansi-escape-byte-in-a-quoted-template.yaml
+  label: an ANSI escape byte in a quoted template
+  verdict: accept
+- file: cases/a-null-key-inside-an-agent.yaml
+  label: a null key inside an agent
+  verdict: refuse
+  rule: semantic:non-scalar-key
+  control: bases/det.yaml
+- file: cases/a-sequence-key-inside-an-agent.yaml
+  label: a sequence key inside an agent
+  verdict: refuse
+  rule: semantic:non-scalar-key
+  control: bases/det.yaml
+- file: cases/a-phase-named-by-a-tagged-empty-string.yaml
+  label: a phase named by a tagged empty string
+  verdict: accept
+- file: cases/the-deterministic-time-world.yaml
+  label: the deterministic time world
+  verdict: accept
+- file: cases/the-real-world.yaml
+  label: the real world
+  verdict: accept
+- file: cases/the-ci-build-world.yaml
+  label: the CI build world
+  verdict: accept
+- file: cases/a-causal-tower.yaml
+  label: a causal tower
+  verdict: accept
+- file: cases/a-knob-tower.yaml
+  label: a knob tower
+  verdict: accept
+- file: cases/a-knob-tower-over-a-build-world.yaml
+  label: a knob tower over a build world
+  verdict: accept
+- file: cases/a-deterministic-root-with-no-seed.yaml
+  label: a deterministic root with no seed
+  verdict: accept
+- file: cases/an-empty-log-level.yaml
+  label: an EMPTY log_level
+  verdict: refuse
+  rule: '#/$defs/log_level/then:enum'
+  control: bases/det.yaml
+- file: cases/an-intent-kind-in-capitals.yaml
+  label: an intent kind in capitals
+  verdict: accept
+- file: cases/semantic-agent-field-named-twice.yaml
+  label: a field named twice in one agent's fields
+  verdict: refuse
+  rule: semantic:agent-field-named-twice
+  control: cases/semantic-agent-field-named-twice.control.yaml
+- file: cases/semantic-flow-state-field-named-twice.yaml
+  label: a field named twice in one flow state's fields
+  verdict: refuse
+  rule: semantic:flow-state-field-named-twice
+  control: cases/semantic-flow-state-field-named-twice.control.yaml
+- file: cases/semantic-health-transition-declared-twice.yaml
+  label: a health transition declared twice
+  verdict: refuse
+  rule: semantic:health-transition-declared-twice
+  control: cases/semantic-health-transition-declared-twice.control.yaml
+- file: cases/semantic-field-variation-targets-one-field-twice.yaml
+  label: a field variation targeting one field twice
+  verdict: refuse
+  rule: semantic:field-variation-targets-one-field-twice
+  control: cases/semantic-field-variation-targets-one-field-twice.control.yaml
+- file: cases/semantic-flow-transition-declared-twice.yaml
+  label: a flow transition declared twice
+  verdict: refuse
+  rule: semantic:flow-transition-declared-twice
+  control: cases/semantic-flow-transition-declared-twice.control.yaml
+- file: cases/semantic-health-state-outside-the-four.yaml
+  label: a health state outside the engine's four
+  verdict: refuse
+  rule: semantic:health-state-outside-the-four
+  control: cases/semantic-health-state-outside-the-four.control.yaml
+- file: cases/an-output-of-a-type-the-language-does-not-declare.yaml
+  label: an output of a type the language does not declare
+  verdict: refuse
+  rule: '#/$defs/output/properties/type:enum'
+  control: bases/det.yaml
+- file: cases/an-output-format-the-language-does-not-declare.yaml
+  label: an output format the language does not declare
+  verdict: refuse
+  rule: '#/$defs/format_token:enum'
+  control: bases/det.yaml
+- file: cases/an-output-formats-entry-the-language-does-not-declare.yaml
+  label: an output formats entry the language does not declare
+  verdict: refuse
+  rule: '#/$defs/format_token:enum'
+  control: bases/det.yaml
+- file: cases/an-http-output-with-no-url.yaml
+  label: an http output with no url
+  verdict: refuse
+  rule: '#/$defs/output/allOf/2/then:required'
+  control: cases/an-http-output-with-its-url.control.yaml
+- file: cases/an-http-output-with-an-empty-url.yaml
+  label: an http output with an empty url
+  verdict: refuse
+  rule: '#/$defs/output/allOf/2/then/properties/url:minLength'
+  control: cases/an-http-output-with-its-url.control.yaml

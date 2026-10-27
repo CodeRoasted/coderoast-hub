@@ -1,0 +1,10 @@
+deterministic_scenario:
+  name: parity-det
+  seed: 7
+  outputs:
+  - name: out
+    type: console
+    format: json
+  pipeline:
+    num_shards: 1
+    policy: block

@@ -2,12 +2,24 @@ packages:
   # The public InSight scenario + contract corpus, content only (CC-BY-4.0). No code.
   # Consumed by insight-eidos's private e2e harness (insight_e2e, test_requires) as an editable, and
   # served read-only at runtime by coderoast-server. The single source of truth for the scenarios —
-  # the rest of coderoast-hub (logcraft-playground, benchmarks, workflows) stays pure content with no
-  # conanfile. NOT a released conan artifact (release:false): it is published as public GIT content in
-  # this repo and consumed only via editable in the workspace / superproject gate — never installed
+  # the rest of coderoast-hub (benchmarks, workflows) stays pure content with no conanfile;
+  # logcraft-playground is the second content package, logcraft_dsl, below. NOT a released conan
+  # artifact (release:false): it is published as public GIT content in this repo and consumed only
+  # via editable in the workspace / superproject gate — never installed
   # from a conan remote. So no release-publish.yml and no compatibility-matrix pin row are required.
   insight_scenarios:
     path: insight-playground
+    version: 1.10.9
+    source_public: true
+    release: false
+    depends: []
+  # The LogCraft DSL contract, content only (CC-BY-4.0): the JSON Schema, the reference, the
+  # conformance set and the starter scenarios. The contract leads and the engine complies:
+  # logcraft_core test_requires it and proves in its own build that it judges every conformance
+  # case as stated. Same posture as insight_scenarios: release:false, consumed as an editable in
+  # the workspace and by the superproject gate, never installed from a conan remote.
+  logcraft_dsl:
+    path: logcraft-playground
     version: 1.10.9
     source_public: true
     release: false

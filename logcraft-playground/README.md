@@ -22,7 +22,9 @@ licensed [CC-BY-4.0](../LICENSE).
 | `scenario/01_starter/` | Starter scenarios, ordered by increasing complexity. |
 | `scenario/agents/` | Reusable agent definitions (nginx, postgres, redis, kafka, …). |
 | `scenario_reference.md` | Complete DSL reference — every key, type, and default. |
-| `scenario.schema.json` | JSON Schema of the DSL for editors and CI — every closed key set and load refusal it can state; weaker than the engine by design. Generated from the engine's declarations: never edit it by hand. |
+| `scenario.schema.json` | JSON Schema of the DSL for editors and CI — every closed key set, value token set and rule a JSON Schema can state. Hand-authored, and it LEADS: the engine complies, proving it in its own build. |
+| `conformance/` | Every case an implementation must judge as stated (`cases.yaml`): each refuse case proves one rule beside a control that is accepted. |
+| `conanfile.py` | Packages this directory as `logcraft_dsl`, the content-only DSL contract the engine's tests depend on. |
 
 ## License
 

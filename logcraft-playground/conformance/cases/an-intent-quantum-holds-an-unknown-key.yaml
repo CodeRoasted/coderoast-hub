@@ -1,0 +1,73 @@
+deterministic_scenario:
+  name: parity-ci
+  seed: 5
+  outputs:
+  - name: out
+    type: console
+    format: jenkins
+  build_axis:
+    dialect: jenkins
+    duration_seconds: 20
+    environment:
+      region: eu-west-1
+    noise:
+      log_duplication_rate: 0.0
+    users:
+      count: 1
+    field_variations:
+    - field: unit
+      jitter_percent: 5.0
+    agents:
+    - name: stage
+      intent:
+        kind: job
+        payload: Build
+        bogus: 1
+    - name: step
+      intent:
+        kind: step
+        payload: checkout
+      after: stage
+    - name: sh
+      intent:
+        kind: step
+        payload: sh
+      after: step
+      rate_per_second: 4
+      message_template: compiling {unit}
+      fields:
+      - name: unit
+        generator: choice
+        values:
+        - core
+        - api
+    - name: junit
+      use_intent: jenkins.step
+      payload: junit
+      after: sh
+      rate_per_second: 4
+      field_distributions:
+        action:
+          weights:
+          - 10
+          - 20
+          - 30
+          - 40
+        target:
+          generator: choice
+          values:
+          - core
+          - api
+        warnings:
+          min: 0
+          max: 3
+    flows:
+    - name: retry
+      instance_rate_per_second: 1
+      max_concurrent: 1
+      start_state: again
+      states:
+        again:
+          agent: sh
+          message_template: retrying
+      transitions: []
