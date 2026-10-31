@@ -50,6 +50,9 @@ class LogcraftDslConan(ConanFile):
         for name in self.CONTENT_DIRS:
             copy(self, "*", src=os.path.join(self.source_folder, name),
                  dst=os.path.join(self.package_folder, name))
+        # Last, the package's third-party notices and its repository's own licence (DN-142.D39): malf's
+        # helper, staged in the conan home and named by global.conf, writes both under licenses/.
+        runpy.run_path(self.conf.get("user.malf:recipe_notices"))["write_notices"](self)
 
     def package_info(self):
         self.cpp_info.includedirs = []

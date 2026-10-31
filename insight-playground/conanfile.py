@@ -44,6 +44,9 @@ class InsightScenariosConan(ConanFile):
     def package(self):
         copy(self, "*", src=os.path.join(self.source_folder, "scenario"),
              dst=os.path.join(self.package_folder, "scenario"))
+        # Last, the package's third-party notices and its repository's own licence (DN-142.D39): malf's
+        # helper, staged in the conan home and named by global.conf, writes both under licenses/.
+        runpy.run_path(self.conf.get("user.malf:recipe_notices"))["write_notices"](self)
 
     def package_info(self):
         self.cpp_info.includedirs = []
