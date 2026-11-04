@@ -276,7 +276,7 @@
         "high_watermark": true,
         "min_batch": true,
         "max_batch": true,
-        "policy": true
+        "policy": { "enum": ["block", "drop"] }
       },
       "additionalProperties": false
     },

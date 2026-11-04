@@ -236,11 +236,11 @@ phase that **omits** the key keeps the current rate. The per-field default (agen
 | Mode | Selected by | Clock | Notes |
 |------|-------------|-------|-------|
 | **Real** | `scenario:` root (no `seed:`) | real wall-clock (structural) | Default. Randomized each run. Flat — no axis. |
-| **Deterministic** | `deterministic_scenario:` root (`seed:`, default `42`) | virtual (structural; no `clock:`/`mode:`) | Same logs every run under one coordinatization version (currently `2`); a release that changes it changes the stream, and the `coordinatization` key lets a scenario assert the version its pins were realized under. The clock + world nest under `time_axis`; `epoch_duration_ns` sets the epoch grid. Forces `pipeline.policy: block`; rejects `local` timezone + the real-only knobs. |
+| **Deterministic** | `deterministic_scenario:` root (`seed:`, default `42`) | virtual (structural; no `clock:`/`mode:`) | Same logs every run under one coordinatization version (currently `2`); a release that changes it changes the stream, and the `coordinatization` key lets a scenario assert the version its pins were realized under. The clock + world nest under `time_axis`; `epoch_duration_ns` sets the epoch grid. `pipeline.policy` defaults to `block`, and a declared `drop` is refused; rejects `local` timezone + the real-only knobs. |
 
 In deterministic mode the clock is **virtual by construction** (the `deterministic_scenario:` root
-types the world — there is no `clock:`/`mode:`); the loader forces `pipeline.policy: block` when the
-pipeline block is absent, and emits a notice.
+types the world — there is no `clock:`/`mode:`); an absent `pipeline.policy` takes `block`, and a
+declared `drop` is refused at load and at engine construction, naming `pipeline.policy` (`ADR-11.D4`).
 
 ### What each world declines
 
@@ -262,8 +262,8 @@ declared table each, enforced at a single point:
 | | `outputs: type: insight_shm` | a real clock seals the stream only when the engine stops, so InSight receives nothing while it runs; start a `deterministic_scenario:` Playing for paced, replayable live analysis |
 
 Two further gates are mode-shaped rather than feature-shaped: `timezone: local` (host TZ) is rejected
-in the deterministic world, and `pipeline.policy` must be `block` there (auto-forced) while the real
-world defaults to `drop`.
+in the deterministic world, and `pipeline.policy` must be `block` there (absent defaults to `block`,
+a declared `drop` is refused) while the real world defaults to `drop`.
 
 This is **DSL validation policy, not capability removal.** The engine implements every one of these
 for both worlds; the deterministic world declines them because it is authored with do-operator / axis
@@ -2292,7 +2292,7 @@ High-performance sharded pipeline. Rarely needed unless tuning throughput.
 | `high_watermark` | number | `0.8` | High backpressure threshold fraction |
 | `min_batch` | integer | `16` | Minimum batch size for emission |
 | `max_batch` | integer | `256` | Maximum batch size for emission |
-| `policy` | string | `"drop"` | `"drop"` (maximize throughput) or `"block"` (no loss). Deterministic mode requires `"block"` (auto-set). |
+| `policy` | string | `"drop"` real, `"block"` deterministic | `"drop"` (maximize throughput) or `"block"` (no loss); any other value is refused. Deterministic mode refuses a declared `"drop"`, naming `pipeline.policy`; an absent policy takes `"block"` there. |
 
 ---
 

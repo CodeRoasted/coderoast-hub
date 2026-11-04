@@ -274,6 +274,11 @@ cases:
   verdict: refuse
   rule: '#/$defs/agent:required'
   control: bases/det.yaml
+- file: cases/a-pipeline-policy-that-is-neither-block-nor-drop.yaml
+  label: a pipeline policy that is neither block nor drop
+  verdict: refuse
+  rule: '#/$defs/pipeline/properties/policy:enum'
+  control: bases/det.yaml
 - file: cases/an-agent-log-level-that-is-no-level.yaml
   label: an agent log_level that is no level
   verdict: refuse
