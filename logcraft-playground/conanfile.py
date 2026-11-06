@@ -21,7 +21,7 @@ class LogcraftDslConan(ConanFile):
     """
 
     name = "logcraft_dsl"
-    version = "1.10.10"
+    version = "1.10.11"
     package_type = "build-scripts"          # pure data: no libs, no headers, no binary
     description = "The LogCraft DSL contract: JSON Schema, reference, conformance set and starter scenarios."
     license = "CC-BY-4.0"

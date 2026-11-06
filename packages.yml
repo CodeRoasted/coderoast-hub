@@ -9,7 +9,7 @@ packages:
   # from a conan remote. So no release-publish.yml and no compatibility-matrix pin row are required.
   insight_scenarios:
     path: insight-playground
-    version: 1.10.10
+    version: 1.10.11
     source_public: true
     release: false
     depends: []
@@ -20,7 +20,7 @@ packages:
   # the workspace and by the superproject gate, never installed from a conan remote.
   logcraft_dsl:
     path: logcraft-playground
-    version: 1.10.10
+    version: 1.10.11
     source_public: true
     release: false
     depends: []
