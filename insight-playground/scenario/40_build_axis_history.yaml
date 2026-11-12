@@ -14,7 +14,7 @@
 # moves EXACTLY K, every other cell of the cube byte-identical across the two builds. It is
 # INHERITED from identity-keyed RNG (ADR-10.D1), never enforced, which is precisely why it is worth
 # asserting at cube grain: a fold that keyed on position, or that rewrote a name, would break it
-# here and nowhere else. (The Sift-v1 INTENT-GRAIN diff across this axis is a different claim and a
+# here and nowhere else. (The Tamys-v1 INTENT-GRAIN diff across this axis is a different claim and a
 # different beat — not this fixture.)
 
 deterministic_scenario:

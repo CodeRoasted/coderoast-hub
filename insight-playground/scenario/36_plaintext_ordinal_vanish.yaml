@@ -20,7 +20,7 @@
 #
 # ── WHAT DECIDES THE RE-RUN ARM: A CATALOG UNIT, IN THE VALUE OR IN THE TEMPLATE ────────────────
 # Canon masks a digit-leading token wholesale, so `200 23ms` masks to `<*> <*>` and the value kept
-# for the latency slot is the raw token `23ms`. Before a value slot becomes a FieldShift row, Sift's
+# for the latency slot is the raw token `23ms`. Before a value slot becomes a FieldShift row, Tamys's
 # measurement-syntax rule (`LSRC-15`, in insight-eidos since 2026-06-26) DROPS it when values
 # written as a number with a decimal point or a catalog unit (`ms`, `s`, `kb`, `%`, ...) make up at
 # least half of its mass, OR, since 2026-10-04, when the template names the unit right after the

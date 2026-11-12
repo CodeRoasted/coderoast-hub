@@ -5,7 +5,7 @@ declared error model, not dashboards you read or samplers that throw your data a
 
 CodeRoast is the project. Its engine is **InSight**: it reads the *structure* of your logs and
 tells you, deterministically, when it changes — what moved, why, and how sure it is, as a ranked,
-reproducible verdict a machine or a human can act on. **Sift** is InSight in your CI; **LogCraft**
+reproducible verdict a machine or a human can act on. **Tamys** is InSight in your CI; **LogCraft**
 is the deterministic simulator InSight is proven against. Same inputs, same verdict, every time.
 
 ## What everyone else does, and why InSight doesn't
@@ -39,7 +39,7 @@ exactly what we **guarantee and test** — the goldens are the proof.
 | [`insight-playground/`](insight-playground/) | InSight's detection contracts — the scenarios and their goldens that pin exactly what fires and what stays silent. No code, all evidence. |
 | [`determinism/`](determinism/) | The reproducibility goldens — per-engine determinism proofs + SHA-256 digests, bit-identical across the 5-leg cross-ISA build. Regenerated every cut. |
 | [`benchmarks/`](benchmarks/) | Performance measurements + methodology, versioned per release. |
-| [`showcase/sift/`](showcase/sift/) | Sift over **real CI logs** — three runs of one C++ build job (two green, one failing) and the ranked report for each pair, with the provenance and every transformation declared. Thousands of lines differ between two passing runs; Sift reports one. |
+| [`showcase/tamys/`](showcase/tamys/) | Tamys over **real CI logs** — three runs of one C++ build job (two green, one failing) and the ranked report for each pair, with the provenance and every transformation declared. Thousands of lines differ between two passing runs; Tamys reports one. |
 | [`workflows/`](workflows/) | How we build & gate — pointers to the real, public CI that produces and gates every release (the 5-leg determinism proof, benchmark-gated cuts). Linked, never copied. |
 
 ## The rest of CodeRoast in the open
@@ -49,7 +49,7 @@ claims** — and we tell you exactly where the line is.
 
 **The product**
 
-- **[Sift](https://github.com/CodeRoasted/sift-action)** — the GitHub Action. Drop it into any
+- **[Tamys](https://github.com/CodeRoasted/sift-action)** — the GitHub Action. Drop it into any
   CI: it diffs your logs against the last green run and comments the structural regressions inline.
   *(MIT — this is the thing you can use today.)*
 
@@ -77,7 +77,7 @@ claims** — and we tell you exactly where the line is.
 **The narration model**
 
 - **[sift-explain-model](https://huggingface.co/CodeRoasted/sift-explain-model)** — the local,
-  bring-your-own model weights Sift uses to *narrate* a report in plain language. It **narrates,
+  bring-your-own model weights Tamys uses to *narrate* a report in plain language. It **narrates,
   never decides**: explanation is an opt-in overlay on a deterministic verdict, not the detector.
 
 **The site**

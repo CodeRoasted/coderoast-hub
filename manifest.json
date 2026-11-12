@@ -1,6 +1,6 @@
 {
   "release_tag": "v1.10.11",
-  "sift_version": null,
+  "tamys_version": null,
   "license": "CC-BY-4.0",
   "determinism": {
     "goldens": [

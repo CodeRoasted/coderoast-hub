@@ -353,7 +353,7 @@ Every output except `prometheus` and `statsd` requires a `format:` (or `formats:
 | `ecs` | Elastic Common Schema 8.x |
 | `otel` | OpenTelemetry OTLP JSON **log record** |
 | `otel_span` | OpenTelemetry OTLP JSON **span** — one flat span object per line (`traceId` / `spanId` / `parentSpanId` / `name` / `startTimeUnixNano` / `endTimeUnixNano` / `status` / `service.name`). Renders a [causal flow](#causal-flows)'s trace/span context + `span_duration_ms`; a non-flow record becomes a valid synthesised root span. This is the span-native surface (see [Span output](#span-output-otel_span)) |
-| `github_actions` | Timestamped line with a GitHub Actions workflow-command prefix (`::error::` / `::warning::`; empty for info/trace) — the surface Sift annotates from |
+| `github_actions` | Timestamped line with a GitHub Actions workflow-command prefix (`::error::` / `::warning::`; empty for info/trace) — the surface Tamys annotates from |
 | `jenkins` | Jenkins console log — bare untimestamped body text with `[Pipeline] ` intent banners (`[Pipeline] { (Build)` for a `kind: job` container, `[Pipeline] sh` for a `kind: step`). The second marker-rendering dialect format (with `github_actions`), single materialization — `intent_channel` is ignored. When the build axis declares [`outcome:`](#the-ci-world-build_axis), this is the format that renders the terminal `Finished: <RESULT>` epilogue, once, at end-of-stream |
 | `raw` | Unstructured `LEVEL message field=value` line — CI/app-stdout "dirty logs" the structured formats never exercise |
 

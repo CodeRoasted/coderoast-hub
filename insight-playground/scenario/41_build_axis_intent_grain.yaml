@@ -1,4 +1,4 @@
-# 41 build_axis_intent_grain — the Sift-v1 INTENT-GRAIN diff across a declared CI build history,
+# 41 build_axis_intent_grain — the Tamys-v1 INTENT-GRAIN diff across a declared CI build history,
 # and the axis property at QUANTUM grain.
 #
 # The generator derives build 1 from build 0 under ONE declared edge — do(inject failure into

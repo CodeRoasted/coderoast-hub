@@ -14,7 +14,7 @@ code lives here or ever will.
 - Layout: `logcraft-playground/` (THE LogCraft DSL contract: the schema, the
   reference, the conformance set, starter scenarios + agent library), `insight-playground/` (detection scenarios +
   declarative contracts), `determinism/` (per-engine reproducibility goldens +
-  digests), `benchmarks/`, `showcase/sift/` (Sift over real CI logs),
+  digests), `benchmarks/`, `showcase/tamys/` (Tamys over real CI logs),
   `workflows/` (pointers to the public CI).
 
 ## Constraints & traps
