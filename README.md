@@ -74,11 +74,11 @@ claims** — and we tell you exactly where the line is.
   instruction-set architectures, not one lucky corner. Install our toolchain, rebuild, get our
   bytes. *The determinism claim is toolchain-relative and fetchable — not "trust us."*
 
-**The narration model**
+**The narration**
 
-- **[sift-explain-model](https://huggingface.co/CodeRoasted/sift-explain-model)** — the local,
-  bring-your-own model weights Tamys uses to *narrate* a report in plain language. It **narrates,
-  never decides**: explanation is an opt-in overlay on a deterministic verdict, not the detector.
+- Tamys narrates a report in plain language on the user's own model and key, never with weights
+  CodeRoast ships. It **narrates, never decides**: explanation is an opt-in overlay on a
+  deterministic verdict, not the detector.
 
 **The site**
 
