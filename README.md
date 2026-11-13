@@ -49,7 +49,7 @@ claims** — and we tell you exactly where the line is.
 
 **The product**
 
-- **[Tamys](https://github.com/CodeRoasted/sift-action)** — the GitHub Action. Drop it into any
+- **[Tamys](https://github.com/CodeRoasted/tamys-action)** — the GitHub Action. Drop it into any
   CI: it diffs your logs against the last green run and comments the structural regressions inline.
   *(MIT — this is the thing you can use today.)*
 
